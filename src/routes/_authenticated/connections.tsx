@@ -193,9 +193,10 @@ function ConnectionsPage() {
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
-                            variant="destructive"
+                            className="text-destructive"
                             onSelect={() => deleteMutation.mutate(connection.id)}
                           >
+
                             Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
