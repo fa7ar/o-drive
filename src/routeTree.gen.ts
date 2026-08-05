@@ -14,6 +14,8 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedConnectionsRouteImport } from './routes/_authenticated/connections'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedExplorerRouteImport } from './routes/_authenticated/explorer'
+import { Route as AuthenticatedTransfersRouteImport } from './routes/_authenticated/transfers'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,18 +42,32 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedExplorerRoute = AuthenticatedExplorerRouteImport.update({
+  id: '/explorer',
+  path: '/explorer',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTransfersRoute = AuthenticatedTransfersRouteImport.update({
+  id: '/transfers',
+  path: '/transfers',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/connections': typeof AuthenticatedConnectionsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/explorer': typeof AuthenticatedExplorerRoute
+  '/transfers': typeof AuthenticatedTransfersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/connections': typeof AuthenticatedConnectionsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/explorer': typeof AuthenticatedExplorerRoute
+  '/transfers': typeof AuthenticatedTransfersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -60,12 +76,15 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/connections': typeof AuthenticatedConnectionsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/explorer': typeof AuthenticatedExplorerRoute
+  '/_authenticated/transfers': typeof AuthenticatedTransfersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/connections' | '/dashboard'
+  fullPaths:
+    '/' | '/auth' | '/connections' | '/dashboard' | '/explorer' | '/transfers'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/connections' | '/dashboard'
+  to: '/' | '/auth' | '/connections' | '/dashboard' | '/explorer' | '/transfers'
   id:
     | '__root__'
     | '/'
@@ -73,6 +92,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/connections'
     | '/_authenticated/dashboard'
+    | '/_authenticated/explorer'
+    | '/_authenticated/transfers'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -118,17 +139,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/explorer': {
+      id: '/_authenticated/explorer'
+      path: '/explorer'
+      fullPath: '/explorer'
+      preLoaderRoute: typeof AuthenticatedExplorerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/transfers': {
+      id: '/_authenticated/transfers'
+      path: '/transfers'
+      fullPath: '/transfers'
+      preLoaderRoute: typeof AuthenticatedTransfersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedConnectionsRoute: typeof AuthenticatedConnectionsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedExplorerRoute: typeof AuthenticatedExplorerRoute
+  AuthenticatedTransfersRoute: typeof AuthenticatedTransfersRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedConnectionsRoute: AuthenticatedConnectionsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedExplorerRoute: AuthenticatedExplorerRoute,
+  AuthenticatedTransfersRoute: AuthenticatedTransfersRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

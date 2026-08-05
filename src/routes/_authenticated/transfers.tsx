@@ -132,7 +132,7 @@ function TransfersPage() {
             onClick={() =>
               patchMutation.mutate({
                 id: job.id,
-                patch: { status: "queued", progress: 0, error: undefined },
+                patch: { status: "queued", progress: 0, error: "" },
               })
             }
           >
@@ -235,9 +235,10 @@ function TransfersPage() {
             <div className="space-y-2">
               <Label htmlFor="destination">Destination</Label>
               <Select
-                value={connectionId || connected[0]?.id}
+                value={connectionId || connected[0]?.id || ""}
                 onValueChange={setConnectionId}
               >
+
                 <SelectTrigger id="destination">
                   <SelectValue placeholder="Choose a connection" />
                 </SelectTrigger>
