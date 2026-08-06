@@ -13,7 +13,10 @@ async function sha256(data: string | Uint8Array): Promise<string> {
   return hex(await crypto.subtle.digest("SHA-256", bytes as BufferSource));
 }
 
-async function hmac(key: Uint8Array<ArrayBufferLike>, data: string): Promise<Uint8Array<ArrayBufferLike>>: Promise<Uint8Array> {
+async function hmac(
+  key: Uint8Array<ArrayBufferLike>,
+  data: string,
+): Promise<Uint8Array<ArrayBufferLike>> {
   const cryptoKey = await crypto.subtle.importKey(
     "raw",
     key as BufferSource,
