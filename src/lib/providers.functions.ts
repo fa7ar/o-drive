@@ -123,5 +123,6 @@ export const providerCall = createServerFn({ method: "POST" })
   .inputValidator((data) => callSchema.parse(data))
   .handler(async ({ data }) => {
     const { dispatch } = await import("./provider-dispatch.server");
-    return dispatch(data);
+    const result = await dispatch(data);
+    return JSON.parse(JSON.stringify(result ?? null)) as Record<string, unknown> | null;
   });
