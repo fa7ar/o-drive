@@ -7,6 +7,7 @@ const CONNECTION_TONE: Record<ConnectionStatus, string> = {
   disconnected: "border-border bg-muted text-muted-foreground",
   error: "border-destructive/30 bg-destructive/10 text-destructive",
   pending: "border-warning/30 bg-warning/15 text-warning-foreground",
+  expired: "border-warning/30 bg-warning/15 text-warning-foreground",
 };
 
 const TRANSFER_TONE: Record<TransferStatus, string> = {
