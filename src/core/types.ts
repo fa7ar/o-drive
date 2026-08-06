@@ -5,7 +5,9 @@
 
 export type ProviderId = "google-drive" | "onedrive" | "telegram" | "r2" | "s3";
 
-export type ConnectionStatus = "connected" | "disconnected" | "error" | "pending";
+export type ConnectionStatus = "connected" | "disconnected" | "error" | "pending" | "expired";
+
+export type AuthKind = "oauth" | "api-key" | "bot-token";
 
 export interface ProviderDescriptor {
   id: ProviderId | string;
@@ -15,9 +17,21 @@ export interface ProviderDescriptor {
   icon: string;
   /** oklch token name used for the provider accent */
   accent: string;
-  authKind: "oauth" | "api-key" | "bot-token";
-  /** Fields the connect dialog should collect. */
+  authKind: AuthKind;
+  /** Real vendor integration vs. mock adapter. */
+  capability: "live" | "mock";
+  /** OAuth scopes requested at connect time. */
+  scopes?: string[];
+  /** Fields the connect wizard should collect. */
   fields: Array<{ key: string; label: string; placeholder?: string; secret?: boolean }>;
+}
+
+export interface ProviderState {
+  providerId: string;
+  enabled: boolean;
+  /** Result of the last healthCheck() run. */
+  health: "unknown" | "healthy" | "degraded" | "down";
+  checkedAt: string | null;
 }
 
 export interface Connection {
@@ -30,12 +44,27 @@ export interface Connection {
   quotaUsedBytes: number;
   quotaTotalBytes: number;
   createdAt: string;
+  /** Non-secret provider config (bucket, region, chat id, root folder…). */
+  config?: Record<string, string>;
+  lastError?: string;
+}
+
+export interface ProviderUser {
+  id: string;
+  label: string;
+  email?: string;
+}
+
+export interface Quota {
+  usedBytes: number;
+  totalBytes: number;
 }
 
 export interface FileMetadata {
   id: string;
   connectionId: string;
   name: string;
+  /** Virtual parent path, e.g. "/photos/2026". Always starts with "/". */
   path: string;
   kind: "folder" | "file";
   mimeType: string;
@@ -43,6 +72,8 @@ export interface FileMetadata {
   modifiedAt: string;
   favorite: boolean;
   trashed: boolean;
+  /** Vendor-native identifier, hidden behind the virtual filesystem. */
+  providerFileId?: string;
 }
 
 export type TransferDirection = "upload" | "download";
@@ -57,6 +88,8 @@ export interface TransferJob {
   progress: number;
   sizeBytes: number;
   createdAt: string;
+  path?: string;
+  attempts?: number;
   error?: string;
 }
 
@@ -66,6 +99,21 @@ export interface ActivityLog {
   action: string;
   target: string;
   createdAt: string;
+}
+
+/** Background queue contract — shaped after Cloudflare Queues. */
+export type JobKind = "upload" | "delete" | "metadata.refresh" | "sync" | "retry";
+export type JobStatus = "queued" | "running" | "done" | "failed";
+
+export interface BackgroundJob {
+  id: string;
+  kind: JobKind;
+  payload: Record<string, unknown>;
+  status: JobStatus;
+  attempts: number;
+  createdAt: string;
+  finishedAt?: string;
+  error?: string;
 }
 
 export interface Workspace {
@@ -88,6 +136,16 @@ export interface AppSettings {
   requireMagicLinkReauth: boolean;
   telemetry: boolean;
   apiKeyLabel: string;
+  /** Storage */
+  maxUploadMb: number;
+  trashRetentionDays: number;
+  /** Uploads */
+  uploadRetries: number;
+  /** Search */
+  indexContents: boolean;
+  searchResultLimit: number;
+  /** Admin */
+  maintenanceMode: boolean;
 }
 
 export interface FeatureFlag {
@@ -95,6 +153,18 @@ export interface FeatureFlag {
   label: string;
   description: string;
   enabled: boolean;
+  group: "providers" | "core" | "experimental";
+}
+
+export type SearchResultType = "file" | "folder" | "connection" | "activity";
+
+export interface SearchResult {
+  type: SearchResultType;
+  id: string;
+  title: string;
+  subtitle: string;
+  path?: string;
+  connectionId?: string;
 }
 
 /**
@@ -105,10 +175,22 @@ export interface StorageProvider {
   readonly descriptor: ProviderDescriptor;
   connect(input: Record<string, string>): Promise<Omit<Connection, "id" | "workspaceId">>;
   disconnect(connectionId: string): Promise<void>;
-  upload(connectionId: string, file: { name: string; size: number }): Promise<FileMetadata>;
-  download(connectionId: string, fileId: string): Promise<Blob>;
+  refreshToken(connectionId: string): Promise<void>;
+  getUser(connectionId: string): Promise<ProviderUser>;
   list(connectionId: string, path?: string): Promise<FileMetadata[]>;
+  search(connectionId: string, query: string): Promise<FileMetadata[]>;
+  upload(
+    connectionId: string,
+    file: { name: string; size: number; type?: string; blob?: Blob },
+    path?: string,
+  ): Promise<FileMetadata>;
+  download(connectionId: string, fileId: string): Promise<Blob>;
   delete(connectionId: string, fileId: string): Promise<void>;
   rename(connectionId: string, fileId: string, newName: string): Promise<void>;
-  search(connectionId: string, query: string): Promise<FileMetadata[]>;
+  move(connectionId: string, fileId: string, targetPath: string): Promise<void>;
+  copy(connectionId: string, fileId: string, targetPath: string): Promise<FileMetadata>;
+  createFolder(connectionId: string, path: string, name: string): Promise<FileMetadata>;
+  getQuota(connectionId: string): Promise<Quota>;
+  getMetadata(connectionId: string, fileId: string): Promise<FileMetadata | null>;
+  healthCheck(): Promise<{ status: ProviderState["health"]; detail?: string }>;
 }

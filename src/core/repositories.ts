@@ -1,9 +1,12 @@
 import type {
   ActivityLog,
   AppSettings,
+  BackgroundJob,
   Connection,
   FeatureFlag,
   FileMetadata,
+  ProviderState,
+  SearchResult,
   TransferJob,
   User,
   Workspace,
@@ -12,7 +15,7 @@ import type {
 /**
  * Repository contracts. The UI and services depend on these interfaces only,
  * so the in-memory implementation can be swapped for SQL/HTTP with no changes
- * to business logic.
+ * to business logic. No provider logic lives inside a repository.
  */
 
 export interface ConnectionRepository {
@@ -23,18 +26,44 @@ export interface ConnectionRepository {
   remove(id: string): Promise<void>;
 }
 
+export interface ProviderRepository {
+  list(): Promise<ProviderState[]>;
+  get(providerId: string): Promise<ProviderState>;
+  update(providerId: string, patch: Partial<ProviderState>): Promise<ProviderState>;
+}
+
+/** Local metadata index — the source of truth for instant browse + search. */
 export interface FileRepository {
   listByPath(connectionIds: string[], path: string): Promise<FileMetadata[]>;
   listAll(connectionIds: string[]): Promise<FileMetadata[]>;
+  get(id: string): Promise<FileMetadata | null>;
+  upsertMany(connectionId: string, files: FileMetadata[]): Promise<void>;
+  create(input: Omit<FileMetadata, "id">): Promise<FileMetadata>;
   update(id: string, patch: Partial<FileMetadata>): Promise<FileMetadata>;
   remove(id: string): Promise<void>;
+  removeByConnection(connectionId: string): Promise<void>;
+}
+
+export interface SearchRepository {
+  query(input: {
+    term: string;
+    connectionIds: string[];
+    limit?: number;
+  }): Promise<SearchResult[]>;
 }
 
 export interface TransferRepository {
   list(): Promise<TransferJob[]>;
+  get(id: string): Promise<TransferJob | null>;
   create(input: Omit<TransferJob, "id" | "createdAt">): Promise<TransferJob>;
   update(id: string, patch: Partial<TransferJob>): Promise<TransferJob>;
   remove(id: string): Promise<void>;
+}
+
+export interface JobRepository {
+  list(limit?: number): Promise<BackgroundJob[]>;
+  enqueue(input: Pick<BackgroundJob, "kind" | "payload">): Promise<BackgroundJob>;
+  update(id: string, patch: Partial<BackgroundJob>): Promise<BackgroundJob>;
 }
 
 export interface ActivityRepository {
