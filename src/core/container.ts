@@ -4,6 +4,9 @@ import type {
   ConnectionRepository,
   FeatureFlagRepository,
   FileRepository,
+  JobRepository,
+  ProviderRepository,
+  SearchRepository,
   SecretManager,
   SettingsRepository,
   TokenRepository,
@@ -12,11 +15,14 @@ import type {
   WorkspaceRepository,
 } from "@/core/repositories";
 import {
-  base64SecretManager,
+  aesSecretManager,
   memoryActivityRepository,
   memoryConnectionRepository,
   memoryFeatureFlagRepository,
   memoryFileRepository,
+  memoryJobRepository,
+  memoryProviderRepository,
+  memorySearchRepository,
   memorySettingsRepository,
   memoryTokenRepository,
   memoryTransferRepository,
@@ -30,8 +36,11 @@ import {
  */
 export interface Container {
   connections: ConnectionRepository;
+  providers: ProviderRepository;
   files: FileRepository;
+  search: SearchRepository;
   transfers: TransferRepository;
+  jobs: JobRepository;
   activity: ActivityRepository;
   settings: SettingsRepository;
   flags: FeatureFlagRepository;
@@ -43,15 +52,18 @@ export interface Container {
 
 let container: Container = {
   connections: memoryConnectionRepository,
+  providers: memoryProviderRepository,
   files: memoryFileRepository,
+  search: memorySearchRepository,
   transfers: memoryTransferRepository,
+  jobs: memoryJobRepository,
   activity: memoryActivityRepository,
   settings: memorySettingsRepository,
   flags: memoryFeatureFlagRepository,
   workspaces: memoryWorkspaceRepository,
   users: memoryUserRepository,
   tokens: memoryTokenRepository,
-  secrets: base64SecretManager,
+  secrets: aesSecretManager,
 };
 
 registerAdapters();

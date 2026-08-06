@@ -3,6 +3,9 @@ import type {
   ConnectionRepository,
   FeatureFlagRepository,
   FileRepository,
+  JobRepository,
+  ProviderRepository,
+  SearchRepository,
   SecretManager,
   SettingsRepository,
   TokenRepository,
@@ -13,15 +16,19 @@ import type {
 import type {
   ActivityLog,
   AppSettings,
+  BackgroundJob,
   Connection,
   FeatureFlag,
   FileMetadata,
+  ProviderState,
+  SearchResult,
   TransferJob,
   User,
   Workspace,
 } from "@/core/types";
-import { fileStore } from "@/adapters";
-import { seedFilesFor } from "@/adapters/mock-adapter";
+import { DESCRIPTORS } from "@/adapters";
+import { openValue, sealValue } from "@/core/crypto";
+import { normalizePath } from "@/core/vfs";
 
 const WORKSPACE_ID = "ws_demo";
 
@@ -52,6 +59,7 @@ const connections: Connection[] = [
     quotaUsedBytes: 42_000_000_000,
     quotaTotalBytes: 200_000_000_000,
     createdAt: "2026-07-02T13:20:00Z",
+    config: { bucket: "odrive-media" },
   },
   {
     id: "conn_tg_1",
@@ -66,9 +74,8 @@ const connections: Connection[] = [
   },
 ];
 
-for (const connection of connections) {
-  fileStore.set(connection.id, seedFilesFor(connection.id));
-}
+/** Local metadata index. Filled by the indexer from adapter list() calls. */
+const fileIndex = new Map<string, FileMetadata[]>();
 
 const transfers: TransferJob[] = [
   {
@@ -82,16 +89,6 @@ const transfers: TransferJob[] = [
     createdAt: "2026-08-04T09:12:00Z",
   },
   {
-    id: "job_2",
-    connectionId: "conn_r2_1",
-    fileName: "launch-video.mp4",
-    direction: "upload",
-    status: "running",
-    progress: 62,
-    sizeBytes: 940_000_000,
-    createdAt: "2026-08-05T06:40:00Z",
-  },
-  {
     id: "job_3",
     connectionId: "conn_tg_1",
     fileName: "backup-2025.zip",
@@ -101,16 +98,7 @@ const transfers: TransferJob[] = [
     sizeBytes: 184_000_000,
     createdAt: "2026-08-05T05:02:00Z",
     error: "Connection disconnected mid-transfer",
-  },
-  {
-    id: "job_4",
-    connectionId: "conn_drive_1",
-    fileName: "team-photo.jpg",
-    direction: "download",
-    status: "queued",
-    progress: 0,
-    sizeBytes: 5_180_000,
-    createdAt: "2026-08-05T07:01:00Z",
+    attempts: 1,
   },
 ];
 
@@ -145,28 +133,34 @@ let settings: AppSettings = {
   requireMagicLinkReauth: true,
   telemetry: false,
   apiKeyLabel: "odrive_live_••••7f21",
+  maxUploadMb: 512,
+  trashRetentionDays: 30,
+  uploadRetries: 2,
+  indexContents: false,
+  searchResultLimit: 25,
+  maintenanceMode: false,
 };
 
 let flags: FeatureFlag[] = [
-  {
-    key: "cross_provider_move",
-    label: "Cross-provider move",
-    description: "Move files between two connections in a single job.",
-    enabled: true,
-  },
-  {
-    key: "virtual_folders",
-    label: "Virtual folders",
-    description: "Unified folders spanning multiple providers.",
-    enabled: false,
-  },
-  {
-    key: "delta_sync",
-    label: "Delta sync",
-    description: "Incremental provider change polling.",
-    enabled: false,
-  },
+  { key: "provider_google_drive", label: "Google Drive", description: "OAuth-backed Google Drive adapter.", enabled: true, group: "providers" },
+  { key: "provider_r2", label: "Cloudflare R2", description: "S3-compatible R2 adapter.", enabled: true, group: "providers" },
+  { key: "provider_s3", label: "Amazon S3", description: "SigV4 S3 adapter.", enabled: true, group: "providers" },
+  { key: "upload_engine", label: "Upload engine", description: "Queued uploads with retry and cancel.", enabled: true, group: "core" },
+  { key: "virtual_filesystem", label: "Virtual filesystem", description: "User-facing paths mapped to provider IDs.", enabled: true, group: "core" },
+  { key: "metadata_index", label: "Metadata index", description: "Local index for instant browse.", enabled: true, group: "core" },
+  { key: "local_search", label: "Local search", description: "Search the index without provider APIs.", enabled: true, group: "core" },
+  { key: "cross_provider_move", label: "Cross-provider move", description: "Move files between two connections in one job.", enabled: false, group: "experimental" },
+  { key: "delta_sync", label: "Delta sync", description: "Incremental provider change polling.", enabled: false, group: "experimental" },
 ];
+
+let providerStates: ProviderState[] = DESCRIPTORS.map((descriptor) => ({
+  providerId: descriptor.id,
+  enabled: true,
+  health: "unknown",
+  checkedAt: null,
+}));
+
+const jobs: BackgroundJob[] = [];
 
 let workspace: Workspace = { id: WORKSPACE_ID, name: settings.workspaceName, plan: "pro" };
 const users: User[] = [];
@@ -183,7 +177,6 @@ export const memoryConnectionRepository: ConnectionRepository = {
   async create(input) {
     const created: Connection = { ...input, id: id("conn"), createdAt: new Date().toISOString() };
     connections.unshift(created);
-    fileStore.set(created.id, seedFilesFor(created.id));
     return clone(created);
   },
   async update(idValue, patch) {
@@ -195,44 +188,128 @@ export const memoryConnectionRepository: ConnectionRepository = {
   async remove(idValue) {
     const index = connections.findIndex((c) => c.id === idValue);
     if (index >= 0) connections.splice(index, 1);
-    fileStore.delete(idValue);
+    fileIndex.delete(idValue);
   },
 };
 
-const allFiles = (connectionIds: string[]): FileMetadata[] =>
-  connectionIds.flatMap((connectionId) => {
-    if (!fileStore.has(connectionId)) fileStore.set(connectionId, seedFilesFor(connectionId));
-    return fileStore.get(connectionId)!;
-  });
+export const memoryProviderRepository: ProviderRepository = {
+  async list() {
+    return clone(providerStates);
+  },
+  async get(providerId) {
+    const found = providerStates.find((state) => state.providerId === providerId);
+    if (found) return clone(found);
+    const created: ProviderState = { providerId, enabled: true, health: "unknown", checkedAt: null };
+    providerStates.push(created);
+    return clone(created);
+  },
+  async update(providerId, patch) {
+    providerStates = providerStates.map((state) =>
+      state.providerId === providerId ? { ...state, ...patch } : state,
+    );
+    return memoryProviderRepository.get(providerId);
+  },
+};
+
+const indexed = (connectionIds: string[]): FileMetadata[] =>
+  connectionIds.flatMap((connectionId) => fileIndex.get(connectionId) ?? []);
 
 export const memoryFileRepository: FileRepository = {
   async listByPath(connectionIds, path) {
-    return clone(allFiles(connectionIds).filter((f) => f.path === path && !f.trashed));
+    const target = normalizePath(path);
+    return clone(indexed(connectionIds).filter((f) => f.path === target && !f.trashed));
   },
   async listAll(connectionIds) {
-    return clone(allFiles(connectionIds));
+    return clone(indexed(connectionIds));
+  },
+  async get(idValue) {
+    return clone(indexed([...fileIndex.keys()]).find((f) => f.id === idValue) ?? null);
+  },
+  async upsertMany(connectionId, files) {
+    const existing = fileIndex.get(connectionId) ?? [];
+    const byId = new Map(existing.map((f) => [f.id, f]));
+    for (const file of files) {
+      const previous = byId.get(file.id);
+      byId.set(file.id, previous ? { ...previous, ...file } : file);
+    }
+    fileIndex.set(connectionId, [...byId.values()]);
+  },
+  async create(input) {
+    const created: FileMetadata = { ...input, id: id("file") };
+    const list = fileIndex.get(created.connectionId) ?? [];
+    list.push(created);
+    fileIndex.set(created.connectionId, list);
+    return clone(created);
   },
   async update(idValue, patch) {
-    const target = allFiles([...fileStore.keys()]).find((f) => f.id === idValue);
-    if (!target) throw new Error("File not found");
-    Object.assign(target, patch);
-    return clone(target);
+    for (const list of fileIndex.values()) {
+      const target = list.find((f) => f.id === idValue);
+      if (target) {
+        Object.assign(target, patch);
+        return clone(target);
+      }
+    }
+    throw new Error("File not found");
   },
   async remove(idValue) {
-    for (const [key, list] of fileStore) {
+    for (const [key, list] of fileIndex) {
       const index = list.findIndex((f) => f.id === idValue);
       if (index >= 0) {
         list.splice(index, 1);
-        fileStore.set(key, list);
+        fileIndex.set(key, list);
         return;
       }
     }
+  },
+  async removeByConnection(connectionId) {
+    fileIndex.delete(connectionId);
+  },
+};
+
+export const memorySearchRepository: SearchRepository = {
+  async query({ term, connectionIds, limit = 25 }) {
+    const needle = term.trim().toLowerCase();
+    if (!needle) return [];
+    const results: SearchResult[] = [];
+
+    for (const file of indexed(connectionIds)) {
+      if (file.trashed || !file.name.toLowerCase().includes(needle)) continue;
+      results.push({
+        type: file.kind === "folder" ? "folder" : "file",
+        id: file.id,
+        title: file.name,
+        subtitle: file.path,
+        path: file.path,
+        connectionId: file.connectionId,
+      });
+    }
+
+    for (const connection of connections) {
+      if (!`${connection.name} ${connection.accountLabel}`.toLowerCase().includes(needle)) continue;
+      results.push({
+        type: "connection",
+        id: connection.id,
+        title: connection.name,
+        subtitle: connection.accountLabel,
+        connectionId: connection.id,
+      });
+    }
+
+    for (const log of activity) {
+      if (!`${log.action} ${log.target}`.toLowerCase().includes(needle)) continue;
+      results.push({ type: "activity", id: log.id, title: log.target, subtitle: log.action });
+    }
+
+    return clone(results.slice(0, limit));
   },
 };
 
 export const memoryTransferRepository: TransferRepository = {
   async list() {
     return clone(transfers);
+  },
+  async get(idValue) {
+    return clone(transfers.find((t) => t.id === idValue) ?? null);
   },
   async create(input) {
     const created: TransferJob = { ...input, id: id("job"), createdAt: new Date().toISOString() };
@@ -248,6 +325,29 @@ export const memoryTransferRepository: TransferRepository = {
   async remove(idValue) {
     const index = transfers.findIndex((t) => t.id === idValue);
     if (index >= 0) transfers.splice(index, 1);
+  },
+};
+
+export const memoryJobRepository: JobRepository = {
+  async list(limit = 25) {
+    return clone(jobs.slice(0, limit));
+  },
+  async enqueue(input) {
+    const created: BackgroundJob = {
+      ...input,
+      id: id("bg"),
+      status: "queued",
+      attempts: 0,
+      createdAt: new Date().toISOString(),
+    };
+    jobs.unshift(created);
+    return clone(created);
+  },
+  async update(idValue, patch) {
+    const target = jobs.find((j) => j.id === idValue);
+    if (!target) throw new Error("Job not found");
+    Object.assign(target, patch);
+    return clone(target);
   },
 };
 
@@ -313,14 +413,10 @@ export const memoryUserRepository: UserRepository = {
   },
 };
 
-/** Placeholder envelope encryption. Swap for KMS/Secret Manager in production. */
-export const base64SecretManager: SecretManager = {
-  async seal(plaintext) {
-    return `enc:v1:${btoa(unescape(encodeURIComponent(plaintext)))}`;
-  },
-  async open(ciphertext) {
-    return decodeURIComponent(escape(atob(ciphertext.replace(/^enc:v1:/, ""))));
-  },
+/** AES-GCM envelope encryption for every credential that hits persistence. */
+export const aesSecretManager: SecretManager = {
+  seal: (plaintext) => sealValue(plaintext),
+  open: (ciphertext) => openValue(ciphertext),
 };
 
 const tokens = new Map<string, string>();

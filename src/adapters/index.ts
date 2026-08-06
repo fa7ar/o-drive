@@ -1,10 +1,12 @@
 import type { FileMetadata, ProviderDescriptor } from "@/core/types";
 import { registerProvider } from "@/core/registry";
 import { createMockAdapter } from "./mock-adapter";
+import { createGoogleDriveAdapter } from "./google-drive-adapter";
+import { createS3Adapter } from "./s3-adapter";
 
 /**
- * Shared mock file store so the Explorer stays consistent across adapters.
- * A real deployment gives each adapter its own vendor-backed storage.
+ * Simulated vendor-side storage for the mock adapters. Live adapters ignore it
+ * entirely and talk to the real provider through server functions.
  */
 const fileStore = new Map<string, FileMetadata[]>();
 const files = () => fileStore;
@@ -17,9 +19,40 @@ export const DESCRIPTORS: ProviderDescriptor[] = [
     icon: "HardDrive",
     accent: "provider-drive",
     authKind: "oauth",
+    capability: "live",
+    scopes: ["https://www.googleapis.com/auth/drive", "openid", "email"],
+    fields: [{ key: "name", label: "Connection name", placeholder: "Work Drive" }],
+  },
+  {
+    id: "r2",
+    name: "Cloudflare R2",
+    tagline: "Zero egress S3-compatible buckets",
+    icon: "Boxes",
+    accent: "provider-r2",
+    authKind: "api-key",
+    capability: "live",
     fields: [
-      { key: "name", label: "Connection name", placeholder: "Work Drive" },
-      { key: "account", label: "Account email", placeholder: "you@company.com" },
+      { key: "name", label: "Connection name", placeholder: "R2 media" },
+      { key: "endpoint", label: "S3 endpoint", placeholder: "https://<account>.r2.cloudflarestorage.com" },
+      { key: "bucket", label: "Bucket", placeholder: "odrive-media" },
+      { key: "accessKeyId", label: "Access key ID" },
+      { key: "secretAccessKey", label: "Secret access key", secret: true },
+    ],
+  },
+  {
+    id: "s3",
+    name: "Amazon S3",
+    tagline: "Buckets across every AWS region",
+    icon: "Database",
+    accent: "provider-s3",
+    authKind: "api-key",
+    capability: "live",
+    fields: [
+      { key: "name", label: "Connection name", placeholder: "S3 cold storage" },
+      { key: "region", label: "Region", placeholder: "eu-central-1" },
+      { key: "bucket", label: "Bucket", placeholder: "company-archive" },
+      { key: "accessKeyId", label: "Access key ID" },
+      { key: "secretAccessKey", label: "Secret access key", secret: true },
     ],
   },
   {
@@ -29,6 +62,8 @@ export const DESCRIPTORS: ProviderDescriptor[] = [
     icon: "Cloud",
     accent: "provider-onedrive",
     authKind: "oauth",
+    capability: "mock",
+    scopes: ["Files.ReadWrite.All", "offline_access"],
     fields: [
       { key: "name", label: "Connection name", placeholder: "Microsoft 365" },
       { key: "account", label: "Account email", placeholder: "you@company.com" },
@@ -41,39 +76,17 @@ export const DESCRIPTORS: ProviderDescriptor[] = [
     icon: "Send",
     accent: "provider-telegram",
     authKind: "bot-token",
+    capability: "mock",
     fields: [
       { key: "name", label: "Connection name", placeholder: "Archive bot" },
       { key: "chat", label: "Chat ID", placeholder: "-1001234567890" },
       { key: "token", label: "Bot token", secret: true },
     ],
   },
-  {
-    id: "r2",
-    name: "Cloudflare R2",
-    tagline: "Zero egress S3-compatible buckets",
-    icon: "Boxes",
-    accent: "provider-r2",
-    authKind: "api-key",
-    fields: [
-      { key: "name", label: "Connection name", placeholder: "R2 media" },
-      { key: "bucket", label: "Bucket", placeholder: "odrive-media" },
-      { key: "secret", label: "Secret access key", secret: true },
-    ],
-  },
-  {
-    id: "s3",
-    name: "Amazon S3",
-    tagline: "Buckets across every AWS region",
-    icon: "Database",
-    accent: "provider-s3",
-    authKind: "api-key",
-    fields: [
-      { key: "name", label: "Connection name", placeholder: "S3 cold storage" },
-      { key: "bucket", label: "Bucket", placeholder: "company-archive" },
-      { key: "secret", label: "Secret access key", secret: true },
-    ],
-  },
 ];
+
+export const descriptorById = (providerId: string): ProviderDescriptor | undefined =>
+  DESCRIPTORS.find((descriptor) => descriptor.id === providerId);
 
 let bootstrapped = false;
 
@@ -81,6 +94,14 @@ let bootstrapped = false;
 export function registerAdapters(): void {
   if (bootstrapped) return;
   for (const descriptor of DESCRIPTORS) {
+    if (descriptor.id === "google-drive") {
+      registerProvider(createGoogleDriveAdapter(descriptor, { fallback: () => createMockAdapter(descriptor, { files }) }));
+      continue;
+    }
+    if (descriptor.id === "r2" || descriptor.id === "s3") {
+      registerProvider(createS3Adapter(descriptor, { fallback: () => createMockAdapter(descriptor, { files }) }));
+      continue;
+    }
     registerProvider(createMockAdapter(descriptor, { files }));
   }
   bootstrapped = true;
