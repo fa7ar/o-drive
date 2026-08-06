@@ -124,5 +124,5 @@ export const providerCall = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { dispatch } = await import("./provider-dispatch.server");
     const result = await dispatch(data);
-    return JSON.parse(JSON.stringify(result ?? null)) as Record<string, unknown> | null;
+    return { json: JSON.stringify(result ?? null) };
   });

@@ -24,7 +24,7 @@ export function createLiveAdapter(
       const result = await providerCall({
         data: { connectionId, providerId: descriptor.id, op: op as never, args },
       });
-      return result as T;
+      return JSON.parse(result.json) as T;
     } catch {
       return fallback();
     }
