@@ -13,7 +13,7 @@ async function sha256(data: string | Uint8Array): Promise<string> {
   return hex(await crypto.subtle.digest("SHA-256", bytes as BufferSource));
 }
 
-async function hmac(key: Uint8Array, data: string): Promise<Uint8Array> {
+async function hmac(key: Uint8Array<ArrayBufferLike>, data: string): Promise<Uint8Array<ArrayBufferLike>>: Promise<Uint8Array> {
   const cryptoKey = await crypto.subtle.importKey(
     "raw",
     key as BufferSource,
@@ -101,7 +101,7 @@ export async function s3Fetch(
     await sha256(canonicalRequest),
   ].join("\n");
 
-  let key = encoder.encode(`AWS4${config.secretAccessKey}`);
+  let key: Uint8Array<ArrayBufferLike> = encoder.encode(`AWS4${config.secretAccessKey}`);
   for (const part of [dateStamp, config.region, "s3", "aws4_request"]) key = await hmac(key, part);
   const signature = hex((await hmac(key, stringToSign)).buffer as ArrayBuffer);
 
@@ -111,7 +111,7 @@ export async function s3Fetch(
       ...headers,
       Authorization: `AWS4-HMAC-SHA256 Credential=${config.accessKeyId}/${scope}, SignedHeaders=${signedHeaders.join(";")}, Signature=${signature}`,
     },
-    body: input.body ? (input.body as BodyInit) : undefined,
+    ...(input.body ? { body: input.body as BodyInit } : {}),
   });
 }
 

@@ -45,7 +45,7 @@ async function consume(jobId: string): Promise<void> {
 }
 
 export async function retry(jobId: string): Promise<void> {
-  await useContainer().jobs.update(jobId, { status: "queued", error: undefined });
+  await useContainer().jobs.update(jobId, { status: "queued" });
   await consume(jobId);
 }
 
