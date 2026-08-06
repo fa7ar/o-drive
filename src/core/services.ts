@@ -1,5 +1,7 @@
 import { useContainer } from "@/core/container";
 import { getProvider } from "@/core/registry";
+import { StorageManager } from "@/core/storage-manager";
+import { folderPath } from "@/core/vfs";
 import type { Connection, FileMetadata, TransferJob } from "@/core/types";
 import { DEMO_WORKSPACE_ID } from "@/database/memory";
 
@@ -61,12 +63,69 @@ export async function deleteConnection(connectionId: string): Promise<void> {
   }
 }
 
+/** Pulls a folder from every connection into the local metadata index. */
+export async function indexPath(connectionIds: string[], path: string): Promise<void> {
+  const { files } = useContainer();
+  await Promise.all(
+    connectionIds.map(async (connectionId) => {
+      try {
+        const provider = await StorageManager.forConnection(connectionId);
+        const listed = await provider.list(connectionId, path);
+        await files.upsertMany(connectionId, listed);
+      } catch {
+        /* offline provider: keep whatever the index already holds */
+      }
+    }),
+  );
+}
+
 export async function browse(connectionIds: string[], path: string): Promise<FileMetadata[]> {
+  await indexPath(connectionIds, path);
   return useContainer().files.listByPath(connectionIds, path);
 }
 
+/** Walks the tree breadth-first so search and favourites see the whole index. */
 export async function listAllFiles(connectionIds: string[]): Promise<FileMetadata[]> {
-  return useContainer().files.listAll(connectionIds);
+  const { files } = useContainer();
+  const queue = ["/"];
+  const seen = new Set<string>();
+  while (queue.length) {
+    const path = queue.shift()!;
+    if (seen.has(path)) continue;
+    seen.add(path);
+    await indexPath(connectionIds, path);
+    const level = await files.listByPath(connectionIds, path);
+    for (const entry of level) {
+      if (entry.kind === "folder") queue.push(folderPath(entry));
+    }
+  }
+  return files.listAll(connectionIds);
+}
+
+export async function createFolder(connectionId: string, path: string, name: string) {
+  const provider = await StorageManager.forConnection(connectionId);
+  const created = await provider.createFolder(connectionId, path, name);
+  await useContainer().files.upsertMany(connectionId, [created]);
+  await useContainer().activity.record({ actor: "you", action: "folder.created", target: name });
+  return created;
+}
+
+export async function searchEverything(term: string, connectionIds: string[]) {
+  const { search, settings } = useContainer();
+  const config = await settings.get();
+  return search.query({ term, connectionIds, limit: config.searchResultLimit });
+}
+
+export async function listProviderStates() {
+  return useContainer().providers.list();
+}
+
+export async function setProviderEnabled(providerId: string, enabled: boolean) {
+  return useContainer().providers.update(providerId, { enabled });
+}
+
+export async function runHealthChecks() {
+  return StorageManager.healthCheckAll();
 }
 
 export async function toggleFavorite(fileId: string, favorite: boolean): Promise<FileMetadata> {
