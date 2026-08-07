@@ -3,14 +3,21 @@ import type {
   AppSettings,
   BackgroundJob,
   Connection,
+  ConfigEntry,
+  CredentialRecord,
   FeatureFlag,
   FileMetadata,
+  JobLogEntry,
   ProviderState,
   SearchResult,
+  SyncHistoryEntry,
+  SyncJob,
+  SystemLog,
   TransferJob,
   User,
   Workspace,
 } from "./types";
+
 
 /**
  * Repository contracts. The UI and services depend on these interfaces only,
