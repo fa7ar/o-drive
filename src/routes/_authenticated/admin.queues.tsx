@@ -75,7 +75,7 @@ function AdminQueues() {
                   <p className="font-mono text-[11px] text-muted-foreground">
                     {job.kind} · {job.priority} · attempt {job.attempts}/{job.maxAttempts}
                     {job.bytesTotal ? ` · ${formatBytes(job.bytesDone)}/${formatBytes(job.bytesTotal)}` : ""}
-                    {job.speedBytesPerSecond ? ` · ${formatBytes(job.speedBytesPerSecond)}/s` : ""}
+                    {job.speedBytesPerSecond ? ` · ${formatBytes(job.speedBytesPerSecond ?? 0)}/s` : ""}
                     {job.etaSeconds ? ` · eta ${job.etaSeconds}s` : ""}
                   </p>
                 </div>

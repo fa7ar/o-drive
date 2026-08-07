@@ -40,7 +40,7 @@ function AdminConnections() {
               <TableHead>Status</TableHead>
               <TableHead>Used</TableHead>
               <TableHead>Quota</TableHead>
-              <TableHead>Last sync</TableHead>
+              <TableHead>Linked</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -54,7 +54,7 @@ function AdminConnections() {
                 <TableCell className="text-xs">{formatBytes(connection.quotaUsedBytes)}</TableCell>
                 <TableCell className="text-xs">{formatBytes(connection.quotaTotalBytes)}</TableCell>
                 <TableCell className="text-xs">
-                  {connection.lastSyncedAt ? formatDateTime(connection.lastSyncedAt) : "never"}
+                  {formatDateTime(connection.createdAt)}
                 </TableCell>
               </TableRow>
             ))}
@@ -70,7 +70,7 @@ function AdminConnections() {
               <li key={job.id} className="flex justify-between gap-3">
                 <span className="truncate font-mono text-xs">{job.connectionId}</span>
                 <span className="text-xs text-muted-foreground">
-                  {job.status} · +{job.added} ~{job.updated} !{job.conflicts}
+                  {job.status} · +{job.added} ~{job.updated} !{job.conflicts.length}
                 </span>
               </li>
             ))}
@@ -86,7 +86,7 @@ function AdminConnections() {
               <li key={entry.id} className="flex justify-between gap-3">
                 <span className="truncate">{formatDateTime(entry.createdAt)}</span>
                 <span className="text-xs text-muted-foreground">
-                  {entry.filesScanned} scanned · {entry.durationMs}ms
+                  {entry.changes} changes · {entry.conflicts} conflicts
                 </span>
               </li>
             ))}

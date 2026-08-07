@@ -7,7 +7,7 @@ import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { exportLogs, type LogFilter } from "@/core/logs";
+import { listLogs, toCsv, toJson, type LogFilter } from "@/core/logs";
 import type { LogSeverity } from "@/core/types";
 import { formatDateTime } from "@/lib/format";
 import { systemLogsQuery } from "@/lib/queries";
@@ -41,7 +41,8 @@ function AdminLogs() {
   const logs = useQuery(systemLogsQuery(filter));
 
   const download = async (format: "csv" | "json") => {
-    const content = await exportLogs(format, filter);
+    const entries = await listLogs(filter);
+    const content = format === "csv" ? toCsv(entries) : toJson(entries);
     const blob = new Blob([content], { type: format === "csv" ? "text/csv" : "application/json" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
@@ -71,9 +72,9 @@ function AdminLogs() {
       <div className="panel mb-4 flex flex-wrap items-center gap-2 p-3">
         <Input
           placeholder="Search messages…"
-          value={filter.search ?? ""}
+          value={filter.term ?? ""}
           onChange={(event) =>
-            setFilter((previous) => ({ ...previous, search: event.target.value || undefined }))
+            setFilter((previous) => ({ ...previous, term: event.target.value }))
           }
           className="h-8 max-w-xs"
         />
@@ -85,7 +86,7 @@ function AdminLogs() {
             onClick={() =>
               setFilter((previous) => ({
                 ...previous,
-                severity: previous.severity === severity ? undefined : severity,
+                severity: previous.severity === severity ? "all" : severity,
               }))
             }
           >

@@ -8,7 +8,7 @@ import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { setConfigValue } from "@/core/configurations";
+import { setConfig } from "@/core/configurations";
 import { configQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/_authenticated/admin/configurations")({
@@ -31,7 +31,7 @@ function AdminConfigurations() {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
 
   const save = useMutation({
-    mutationFn: ({ key, value }: { key: string; value: string }) => setConfigValue(key, value),
+    mutationFn: ({ key, value }: { key: string; value: string }) => setConfig(key, value),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["config"] });
       toast.success("Configuration saved");
@@ -69,7 +69,7 @@ function AdminConfigurations() {
                       <Input
                         id={entry.key}
                         className="h-8 max-w-48"
-                        value={drafts[entry.key] ?? entry.value}
+                        value={drafts[entry.key] ?? String(entry.value)}
                         onChange={(event) =>
                           setDrafts((previous) => ({ ...previous, [entry.key]: event.target.value }))
                         }
@@ -78,7 +78,7 @@ function AdminConfigurations() {
                         size="sm"
                         variant="secondary"
                         onClick={() =>
-                          save.mutate({ key: entry.key, value: drafts[entry.key] ?? entry.value })
+                          save.mutate({ key: entry.key, value: drafts[entry.key] ?? String(entry.value) })
                         }
                       >
                         Save
