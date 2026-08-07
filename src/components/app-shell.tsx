@@ -7,6 +7,8 @@ import {
   Plug,
   Search,
   Settings as SettingsIcon,
+  ShieldCheck,
+
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
