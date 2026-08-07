@@ -1,5 +1,4 @@
-import {
-  ShieldCheck, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeftRight,
   FolderTree,
