@@ -1,13 +1,18 @@
 import type {
   ActivityRepository,
+  ConfigRepository,
   ConnectionRepository,
+  CredentialRepository,
   FeatureFlagRepository,
   FileRepository,
+  JobLogRepository,
   JobRepository,
   ProviderRepository,
   SearchRepository,
   SecretManager,
   SettingsRepository,
+  SyncRepository,
+  SystemLogRepository,
   TokenRepository,
   TransferRepository,
   UserRepository,
@@ -17,18 +22,25 @@ import type {
   ActivityLog,
   AppSettings,
   BackgroundJob,
+  ConfigEntry,
   Connection,
+  CredentialRecord,
   FeatureFlag,
   FileMetadata,
+  JobLogEntry,
   ProviderState,
   SearchResult,
+  SyncHistoryEntry,
+  SyncJob,
+  SystemLog,
   TransferJob,
   User,
   Workspace,
 } from "@/core/types";
 import { DESCRIPTORS } from "@/adapters";
-import { openValue, sealValue } from "@/core/crypto";
+import { maskSecret, openValue, sealValue } from "@/core/crypto";
 import { normalizePath } from "@/core/vfs";
+
 
 const WORKSPACE_ID = "ws_demo";
 
