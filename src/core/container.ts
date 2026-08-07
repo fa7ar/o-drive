@@ -1,14 +1,19 @@
 import { registerAdapters } from "@/adapters";
 import type {
   ActivityRepository,
+  ConfigRepository,
   ConnectionRepository,
+  CredentialRepository,
   FeatureFlagRepository,
   FileRepository,
+  JobLogRepository,
   JobRepository,
   ProviderRepository,
   SearchRepository,
   SecretManager,
   SettingsRepository,
+  SyncRepository,
+  SystemLogRepository,
   TokenRepository,
   TransferRepository,
   UserRepository,
@@ -17,13 +22,18 @@ import type {
 import {
   aesSecretManager,
   memoryActivityRepository,
+  memoryConfigRepository,
   memoryConnectionRepository,
+  memoryCredentialRepository,
   memoryFeatureFlagRepository,
   memoryFileRepository,
+  memoryJobLogRepository,
   memoryJobRepository,
   memoryProviderRepository,
   memorySearchRepository,
   memorySettingsRepository,
+  memorySyncRepository,
+  memorySystemLogRepository,
   memoryTokenRepository,
   memoryTransferRepository,
   memoryUserRepository,
@@ -41,6 +51,11 @@ export interface Container {
   search: SearchRepository;
   transfers: TransferRepository;
   jobs: JobRepository;
+  jobLogs: JobLogRepository;
+  logs: SystemLogRepository;
+  credentials: CredentialRepository;
+  config: ConfigRepository;
+  sync: SyncRepository;
   activity: ActivityRepository;
   settings: SettingsRepository;
   flags: FeatureFlagRepository;
@@ -57,6 +72,11 @@ let container: Container = {
   search: memorySearchRepository,
   transfers: memoryTransferRepository,
   jobs: memoryJobRepository,
+  jobLogs: memoryJobLogRepository,
+  logs: memorySystemLogRepository,
+  credentials: memoryCredentialRepository,
+  config: memoryConfigRepository,
+  sync: memorySyncRepository,
   activity: memoryActivityRepository,
   settings: memorySettingsRepository,
   flags: memoryFeatureFlagRepository,
