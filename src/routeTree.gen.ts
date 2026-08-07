@@ -19,8 +19,13 @@ import { Route as AuthenticatedExplorerRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedTransfersRouteImport } from './routes/_authenticated/transfers'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminConfigurationsRouteImport } from './routes/_authenticated/admin.configurations'
+import { Route as AuthenticatedAdminConnectionsRouteImport } from './routes/_authenticated/admin.connections'
 import { Route as AuthenticatedAdminCredentialsRouteImport } from './routes/_authenticated/admin.credentials'
+import { Route as AuthenticatedAdminHealthRouteImport } from './routes/_authenticated/admin.health'
+import { Route as AuthenticatedAdminLogsRouteImport } from './routes/_authenticated/admin.logs'
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
+import { Route as AuthenticatedAdminQueuesRouteImport } from './routes/_authenticated/admin.queues'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -72,16 +77,45 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminConfigurationsRoute =
+  AuthenticatedAdminConfigurationsRouteImport.update({
+    id: '/configurations',
+    path: '/configurations',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminConnectionsRoute =
+  AuthenticatedAdminConnectionsRouteImport.update({
+    id: '/connections',
+    path: '/connections',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminCredentialsRoute =
   AuthenticatedAdminCredentialsRouteImport.update({
     id: '/credentials',
     path: '/credentials',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminHealthRoute =
+  AuthenticatedAdminHealthRouteImport.update({
+    id: '/health',
+    path: '/health',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminLogsRoute = AuthenticatedAdminLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminProvidersRoute =
   AuthenticatedAdminProvidersRouteImport.update({
     id: '/providers',
     path: '/providers',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminQueuesRoute =
+  AuthenticatedAdminQueuesRouteImport.update({
+    id: '/queues',
+    path: '/queues',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 
@@ -94,8 +128,13 @@ export interface FileRoutesByFullPath {
   '/explorer': typeof AuthenticatedExplorerRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
+  '/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/admin/credentials': typeof AuthenticatedAdminCredentialsRoute
+  '/admin/health': typeof AuthenticatedAdminHealthRoute
+  '/admin/logs': typeof AuthenticatedAdminLogsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
+  '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -106,8 +145,13 @@ export interface FileRoutesByTo {
   '/explorer': typeof AuthenticatedExplorerRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
+  '/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/admin/credentials': typeof AuthenticatedAdminCredentialsRoute
+  '/admin/health': typeof AuthenticatedAdminHealthRoute
+  '/admin/logs': typeof AuthenticatedAdminLogsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
+  '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -121,8 +165,13 @@ export interface FileRoutesById {
   '/_authenticated/explorer': typeof AuthenticatedExplorerRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/transfers': typeof AuthenticatedTransfersRoute
+  '/_authenticated/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
+  '/_authenticated/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/_authenticated/admin/credentials': typeof AuthenticatedAdminCredentialsRoute
+  '/_authenticated/admin/health': typeof AuthenticatedAdminHealthRoute
+  '/_authenticated/admin/logs': typeof AuthenticatedAdminLogsRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
+  '/_authenticated/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -136,8 +185,13 @@ export interface FileRouteTypes {
     | '/explorer'
     | '/settings'
     | '/transfers'
+    | '/admin/configurations'
+    | '/admin/connections'
     | '/admin/credentials'
+    | '/admin/health'
+    | '/admin/logs'
     | '/admin/providers'
+    | '/admin/queues'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -148,8 +202,13 @@ export interface FileRouteTypes {
     | '/explorer'
     | '/settings'
     | '/transfers'
+    | '/admin/configurations'
+    | '/admin/connections'
     | '/admin/credentials'
+    | '/admin/health'
+    | '/admin/logs'
     | '/admin/providers'
+    | '/admin/queues'
     | '/admin'
   id:
     | '__root__'
@@ -162,8 +221,13 @@ export interface FileRouteTypes {
     | '/_authenticated/explorer'
     | '/_authenticated/settings'
     | '/_authenticated/transfers'
+    | '/_authenticated/admin/configurations'
+    | '/_authenticated/admin/connections'
     | '/_authenticated/admin/credentials'
+    | '/_authenticated/admin/health'
+    | '/_authenticated/admin/logs'
     | '/_authenticated/admin/providers'
+    | '/_authenticated/admin/queues'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -245,11 +309,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/configurations': {
+      id: '/_authenticated/admin/configurations'
+      path: '/configurations'
+      fullPath: '/admin/configurations'
+      preLoaderRoute: typeof AuthenticatedAdminConfigurationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/connections': {
+      id: '/_authenticated/admin/connections'
+      path: '/connections'
+      fullPath: '/admin/connections'
+      preLoaderRoute: typeof AuthenticatedAdminConnectionsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/credentials': {
       id: '/_authenticated/admin/credentials'
       path: '/credentials'
       fullPath: '/admin/credentials'
       preLoaderRoute: typeof AuthenticatedAdminCredentialsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/health': {
+      id: '/_authenticated/admin/health'
+      path: '/health'
+      fullPath: '/admin/health'
+      preLoaderRoute: typeof AuthenticatedAdminHealthRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/logs': {
+      id: '/_authenticated/admin/logs'
+      path: '/logs'
+      fullPath: '/admin/logs'
+      preLoaderRoute: typeof AuthenticatedAdminLogsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/providers': {
@@ -259,18 +351,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminProvidersRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/queues': {
+      id: '/_authenticated/admin/queues'
+      path: '/queues'
+      fullPath: '/admin/queues'
+      preLoaderRoute: typeof AuthenticatedAdminQueuesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminConfigurationsRoute: typeof AuthenticatedAdminConfigurationsRoute
+  AuthenticatedAdminConnectionsRoute: typeof AuthenticatedAdminConnectionsRoute
   AuthenticatedAdminCredentialsRoute: typeof AuthenticatedAdminCredentialsRoute
+  AuthenticatedAdminHealthRoute: typeof AuthenticatedAdminHealthRoute
+  AuthenticatedAdminLogsRoute: typeof AuthenticatedAdminLogsRoute
   AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
+  AuthenticatedAdminQueuesRoute: typeof AuthenticatedAdminQueuesRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminConfigurationsRoute: AuthenticatedAdminConfigurationsRoute,
+  AuthenticatedAdminConnectionsRoute: AuthenticatedAdminConnectionsRoute,
   AuthenticatedAdminCredentialsRoute: AuthenticatedAdminCredentialsRoute,
+  AuthenticatedAdminHealthRoute: AuthenticatedAdminHealthRoute,
+  AuthenticatedAdminLogsRoute: AuthenticatedAdminLogsRoute,
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
+  AuthenticatedAdminQueuesRoute: AuthenticatedAdminQueuesRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
