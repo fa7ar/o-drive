@@ -69,9 +69,64 @@ export interface TransferRepository {
 
 export interface JobRepository {
   list(limit?: number): Promise<BackgroundJob[]>;
-  enqueue(input: Pick<BackgroundJob, "kind" | "payload">): Promise<BackgroundJob>;
+  get(id: string): Promise<BackgroundJob | null>;
+  enqueue(
+    input: Pick<BackgroundJob, "kind" | "payload"> & Partial<BackgroundJob>,
+  ): Promise<BackgroundJob>;
   update(id: string, patch: Partial<BackgroundJob>): Promise<BackgroundJob>;
 }
+
+export interface JobLogRepository {
+  list(jobId: string): Promise<JobLogEntry[]>;
+  append(input: Omit<JobLogEntry, "id" | "createdAt">): Promise<JobLogEntry>;
+}
+
+export interface SystemLogRepository {
+  list(filter?: {
+    category?: SystemLog["category"] | "all";
+    severity?: SystemLog["severity"] | "all";
+    providerId?: string | "all";
+    term?: string;
+    limit?: number;
+  }): Promise<SystemLog[]>;
+  append(input: Omit<SystemLog, "id" | "createdAt">): Promise<SystemLog>;
+  purgeOlderThan(days: number): Promise<number>;
+}
+
+export interface CredentialRepository {
+  list(providerId?: string): Promise<CredentialRecord[]>;
+  get(id: string): Promise<CredentialRecord | null>;
+  /** The plaintext is sealed by the SecretManager before it is persisted. */
+  save(input: {
+    id?: string;
+    providerId: string | null;
+    type: CredentialRecord["type"];
+    label: string;
+    key: string;
+    plaintext: string;
+    rotationDays?: number;
+  }): Promise<CredentialRecord>;
+  reveal(id: string): Promise<string | null>;
+  rotate(id: string, plaintext: string): Promise<CredentialRecord>;
+  setStatus(id: string, status: CredentialRecord["status"]): Promise<CredentialRecord>;
+  remove(id: string): Promise<void>;
+}
+
+export interface ConfigRepository {
+  list(): Promise<ConfigEntry[]>;
+  set(key: string, value: ConfigEntry["value"]): Promise<ConfigEntry>;
+  reset(key: string): Promise<ConfigEntry>;
+}
+
+export interface SyncRepository {
+  list(limit?: number): Promise<SyncJob[]>;
+  get(id: string): Promise<SyncJob | null>;
+  create(input: Omit<SyncJob, "id" | "startedAt">): Promise<SyncJob>;
+  update(id: string, patch: Partial<SyncJob>): Promise<SyncJob>;
+  history(limit?: number): Promise<SyncHistoryEntry[]>;
+  recordHistory(input: Omit<SyncHistoryEntry, "id" | "createdAt">): Promise<SyncHistoryEntry>;
+}
+
 
 export interface ActivityRepository {
   list(limit?: number): Promise<ActivityLog[]>;
