@@ -172,7 +172,259 @@ let providerStates: ProviderState[] = DESCRIPTORS.map((descriptor) => ({
   checkedAt: null,
 }));
 
-const jobs: BackgroundJob[] = [];
+const jobs: BackgroundJob[] = [
+  {
+    id: "bg_seed_1",
+    kind: "transfer",
+    label: "campaign-master.mov → R2",
+    payload: { from: "conn_drive_1", to: "conn_r2_1" },
+    status: "running",
+    priority: "high",
+    attempts: 1,
+    maxAttempts: 3,
+    createdAt: "2026-08-06T22:41:00Z",
+    providerId: "r2",
+    connectionId: "conn_r2_1",
+    progress: 64,
+    bytesTotal: 1_820_000_000,
+    bytesDone: 1_164_800_000,
+    speedBytesPerSecond: 24_500_000,
+    etaSeconds: 27,
+  },
+  {
+    id: "bg_seed_2",
+    kind: "sync",
+    label: "Metadata sync — Google Drive",
+    payload: { connectionId: "conn_drive_1" },
+    status: "queued",
+    priority: "medium",
+    attempts: 0,
+    maxAttempts: 3,
+    createdAt: "2026-08-06T23:02:00Z",
+    providerId: "google-drive",
+    connectionId: "conn_drive_1",
+    progress: 0,
+  },
+  {
+    id: "bg_seed_3",
+    kind: "upload",
+    label: "backup-2025.zip",
+    payload: { connectionId: "conn_tg_1" },
+    status: "failed",
+    priority: "low",
+    attempts: 3,
+    maxAttempts: 3,
+    createdAt: "2026-08-05T05:02:00Z",
+    finishedAt: "2026-08-05T05:09:00Z",
+    error: "Connection disconnected mid-transfer",
+    providerId: "telegram",
+    connectionId: "conn_tg_1",
+    progress: 18,
+    deadLettered: true,
+  },
+  {
+    id: "bg_seed_4",
+    kind: "metadata.refresh",
+    label: "Index refresh — R2 media",
+    payload: { connectionId: "conn_r2_1" },
+    status: "done",
+    priority: "low",
+    attempts: 1,
+    maxAttempts: 3,
+    createdAt: "2026-08-06T18:10:00Z",
+    finishedAt: "2026-08-06T18:11:12Z",
+    providerId: "r2",
+    connectionId: "conn_r2_1",
+    progress: 100,
+  },
+];
+
+const jobLogs: JobLogEntry[] = [
+  {
+    id: "jlog_1",
+    jobId: "bg_seed_3",
+    createdAt: "2026-08-05T05:04:00Z",
+    severity: "warning",
+    message: "Attempt 1 failed — retrying in 2s (exponential backoff)",
+  },
+  {
+    id: "jlog_2",
+    jobId: "bg_seed_3",
+    createdAt: "2026-08-05T05:09:00Z",
+    severity: "error",
+    message: "Attempt 3 failed — moved to dead-letter queue",
+  },
+  {
+    id: "jlog_3",
+    jobId: "bg_seed_1",
+    createdAt: "2026-08-06T22:41:02Z",
+    severity: "info",
+    message: "Stream opened: google-drive → r2 (chunked, 8 MiB windows)",
+  },
+];
+
+const systemLogs: SystemLog[] = [
+  {
+    id: "slog_1",
+    category: "queue",
+    severity: "info",
+    message: "Worker pool started with 4 workers",
+    createdAt: "2026-08-06T22:40:00Z",
+  },
+  {
+    id: "slog_2",
+    category: "transfer",
+    severity: "info",
+    message: "Cross-provider transfer started: campaign-master.mov",
+    providerId: "r2",
+    context: { from: "google-drive", to: "r2" },
+    createdAt: "2026-08-06T22:41:00Z",
+  },
+  {
+    id: "slog_3",
+    category: "connection",
+    severity: "error",
+    message: "Telegram connection unreachable (socket closed)",
+    providerId: "telegram",
+    createdAt: "2026-08-05T05:02:30Z",
+  },
+  {
+    id: "slog_4",
+    category: "security",
+    severity: "warning",
+    message: "Google OAuth credential is 84 days old — rotation due in 6 days",
+    providerId: "google-drive",
+    createdAt: "2026-08-06T06:00:00Z",
+  },
+  {
+    id: "slog_5",
+    category: "sync",
+    severity: "warning",
+    message: "Sync finished with 1 unresolved conflict",
+    providerId: "google-drive",
+    createdAt: "2026-08-06T09:15:00Z",
+  },
+  {
+    id: "slog_6",
+    category: "provider",
+    severity: "info",
+    message: "Health check passed for 4 of 5 providers",
+    createdAt: "2026-08-06T23:00:00Z",
+  },
+];
+
+const credentials: CredentialRecord[] = [
+  {
+    id: "cred_drive_oauth",
+    providerId: "google-drive",
+    type: "oauth",
+    label: "Google OAuth client secret",
+    key: "GOOGLE_CLIENT_SECRET",
+    maskedValue: "••••a91f",
+    status: "active",
+    createdAt: "2026-05-14T09:00:00Z",
+    lastRotatedAt: "2026-05-14T09:00:00Z",
+    rotationDays: 90,
+  },
+  {
+    id: "cred_r2_key",
+    providerId: "r2",
+    type: "api-key",
+    label: "R2 secret access key",
+    key: "R2_SECRET_ACCESS_KEY",
+    maskedValue: "••••7c02",
+    status: "active",
+    createdAt: "2026-07-02T13:20:00Z",
+    lastRotatedAt: "2026-07-28T13:20:00Z",
+    rotationDays: 30,
+  },
+  {
+    id: "cred_encryption",
+    providerId: null,
+    type: "secret",
+    label: "Credential encryption key",
+    key: "ODRIVE_ENCRYPTION_KEY",
+    maskedValue: "••••b4d1",
+    status: "active",
+    createdAt: "2026-04-01T00:00:00Z",
+    lastRotatedAt: "2026-04-01T00:00:00Z",
+    rotationDays: 180,
+  },
+];
+
+/** connection between credential id and its sealed value. */
+const credentialVault = new Map<string, string>();
+
+const configEntries: ConfigEntry[] = [
+  { key: "general.system_name", section: "general", label: "System name", description: "Shown in the admin console and emails.", type: "string", value: "ODrive", defaultValue: "ODrive" },
+  { key: "general.timezone", section: "general", label: "Timezone", description: "Timezone used for job schedules and log display.", type: "string", value: "UTC", defaultValue: "UTC" },
+  { key: "providers.default_provider", section: "providers", label: "Default provider", description: "Used when a request does not name a connection.", type: "select", value: "google-drive", defaultValue: "google-drive", options: ["google-drive", "onedrive", "telegram", "r2", "s3"] },
+  { key: "providers.health_interval_seconds", section: "providers", label: "Health check interval", description: "Seconds between automated provider health checks.", type: "number", value: 300, defaultValue: 300 },
+  { key: "security.encrypt_at_rest", section: "security", label: "Encrypt secrets at rest", description: "AES-256-GCM envelope encryption for every credential.", type: "boolean", value: true, defaultValue: true },
+  { key: "security.admin_reveal", section: "security", label: "Allow admin reveal", description: "Admins may reveal a decrypted secret once, with an audit entry.", type: "boolean", value: true, defaultValue: true },
+  { key: "security.oauth_rotation_days", section: "security", label: "OAuth rotation SLA (days)", description: "Warn when an OAuth credential exceeds this age.", type: "number", value: 90, defaultValue: 90 },
+  { key: "storage.retention_days", section: "storage", label: "Trash retention (days)", description: "How long deleted objects stay recoverable.", type: "number", value: 30, defaultValue: 30 },
+  { key: "storage.quota_warning_percent", section: "storage", label: "Quota warning threshold (%)", description: "Raise a warning when a connection passes this usage.", type: "number", value: 85, defaultValue: 85 },
+  { key: "transfers.max_retries", section: "transfers", label: "Max retries", description: "Attempts before a job is dead-lettered.", type: "number", value: 3, defaultValue: 3 },
+  { key: "transfers.backoff_seconds", section: "transfers", label: "Backoff base (seconds)", description: "Exponential backoff base between retries.", type: "number", value: 2, defaultValue: 2 },
+  { key: "transfers.default_priority", section: "transfers", label: "Default priority", description: "Priority assigned to new transfer jobs.", type: "select", value: "medium", defaultValue: "medium", options: ["high", "medium", "low"] },
+  { key: "queue.adapter", section: "queue", label: "Queue adapter", description: "Vendor-agnostic queue backend.", type: "select", value: "memory", defaultValue: "memory", options: ["memory", "cloudflare-queue", "redis", "bullmq"] },
+  { key: "queue.workers", section: "queue", label: "Worker count", description: "Concurrent workers consuming the queue.", type: "number", value: 4, defaultValue: 4 },
+  { key: "queue.dead_letter", section: "queue", label: "Dead-letter queue", description: "Park permanently failing jobs instead of dropping them.", type: "boolean", value: true, defaultValue: true },
+  { key: "search.index_interval_minutes", section: "search", label: "Index interval (minutes)", description: "How often the metadata index is refreshed.", type: "number", value: 15, defaultValue: 15 },
+  { key: "search.index_contents", section: "search", label: "Index file contents", description: "Extract text from documents for full-text search.", type: "boolean", value: false, defaultValue: false },
+  { key: "logging.retention_days", section: "logging", label: "Log retention (days)", description: "System logs older than this are purged.", type: "number", value: 30, defaultValue: 30 },
+  { key: "logging.min_severity", section: "logging", label: "Minimum severity", description: "Lowest severity persisted to the log store.", type: "select", value: "info", defaultValue: "info", options: ["debug", "info", "warning", "error", "critical"] },
+];
+
+const syncJobs: SyncJob[] = [
+  {
+    id: "sync_seed_1",
+    connectionId: "conn_drive_1",
+    providerId: "google-drive",
+    status: "completed",
+    scanned: 1_284,
+    added: 12,
+    updated: 31,
+    removed: 4,
+    conflicts: [
+      {
+        id: "conf_1",
+        path: "/projects/2026",
+        name: "roadmap.xlsx",
+        localModifiedAt: "2026-08-06T08:41:00Z",
+        remoteModifiedAt: "2026-08-06T09:02:00Z",
+        resolution: "pending",
+      },
+    ],
+    startedAt: "2026-08-06T09:10:00Z",
+    finishedAt: "2026-08-06T09:15:00Z",
+  },
+  {
+    id: "sync_seed_2",
+    connectionId: "conn_r2_1",
+    providerId: "r2",
+    status: "paused",
+    scanned: 8_902,
+    added: 140,
+    updated: 0,
+    removed: 0,
+    conflicts: [],
+    startedAt: "2026-08-06T21:00:00Z",
+  },
+];
+
+const syncHistory: SyncHistoryEntry[] = [
+  {
+    id: "shist_1",
+    syncId: "sync_seed_1",
+    connectionId: "conn_drive_1",
+    changes: 47,
+    conflicts: 1,
+    createdAt: "2026-08-06T09:15:00Z",
+  },
+];
+
 
 let workspace: Workspace = { id: WORKSPACE_ID, name: settings.workspaceName, plan: "pro" };
 const users: User[] = [];
