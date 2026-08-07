@@ -332,12 +332,18 @@ export const memoryJobRepository: JobRepository = {
   async list(limit = 25) {
     return clone(jobs.slice(0, limit));
   },
+  async get(idValue) {
+    return clone(jobs.find((j) => j.id === idValue) ?? null);
+  },
   async enqueue(input) {
     const created: BackgroundJob = {
+      priority: "medium",
+      maxAttempts: 3,
+      progress: 0,
       ...input,
       id: id("bg"),
-      status: "queued",
-      attempts: 0,
+      status: input.status ?? "queued",
+      attempts: input.attempts ?? 0,
       createdAt: new Date().toISOString(),
     };
     jobs.unshift(created);
@@ -350,6 +356,170 @@ export const memoryJobRepository: JobRepository = {
     return clone(target);
   },
 };
+
+export const memoryJobLogRepository: JobLogRepository = {
+  async list(jobId) {
+    return clone(jobLogs.filter((entry) => entry.jobId === jobId));
+  },
+  async append(input) {
+    const created: JobLogEntry = { ...input, id: id("jlog"), createdAt: new Date().toISOString() };
+    jobLogs.push(created);
+    return clone(created);
+  },
+};
+
+export const memorySystemLogRepository: SystemLogRepository = {
+  async list(filter = {}) {
+    const { category = "all", severity = "all", providerId = "all", term = "", limit = 200 } = filter;
+    const needle = term.trim().toLowerCase();
+    return clone(
+      systemLogs
+        .filter((log) => category === "all" || log.category === category)
+        .filter((log) => severity === "all" || log.severity === severity)
+        .filter((log) => providerId === "all" || log.providerId === providerId)
+        .filter((log) => !needle || log.message.toLowerCase().includes(needle))
+        .slice(0, limit),
+    );
+  },
+  async append(input) {
+    const created: SystemLog = { ...input, id: id("slog"), createdAt: new Date().toISOString() };
+    systemLogs.unshift(created);
+    if (systemLogs.length > 2000) systemLogs.length = 2000;
+    return clone(created);
+  },
+  async purgeOlderThan(days) {
+    const cutoff = Date.now() - days * 86_400_000;
+    const before = systemLogs.length;
+    const kept = systemLogs.filter((log) => new Date(log.createdAt).getTime() >= cutoff);
+    systemLogs.length = 0;
+    systemLogs.push(...kept);
+    return before - kept.length;
+  },
+};
+
+export const memoryCredentialRepository: CredentialRepository = {
+  async list(providerId) {
+    return clone(
+      credentials.filter((record) => !providerId || record.providerId === providerId),
+    );
+  },
+  async get(idValue) {
+    return clone(credentials.find((record) => record.id === idValue) ?? null);
+  },
+  async save(input) {
+    const sealed = await sealValue(input.plaintext);
+    const existing = input.id
+      ? credentials.find((record) => record.id === input.id)
+      : credentials.find(
+          (record) => record.providerId === input.providerId && record.key === input.key,
+        );
+    if (existing) {
+      Object.assign(existing, {
+        label: input.label,
+        type: input.type,
+        maskedValue: maskSecret(input.plaintext),
+        lastRotatedAt: new Date().toISOString(),
+        ...(input.rotationDays === undefined ? {} : { rotationDays: input.rotationDays }),
+      });
+      credentialVault.set(existing.id, sealed);
+      return clone(existing);
+    }
+    const created: CredentialRecord = {
+      id: id("cred"),
+      providerId: input.providerId,
+      type: input.type,
+      label: input.label,
+      key: input.key,
+      maskedValue: maskSecret(input.plaintext),
+      status: "active",
+      createdAt: new Date().toISOString(),
+      lastRotatedAt: new Date().toISOString(),
+      rotationDays: input.rotationDays ?? (input.type === "oauth" ? 90 : 30),
+    };
+    credentials.unshift(created);
+    credentialVault.set(created.id, sealed);
+    return clone(created);
+  },
+  async reveal(idValue) {
+    const sealed = credentialVault.get(idValue);
+    if (!sealed) return null;
+    try {
+      return await openValue(sealed);
+    } catch {
+      return null;
+    }
+  },
+  async rotate(idValue, plaintext) {
+    const target = credentials.find((record) => record.id === idValue);
+    if (!target) throw new Error("Credential not found");
+    credentialVault.set(idValue, await sealValue(plaintext));
+    target.maskedValue = maskSecret(plaintext);
+    target.lastRotatedAt = new Date().toISOString();
+    return clone(target);
+  },
+  async setStatus(idValue, status) {
+    const target = credentials.find((record) => record.id === idValue);
+    if (!target) throw new Error("Credential not found");
+    target.status = status;
+    return clone(target);
+  },
+  async remove(idValue) {
+    const index = credentials.findIndex((record) => record.id === idValue);
+    if (index >= 0) credentials.splice(index, 1);
+    credentialVault.delete(idValue);
+  },
+};
+
+export const memoryConfigRepository: ConfigRepository = {
+  async list() {
+    return clone(configEntries);
+  },
+  async set(key, value) {
+    const target = configEntries.find((entry) => entry.key === key);
+    if (!target) throw new Error("Unknown configuration key");
+    target.value = value;
+    return clone(target);
+  },
+  async reset(key) {
+    const target = configEntries.find((entry) => entry.key === key);
+    if (!target) throw new Error("Unknown configuration key");
+    target.value = target.defaultValue;
+    return clone(target);
+  },
+};
+
+export const memorySyncRepository: SyncRepository = {
+  async list(limit = 25) {
+    return clone(syncJobs.slice(0, limit));
+  },
+  async get(idValue) {
+    return clone(syncJobs.find((job) => job.id === idValue) ?? null);
+  },
+  async create(input) {
+    const created: SyncJob = { ...input, id: id("sync"), startedAt: new Date().toISOString() };
+    syncJobs.unshift(created);
+    return clone(created);
+  },
+  async update(idValue, patch) {
+    const target = syncJobs.find((job) => job.id === idValue);
+    if (!target) throw new Error("Sync job not found");
+    Object.assign(target, patch);
+    return clone(target);
+  },
+  async history(limit = 25) {
+    return clone(syncHistory.slice(0, limit));
+  },
+  async recordHistory(input) {
+    const created: SyncHistoryEntry = {
+      ...input,
+      id: id("shist"),
+      createdAt: new Date().toISOString(),
+    };
+    syncHistory.unshift(created);
+    return clone(created);
+  },
+};
+
 
 export const memoryActivityRepository: ActivityRepository = {
   async list(limit = 20) {
