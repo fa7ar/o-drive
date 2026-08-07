@@ -7,6 +7,8 @@ import {
   Plug,
   Search,
   Settings as SettingsIcon,
+  ShieldCheck,
+
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
@@ -29,6 +31,7 @@ const NAV = [
   { to: "/explorer", label: "Explorer", icon: FolderTree },
   { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },
   { to: "/settings", label: "Settings", icon: SettingsIcon },
+  { to: "/admin", label: "Admin", icon: ShieldCheck },
 ] as const;
 
 export function AppShell({

@@ -102,19 +102,173 @@ export interface ActivityLog {
 }
 
 /** Background queue contract — shaped after Cloudflare Queues. */
-export type JobKind = "upload" | "delete" | "metadata.refresh" | "sync" | "retry";
-export type JobStatus = "queued" | "running" | "done" | "failed";
+export type JobKind =
+  | "upload"
+  | "download"
+  | "delete"
+  | "metadata.refresh"
+  | "sync"
+  | "transfer"
+  | "retry";
+export type JobStatus = "queued" | "running" | "done" | "failed" | "cancelled" | "paused";
+export type JobPriority = "high" | "medium" | "low";
 
 export interface BackgroundJob {
   id: string;
   kind: JobKind;
   payload: Record<string, unknown>;
   status: JobStatus;
+  priority: JobPriority;
   attempts: number;
+  maxAttempts: number;
   createdAt: string;
   finishedAt?: string;
   error?: string;
+  label?: string;
+  providerId?: string;
+  connectionId?: string;
+  progress?: number;
+  bytesTotal?: number;
+  bytesDone?: number;
+  speedBytesPerSecond?: number;
+  etaSeconds?: number;
+  /** Job moved to the dead-letter queue after exhausting retries. */
+  deadLettered?: boolean;
 }
+
+export interface JobLogEntry {
+  id: string;
+  jobId: string;
+  createdAt: string;
+  severity: LogSeverity;
+  message: string;
+}
+
+/* ------------------------------ observability ----------------------------- */
+
+export type LogCategory =
+  | "system"
+  | "connection"
+  | "provider"
+  | "queue"
+  | "security"
+  | "search"
+  | "transfer"
+  | "sync";
+
+export type LogSeverity = "debug" | "info" | "warning" | "error" | "critical";
+
+export interface SystemLog {
+  id: string;
+  category: LogCategory;
+  severity: LogSeverity;
+  message: string;
+  providerId?: string;
+  context?: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface SystemMetrics {
+  cpuPercent: number;
+  memoryPercent: number;
+  workersActive: number;
+  workersTotal: number;
+  jobsRunning: number;
+  jobsQueued: number;
+  jobsFailed: number;
+  connectionsActive: number;
+  providersHealthy: number;
+  providersTotal: number;
+  storageUsedBytes: number;
+  storageTotalBytes: number;
+  lastSyncAt: string | null;
+  errorsCritical: number;
+  errorsWarning: number;
+  latencyMs: number;
+}
+
+/* -------------------------------- sync engine ------------------------------ */
+
+export type SyncStatus = "queued" | "running" | "completed" | "paused" | "cancelled" | "failed";
+export type ConflictResolution = "pending" | "keep-local" | "keep-remote";
+
+export interface SyncConflict {
+  id: string;
+  path: string;
+  name: string;
+  localModifiedAt: string;
+  remoteModifiedAt: string;
+  resolution: ConflictResolution;
+}
+
+export interface SyncJob {
+  id: string;
+  connectionId: string;
+  providerId: string;
+  status: SyncStatus;
+  scanned: number;
+  added: number;
+  updated: number;
+  removed: number;
+  conflicts: SyncConflict[];
+  startedAt: string;
+  finishedAt?: string;
+  error?: string;
+}
+
+export interface SyncHistoryEntry {
+  id: string;
+  syncId: string;
+  connectionId: string;
+  changes: number;
+  conflicts: number;
+  createdAt: string;
+}
+
+/* ------------------------------- credentials ------------------------------- */
+
+export type CredentialType = "oauth" | "api-key" | "secret" | "env";
+export type CredentialStatus = "active" | "disabled";
+
+export interface CredentialRecord {
+  id: string;
+  /** null for system-wide secrets (encryption keys, webhooks). */
+  providerId: string | null;
+  type: CredentialType;
+  label: string;
+  key: string;
+  /** Never the plaintext — display value only. */
+  maskedValue: string;
+  status: CredentialStatus;
+  createdAt: string;
+  lastRotatedAt: string | null;
+  /** Rotation SLA in days: OAuth 90, API keys 30. */
+  rotationDays: number;
+}
+
+/* ------------------------------ configurations ----------------------------- */
+
+export type ConfigSection =
+  | "general"
+  | "providers"
+  | "security"
+  | "storage"
+  | "transfers"
+  | "queue"
+  | "search"
+  | "logging";
+
+export interface ConfigEntry {
+  key: string;
+  section: ConfigSection;
+  label: string;
+  description: string;
+  type: "string" | "number" | "boolean" | "select";
+  value: string | number | boolean;
+  defaultValue: string | number | boolean;
+  options?: string[];
+}
+
 
 export interface Workspace {
   id: string;
