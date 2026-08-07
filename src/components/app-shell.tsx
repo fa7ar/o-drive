@@ -1,4 +1,5 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import {
+  ShieldCheck, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeftRight,
   FolderTree,
@@ -29,6 +30,7 @@ const NAV = [
   { to: "/explorer", label: "Explorer", icon: FolderTree },
   { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },
   { to: "/settings", label: "Settings", icon: SettingsIcon },
+  { to: "/admin", label: "Admin", icon: ShieldCheck },
 ] as const;
 
 export function AppShell({
