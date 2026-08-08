@@ -10,6 +10,7 @@ import {
   listTransfers,
 } from "@/core/services";
 import { listConfig } from "@/core/configurations";
+import { listDrives } from "@/core/drives";
 import { listCredentials } from "@/core/credentials";
 import { systemMetrics } from "@/core/health";
 import { jobLog, listJobs } from "@/core/jobs";
@@ -19,6 +20,11 @@ import { listSyncHistory, listSyncJobs } from "@/core/sync-engine";
 export const connectionsQuery = queryOptions({
   queryKey: ["connections"],
   queryFn: () => listConnections(),
+});
+
+export const drivesQuery = queryOptions({
+  queryKey: ["drives"],
+  queryFn: () => listDrives(),
 });
 
 export const transfersQuery = queryOptions({

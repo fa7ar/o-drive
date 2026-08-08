@@ -4,12 +4,14 @@ import { Link } from "@tanstack/react-router";
 const ITEMS = [
   { to: "/admin", label: "Dashboard" },
   { to: "/admin/providers", label: "Providers" },
+  { to: "/admin/drives", label: "Drives" },
   { to: "/admin/credentials", label: "Credentials" },
   { to: "/admin/connections", label: "Connections" },
-  { to: "/admin/queues", label: "Queues" },
+  { to: "/admin/queues", label: "Jobs" },
   { to: "/admin/logs", label: "Logs" },
   { to: "/admin/configurations", label: "Configurations" },
   { to: "/admin/health", label: "System health" },
+  { to: "/admin/flags", label: "Feature flags" },
 ] as const;
 
 export function AdminNav() {
