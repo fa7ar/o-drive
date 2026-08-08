@@ -5,6 +5,7 @@ import type {
   Connection,
   ConfigEntry,
   CredentialRecord,
+  Drive,
   FeatureFlag,
   FileMetadata,
   JobLogEntry,
@@ -163,4 +164,14 @@ export interface TokenRepository {
   save(connectionId: string, sealedToken: string): Promise<void>;
   read(connectionId: string): Promise<string | null>;
   remove(connectionId: string): Promise<void>;
+}
+
+export interface DriveRepository {
+  list(workspaceId: string): Promise<Drive[]>;
+  listByConnection(connectionId: string): Promise<Drive[]>;
+  get(id: string): Promise<Drive | null>;
+  create(input: Omit<Drive, "id" | "createdAt" | "updatedAt">): Promise<Drive>;
+  update(id: string, patch: Partial<Drive>): Promise<Drive>;
+  setDefault(workspaceId: string, id: string): Promise<Drive[]>;
+  remove(id: string): Promise<void>;
 }
