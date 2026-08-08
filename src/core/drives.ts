@@ -52,8 +52,8 @@ export async function createDrive(input: {
     workspaceId: DEMO_WORKSPACE_ID,
     connectionId: connection.id,
     name: input.name.trim() || connection.name,
-    description: input.description,
-    rootReference: input.rootReference,
+    ...(input.description ? { description: input.description } : {}),
+    ...(input.rootReference ? { rootReference: input.rootReference } : {}),
     status: "active",
     isDefault: input.makeDefault ?? false,
     lastSyncAt: null,
@@ -122,7 +122,7 @@ export async function healthCheckDrive(driveId: string): Promise<string> {
     category: "provider",
     severity: result.status === "healthy" ? "info" : "warning",
     message: `Health check for drive "${drive.name}": ${result.status}`,
-    providerId: connection?.providerId,
+    ...(connection ? { providerId: connection.providerId } : {}),
   });
   return result.status;
 }

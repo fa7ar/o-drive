@@ -46,7 +46,7 @@ export function AddDriveDialog({ triggerLabel = "Add drive" }: { triggerLabel?: 
         providerId: provider!.id,
         credentials,
         name,
-        rootReference: root || undefined,
+        ...(root ? { rootReference: root } : {}),
       }),
     onSuccess: (drive) => {
       queryClient.invalidateQueries();
