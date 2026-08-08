@@ -4,6 +4,7 @@ import type {
   ConfigRepository,
   ConnectionRepository,
   CredentialRepository,
+  DriveRepository,
   FeatureFlagRepository,
   FileRepository,
   JobLogRepository,
@@ -25,6 +26,7 @@ import {
   memoryConfigRepository,
   memoryConnectionRepository,
   memoryCredentialRepository,
+  memoryDriveRepository,
   memoryFeatureFlagRepository,
   memoryFileRepository,
   memoryJobLogRepository,
@@ -46,6 +48,7 @@ import {
  */
 export interface Container {
   connections: ConnectionRepository;
+  drives: DriveRepository;
   providers: ProviderRepository;
   files: FileRepository;
   search: SearchRepository;
@@ -67,6 +70,7 @@ export interface Container {
 
 let container: Container = {
   connections: memoryConnectionRepository,
+  drives: memoryDriveRepository,
   providers: memoryProviderRepository,
   files: memoryFileRepository,
   search: memorySearchRepository,

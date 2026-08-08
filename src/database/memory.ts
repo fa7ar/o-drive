@@ -3,6 +3,7 @@ import type {
   ConfigRepository,
   ConnectionRepository,
   CredentialRepository,
+  DriveRepository,
   FeatureFlagRepository,
   FileRepository,
   JobLogRepository,
@@ -25,6 +26,7 @@ import type {
   ConfigEntry,
   Connection,
   CredentialRecord,
+  Drive,
   FeatureFlag,
   FileMetadata,
   JobLogEntry,
@@ -62,6 +64,17 @@ const connections: Connection[] = [
     createdAt: "2026-06-14T09:00:00Z",
   },
   {
+    id: "conn_drive_2",
+    workspaceId: WORKSPACE_ID,
+    providerId: "google-drive",
+    name: "Google Drive — Personal",
+    accountLabel: "maya@gmail.com",
+    status: "connected",
+    quotaUsedBytes: 3_100_000_000,
+    quotaTotalBytes: 15_000_000_000,
+    createdAt: "2026-06-28T11:30:00Z",
+  },
+  {
     id: "conn_r2_1",
     workspaceId: WORKSPACE_ID,
     providerId: "r2",
@@ -83,6 +96,66 @@ const connections: Connection[] = [
     quotaUsedBytes: 1_200_000_000,
     quotaTotalBytes: 0,
     createdAt: "2026-07-19T20:10:00Z",
+  },
+];
+
+
+const drives: Drive[] = [
+  {
+    id: "drv_company",
+    workspaceId: WORKSPACE_ID,
+    connectionId: "conn_drive_1",
+    name: "Company Assets",
+    description: "Shared brand, legal and finance documents.",
+    rootReference: "/",
+    status: "active",
+    isDefault: true,
+    createdAt: "2026-06-14T09:05:00Z",
+    updatedAt: "2026-08-06T09:15:00Z",
+    lastSyncAt: "2026-08-06T09:15:00Z",
+    lastHealthCheckAt: "2026-08-06T23:00:00Z",
+  },
+  {
+    id: "drv_personal",
+    workspaceId: WORKSPACE_ID,
+    connectionId: "conn_drive_2",
+    name: "Maya Personal",
+    description: "Second Google account on the same provider.",
+    rootReference: "/",
+    status: "active",
+    isDefault: false,
+    createdAt: "2026-06-28T11:35:00Z",
+    updatedAt: "2026-08-05T18:00:00Z",
+    lastSyncAt: "2026-08-05T18:00:00Z",
+    lastHealthCheckAt: "2026-08-06T23:00:00Z",
+  },
+  {
+    id: "drv_media",
+    workspaceId: WORKSPACE_ID,
+    connectionId: "conn_r2_1",
+    name: "Media Library",
+    description: "Raw video masters on Cloudflare R2.",
+    rootReference: "odrive-media",
+    status: "active",
+    isDefault: false,
+    createdAt: "2026-07-02T13:25:00Z",
+    updatedAt: "2026-08-06T21:00:00Z",
+    lastSyncAt: "2026-08-06T21:00:00Z",
+    lastHealthCheckAt: "2026-08-06T23:00:00Z",
+    settings: { bucket: "odrive-media", region: "auto" },
+  },
+  {
+    id: "drv_archive",
+    workspaceId: WORKSPACE_ID,
+    connectionId: "conn_tg_1",
+    name: "Cold Archive",
+    description: "Long-term archive behind the Telegram bot.",
+    status: "error",
+    isDefault: false,
+    createdAt: "2026-07-19T20:15:00Z",
+    updatedAt: "2026-08-05T05:02:00Z",
+    lastSyncAt: null,
+    lastHealthCheckAt: "2026-08-05T05:02:30Z",
   },
 ];
 
@@ -453,6 +526,44 @@ export const memoryConnectionRepository: ConnectionRepository = {
     const index = connections.findIndex((c) => c.id === idValue);
     if (index >= 0) connections.splice(index, 1);
     fileIndex.delete(idValue);
+  },
+};
+
+export const memoryDriveRepository: DriveRepository = {
+  async list(workspaceId) {
+    return clone(drives.filter((d) => d.workspaceId === workspaceId));
+  },
+  async listByConnection(connectionId) {
+    return clone(drives.filter((d) => d.connectionId === connectionId));
+  },
+  async get(idValue) {
+    return clone(drives.find((d) => d.id === idValue) ?? null);
+  },
+  async create(input) {
+    const now = new Date().toISOString();
+    const created: Drive = { ...input, id: id("drv"), createdAt: now, updatedAt: now };
+    if (created.isDefault) {
+      for (const drive of drives) if (drive.workspaceId === created.workspaceId) drive.isDefault = false;
+    }
+    drives.unshift(created);
+    return clone(created);
+  },
+  async update(idValue, patch) {
+    const target = drives.find((d) => d.id === idValue);
+    if (!target) throw new Error("Drive not found");
+    Object.assign(target, patch, { updatedAt: new Date().toISOString() });
+    return clone(target);
+  },
+  async setDefault(workspaceId, idValue) {
+    for (const drive of drives) {
+      if (drive.workspaceId !== workspaceId) continue;
+      drive.isDefault = drive.id === idValue;
+    }
+    return clone(drives.filter((d) => d.workspaceId === workspaceId));
+  },
+  async remove(idValue) {
+    const index = drives.findIndex((d) => d.id === idValue);
+    if (index >= 0) drives.splice(index, 1);
   },
 };
 

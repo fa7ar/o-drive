@@ -2,6 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeftRight,
   FolderTree,
+  HardDrive,
   LayoutDashboard,
   LogOut,
   Plug,
@@ -27,6 +28,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/drives", label: "Drives", icon: HardDrive },
   { to: "/connections", label: "Connections", icon: Plug },
   { to: "/explorer", label: "Explorer", icon: FolderTree },
   { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },

@@ -348,3 +348,37 @@ export interface StorageProvider {
   getMetadata(connectionId: string, fileId: string): Promise<FileMetadata | null>;
   healthCheck(): Promise<{ status: ProviderState["health"]; detail?: string }>;
 }
+
+/* ---------------------------------- drives --------------------------------- */
+
+export type DriveStatus = "active" | "paused" | "error";
+
+/**
+ * A Drive is the user-facing storage entity. It is backed by exactly one
+ * Connection (an authenticated provider account). A provider may back an
+ * unlimited number of connections, and therefore an unlimited number of drives.
+ */
+export interface Drive {
+  id: string;
+  workspaceId: string;
+  connectionId: string;
+  name: string;
+  description?: string;
+  /** Provider-native root (folder id, bucket, chat id…). */
+  rootReference?: string;
+  status: DriveStatus;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+  lastSyncAt?: string | null;
+  lastHealthCheckAt?: string | null;
+  /** Generic key/value drive settings. */
+  settings?: Record<string, string>;
+}
+
+/** Read model joining a drive with its connection and provider descriptor. */
+export interface DriveView {
+  drive: Drive;
+  connection: Connection;
+  descriptor: ProviderDescriptor | null;
+}

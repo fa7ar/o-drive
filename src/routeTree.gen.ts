@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedConnectionsRouteImport } from './routes/_authenticated/connections'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDrivesRouteImport } from './routes/_authenticated/drives'
 import { Route as AuthenticatedExplorerRouteImport } from './routes/_authenticated/explorer'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedTransfersRouteImport } from './routes/_authenticated/transfers'
@@ -22,6 +23,8 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminConfigurationsRouteImport } from './routes/_authenticated/admin.configurations'
 import { Route as AuthenticatedAdminConnectionsRouteImport } from './routes/_authenticated/admin.connections'
 import { Route as AuthenticatedAdminCredentialsRouteImport } from './routes/_authenticated/admin.credentials'
+import { Route as AuthenticatedAdminDrivesRouteImport } from './routes/_authenticated/admin.drives'
+import { Route as AuthenticatedAdminFlagsRouteImport } from './routes/_authenticated/admin.flags'
 import { Route as AuthenticatedAdminHealthRouteImport } from './routes/_authenticated/admin.health'
 import { Route as AuthenticatedAdminLogsRouteImport } from './routes/_authenticated/admin.logs'
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
@@ -55,6 +58,11 @@ const AuthenticatedConnectionsRoute =
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDrivesRoute = AuthenticatedDrivesRouteImport.update({
+  id: '/drives',
+  path: '/drives',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedExplorerRoute = AuthenticatedExplorerRouteImport.update({
@@ -95,6 +103,17 @@ const AuthenticatedAdminCredentialsRoute =
     path: '/credentials',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminDrivesRoute =
+  AuthenticatedAdminDrivesRouteImport.update({
+    id: '/drives',
+    path: '/drives',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminFlagsRoute = AuthenticatedAdminFlagsRouteImport.update({
+  id: '/flags',
+  path: '/flags',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminHealthRoute =
   AuthenticatedAdminHealthRouteImport.update({
     id: '/health',
@@ -125,12 +144,15 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/connections': typeof AuthenticatedConnectionsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/drives': typeof AuthenticatedDrivesRoute
   '/explorer': typeof AuthenticatedExplorerRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/transfers': typeof AuthenticatedTransfersRoute
   '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
   '/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/admin/credentials': typeof AuthenticatedAdminCredentialsRoute
+  '/admin/drives': typeof AuthenticatedAdminDrivesRoute
+  '/admin/flags': typeof AuthenticatedAdminFlagsRoute
   '/admin/health': typeof AuthenticatedAdminHealthRoute
   '/admin/logs': typeof AuthenticatedAdminLogsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
@@ -142,12 +164,15 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/connections': typeof AuthenticatedConnectionsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/drives': typeof AuthenticatedDrivesRoute
   '/explorer': typeof AuthenticatedExplorerRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/transfers': typeof AuthenticatedTransfersRoute
   '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
   '/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/admin/credentials': typeof AuthenticatedAdminCredentialsRoute
+  '/admin/drives': typeof AuthenticatedAdminDrivesRoute
+  '/admin/flags': typeof AuthenticatedAdminFlagsRoute
   '/admin/health': typeof AuthenticatedAdminHealthRoute
   '/admin/logs': typeof AuthenticatedAdminLogsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
@@ -162,12 +187,15 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/connections': typeof AuthenticatedConnectionsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/drives': typeof AuthenticatedDrivesRoute
   '/_authenticated/explorer': typeof AuthenticatedExplorerRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/transfers': typeof AuthenticatedTransfersRoute
   '/_authenticated/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
   '/_authenticated/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/_authenticated/admin/credentials': typeof AuthenticatedAdminCredentialsRoute
+  '/_authenticated/admin/drives': typeof AuthenticatedAdminDrivesRoute
+  '/_authenticated/admin/flags': typeof AuthenticatedAdminFlagsRoute
   '/_authenticated/admin/health': typeof AuthenticatedAdminHealthRoute
   '/_authenticated/admin/logs': typeof AuthenticatedAdminLogsRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
@@ -182,12 +210,15 @@ export interface FileRouteTypes {
     | '/admin'
     | '/connections'
     | '/dashboard'
+    | '/drives'
     | '/explorer'
     | '/settings'
     | '/transfers'
     | '/admin/configurations'
     | '/admin/connections'
     | '/admin/credentials'
+    | '/admin/drives'
+    | '/admin/flags'
     | '/admin/health'
     | '/admin/logs'
     | '/admin/providers'
@@ -199,12 +230,15 @@ export interface FileRouteTypes {
     | '/auth'
     | '/connections'
     | '/dashboard'
+    | '/drives'
     | '/explorer'
     | '/settings'
     | '/transfers'
     | '/admin/configurations'
     | '/admin/connections'
     | '/admin/credentials'
+    | '/admin/drives'
+    | '/admin/flags'
     | '/admin/health'
     | '/admin/logs'
     | '/admin/providers'
@@ -218,12 +252,15 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/connections'
     | '/_authenticated/dashboard'
+    | '/_authenticated/drives'
     | '/_authenticated/explorer'
     | '/_authenticated/settings'
     | '/_authenticated/transfers'
     | '/_authenticated/admin/configurations'
     | '/_authenticated/admin/connections'
     | '/_authenticated/admin/credentials'
+    | '/_authenticated/admin/drives'
+    | '/_authenticated/admin/flags'
     | '/_authenticated/admin/health'
     | '/_authenticated/admin/logs'
     | '/_authenticated/admin/providers'
@@ -281,6 +318,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/drives': {
+      id: '/_authenticated/drives'
+      path: '/drives'
+      fullPath: '/drives'
+      preLoaderRoute: typeof AuthenticatedDrivesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/explorer': {
       id: '/_authenticated/explorer'
       path: '/explorer'
@@ -330,6 +374,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCredentialsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/drives': {
+      id: '/_authenticated/admin/drives'
+      path: '/drives'
+      fullPath: '/admin/drives'
+      preLoaderRoute: typeof AuthenticatedAdminDrivesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/flags': {
+      id: '/_authenticated/admin/flags'
+      path: '/flags'
+      fullPath: '/admin/flags'
+      preLoaderRoute: typeof AuthenticatedAdminFlagsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/health': {
       id: '/_authenticated/admin/health'
       path: '/health'
@@ -365,6 +423,8 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminConfigurationsRoute: typeof AuthenticatedAdminConfigurationsRoute
   AuthenticatedAdminConnectionsRoute: typeof AuthenticatedAdminConnectionsRoute
   AuthenticatedAdminCredentialsRoute: typeof AuthenticatedAdminCredentialsRoute
+  AuthenticatedAdminDrivesRoute: typeof AuthenticatedAdminDrivesRoute
+  AuthenticatedAdminFlagsRoute: typeof AuthenticatedAdminFlagsRoute
   AuthenticatedAdminHealthRoute: typeof AuthenticatedAdminHealthRoute
   AuthenticatedAdminLogsRoute: typeof AuthenticatedAdminLogsRoute
   AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
@@ -376,6 +436,8 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminConfigurationsRoute: AuthenticatedAdminConfigurationsRoute,
   AuthenticatedAdminConnectionsRoute: AuthenticatedAdminConnectionsRoute,
   AuthenticatedAdminCredentialsRoute: AuthenticatedAdminCredentialsRoute,
+  AuthenticatedAdminDrivesRoute: AuthenticatedAdminDrivesRoute,
+  AuthenticatedAdminFlagsRoute: AuthenticatedAdminFlagsRoute,
   AuthenticatedAdminHealthRoute: AuthenticatedAdminHealthRoute,
   AuthenticatedAdminLogsRoute: AuthenticatedAdminLogsRoute,
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
@@ -390,6 +452,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedConnectionsRoute: typeof AuthenticatedConnectionsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDrivesRoute: typeof AuthenticatedDrivesRoute
   AuthenticatedExplorerRoute: typeof AuthenticatedExplorerRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTransfersRoute: typeof AuthenticatedTransfersRoute
@@ -399,6 +462,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedConnectionsRoute: AuthenticatedConnectionsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDrivesRoute: AuthenticatedDrivesRoute,
   AuthenticatedExplorerRoute: AuthenticatedExplorerRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTransfersRoute: AuthenticatedTransfersRoute,
@@ -415,3 +479,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

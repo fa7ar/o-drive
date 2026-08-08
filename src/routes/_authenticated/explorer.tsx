@@ -31,7 +31,7 @@ import { tryGetProvider } from "@/core/registry";
 import { queueTransfer, toggleFavorite, trashFile } from "@/core/services";
 import type { FileMetadata } from "@/core/types";
 import { formatBytes, formatDateTime } from "@/lib/format";
-import { connectionsQuery, filesQuery } from "@/lib/queries";
+import { drivesQuery, filesQuery } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 
 const searchSchema = z.object({ q: z.string().optional() });
@@ -63,8 +63,11 @@ function ExplorerPage() {
   const navigate = useNavigate({ from: Route.fullPath });
   const queryClient = useQueryClient();
 
-  const connections = useQuery(connectionsQuery);
-  const connected = (connections.data ?? []).filter((c) => c.status === "connected");
+  const drives = useQuery(drivesQuery);
+  const activeDrives = (drives.data ?? []).filter(
+    (view) => view.drive.status === "active" && view.connection.status === "connected",
+  );
+  const connected = activeDrives.map((view) => view.connection);
   const files = useQuery(filesQuery(connected.map((c) => c.id)));
 
   const [scope, setScope] = useState<Scope>("browse");
@@ -128,7 +131,8 @@ function ExplorerPage() {
   const segments = path.split("/").filter(Boolean);
 
   function connectionBadge(connectionId: string) {
-    const connection = connected.find((c) => c.id === connectionId);
+    const view = activeDrives.find((entry) => entry.connection.id === connectionId);
+    const connection = view?.connection;
     const descriptor = connection ? tryGetProvider(connection.providerId)?.descriptor : undefined;
     return (
       <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -138,7 +142,7 @@ function ExplorerPage() {
           size="sm"
           className="size-5 rounded"
         />
-        {connection?.name ?? "unknown"}
+        {view?.drive.name ?? connection?.name ?? "unknown"}
       </span>
     );
   }
@@ -235,7 +239,7 @@ function ExplorerPage() {
                 onChange={(event) =>
                   navigate({ search: { q: event.target.value || undefined } })
                 }
-                placeholder="Search files across connections"
+                placeholder="Search files across every drive"
                 className="pl-9"
                 aria-label="Search files"
               />
