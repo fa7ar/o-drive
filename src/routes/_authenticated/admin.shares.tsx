@@ -111,15 +111,15 @@ function AdminSharesPage() {
                 key={entry.id}
                 className="flex flex-wrap items-center gap-3 px-4 py-2.5 font-mono text-xs"
               >
-                <span className="text-muted-foreground">{formatDateTime(entry.accessedAt)}</span>
+                <span className="text-muted-foreground">{formatDateTime(entry.createdAt)}</span>
                 <span className="uppercase">{entry.action}</span>
                 <span
-                  className={entry.success ? "text-success" : "text-destructive"}
+                  className={entry.status === "success" ? "text-success" : "text-destructive"}
                 >
-                  {entry.success ? "ok" : "denied"}
+                  {entry.status}
                 </span>
                 <span className="min-w-0 flex-1 truncate text-muted-foreground">
-                  {entry.ipHash} · {entry.userAgent}
+                  {entry.ipHash ?? "unknown"} · {entry.userAgent}
                 </span>
               </div>
             ))

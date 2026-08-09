@@ -32,6 +32,7 @@ const NAV = [
   { to: "/connections", label: "Connections", icon: Plug },
   { to: "/explorer", label: "Explorer", icon: FolderTree },
   { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },
+  { to: "/shares", label: "Shares", icon: Link2 },
   { to: "/settings", label: "Settings", icon: SettingsIcon },
   { to: "/admin", label: "Admin", icon: ShieldCheck },
 ] as const;

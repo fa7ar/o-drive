@@ -7,6 +7,7 @@ const ITEMS = [
   { to: "/admin/drives", label: "Drives" },
   { to: "/admin/credentials", label: "Credentials" },
   { to: "/admin/connections", label: "Connections" },
+  { to: "/admin/shares", label: "Shares" },
   { to: "/admin/queues", label: "Jobs" },
   { to: "/admin/logs", label: "Logs" },
   { to: "/admin/configurations", label: "Configurations" },
