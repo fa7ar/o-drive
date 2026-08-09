@@ -347,6 +347,16 @@ export interface StorageProvider {
   createFolder(connectionId: string, path: string, name: string): Promise<FileMetadata>;
   getQuota(connectionId: string): Promise<Quota>;
   getMetadata(connectionId: string, fileId: string): Promise<FileMetadata | null>;
+  /** Optional capability: presigned/temporary URL (S3, R2). */
+  getTemporaryDownloadUrl?(
+    connectionId: string,
+    fileId: string,
+    expiresInSeconds?: number,
+  ): Promise<string | null>;
+  /** Optional capability: streamed download for large files. */
+  getDownloadStream?(connectionId: string, fileId: string): Promise<ReadableStream<Uint8Array> | null>;
+  /** Optional capability: inline preview stream (images, PDF, text). */
+  getPreviewStream?(connectionId: string, fileId: string): Promise<ReadableStream<Uint8Array> | null>;
   healthCheck(): Promise<{ status: ProviderState["health"]; detail?: string }>;
 }
 
