@@ -4,6 +4,7 @@ import {
   FolderTree,
   HardDrive,
   LayoutDashboard,
+  Link2,
   LogOut,
   Plug,
   Search,
