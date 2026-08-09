@@ -154,7 +154,8 @@ export type LogCategory =
   | "security"
   | "search"
   | "transfer"
-  | "sync";
+  | "sync"
+  | "share";
 
 export type LogSeverity = "debug" | "info" | "warning" | "error" | "critical";
 
@@ -381,4 +382,102 @@ export interface DriveView {
   drive: Drive;
   connection: Connection;
   descriptor: ProviderDescriptor | null;
+}
+
+/* --------------------------------- sharing --------------------------------- */
+
+export type ShareResourceType = "file" | "folder";
+export type ShareType = "public" | "private" | "password_protected";
+export type ShareStatus = "active" | "expired" | "revoked" | "limit_reached";
+
+export interface Share {
+  id: string;
+  workspaceId: string;
+  driveId: string;
+  resourceType: ShareResourceType;
+  resourceId: string;
+  /** Denormalised label so public pages never touch provider metadata. */
+  resourceName: string;
+  /** Opaque, cryptographically random public token (never an internal id). */
+  token: string;
+  createdBy: string;
+  shareType: ShareType;
+  status: ShareStatus;
+  expiresAt: string | null;
+  /** PBKDF2 hash. Plaintext passwords are never stored. */
+  passwordHash: string | null;
+  allowDownload: boolean;
+  allowPreview: boolean;
+  maxDownloads: number | null;
+  downloadCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ShareAccessAction = "preview" | "download" | "password_failed" | "view";
+export type ShareAccessStatus = "success" | "failed";
+
+export interface ShareAccessLog {
+  id: string;
+  shareId: string;
+  resourceId: string;
+  action: ShareAccessAction;
+  status: ShareAccessStatus;
+  userId: string | null;
+  ipHash: string | null;
+  userAgent: string;
+  createdAt: string;
+}
+
+/** Read model joining a share with its drive and resource context. */
+export interface ShareView {
+  share: Share;
+  driveName: string;
+  providerId: string | null;
+  accessCount: number;
+}
+
+export type ShareErrorCode =
+  | "SHARE_NOT_FOUND"
+  | "SHARE_EXPIRED"
+  | "SHARE_REVOKED"
+  | "PASSWORD_REQUIRED"
+  | "INVALID_PASSWORD"
+  | "DOWNLOAD_LIMIT_REACHED"
+  | "RESOURCE_NOT_FOUND"
+  | "PROVIDER_UNAVAILABLE"
+  | "DOWNLOAD_NOT_SUPPORTED"
+  | "RATE_LIMITED";
+
+/** Normalised, provider-agnostic public view of a shared resource. */
+export interface PublicShareResource {
+  token: string;
+  resourceType: ShareResourceType;
+  name: string;
+  sizeBytes: number;
+  mimeType: string;
+  modifiedAt: string;
+  allowDownload: boolean;
+  allowPreview: boolean;
+  expiresAt: string | null;
+  downloadsRemaining: number | null;
+  requiresPassword: boolean;
+  /** Folder shares expose their contents relative to the shared root only. */
+  children?: Array<{
+    id: string;
+    name: string;
+    kind: ShareResourceType;
+    sizeBytes: number;
+    mimeType: string;
+    modifiedAt: string;
+  }>;
+}
+
+export interface ShareSecurityPolicy {
+  defaultExpiryHours: number;
+  requirePasswordForPublic: boolean;
+  minPasswordLength: number;
+  maxPasswordAttempts: number;
+  accessRatePerMinute: number;
+  maxDownloadsDefault: number | null;
 }

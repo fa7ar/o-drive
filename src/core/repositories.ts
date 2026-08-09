@@ -175,3 +175,21 @@ export interface DriveRepository {
   setDefault(workspaceId: string, id: string): Promise<Drive[]>;
   remove(id: string): Promise<void>;
 }
+
+export interface ShareRepository {
+  list(workspaceId: string): Promise<Share[]>;
+  listAll(): Promise<Share[]>;
+  get(id: string): Promise<Share | null>;
+  findByToken(token: string): Promise<Share | null>;
+  create(input: Omit<Share, "id" | "createdAt" | "updatedAt">): Promise<Share>;
+  update(id: string, patch: Partial<Share>): Promise<Share>;
+  remove(id: string): Promise<void>;
+}
+
+export interface ShareAccessLogRepository {
+  list(filter?: { shareId?: string; limit?: number }): Promise<ShareAccessLog[]>;
+  countForShare(shareId: string): Promise<number>;
+  record(input: Omit<ShareAccessLog, "id" | "createdAt">): Promise<ShareAccessLog>;
+}
+
+import type { Share, ShareAccessLog } from "./types";

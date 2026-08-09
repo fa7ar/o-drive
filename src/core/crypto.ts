@@ -67,3 +67,48 @@ export function maskSecret(value: string): string {
   if (value.length <= 4) return "••••";
   return `••••${value.slice(-4)}`;
 }
+
+/* ----------------------------- password hashing ---------------------------- */
+
+const PW_PREFIX = "pbkdf2.v1";
+const PW_ITERATIONS = 150_000;
+
+async function derivePasswordBits(password: string, salt: Uint8Array): Promise<string> {
+  const material = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, [
+    "deriveBits",
+  ]);
+  const bits = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", salt: salt as unknown as BufferSource, iterations: PW_ITERATIONS, hash: "SHA-256" },
+    material,
+    256,
+  );
+  return toB64(new Uint8Array(bits));
+}
+
+/** One-way hash for share passwords. Plaintext never leaves this function. */
+export async function hashPassword(password: string): Promise<string> {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  return `${PW_PREFIX}:${toB64(salt)}:${await derivePasswordBits(password, salt)}`;
+}
+
+export async function verifyPassword(password: string, stored: string): Promise<boolean> {
+  const [prefix, salt, digest] = stored.split(":");
+  if (prefix !== PW_PREFIX || !salt || !digest) return false;
+  const candidate = await derivePasswordBits(password, fromB64(salt));
+  if (candidate.length !== digest.length) return false;
+  let diff = 0;
+  for (let i = 0; i < candidate.length; i += 1) diff |= candidate.charCodeAt(i) ^ digest.charCodeAt(i);
+  return diff === 0;
+}
+
+/** Opaque, cryptographically random public token (URL safe, no internal ids). */
+export function randomToken(bytes = 16): string {
+  const raw = crypto.getRandomValues(new Uint8Array(bytes));
+  return [...raw].map((byte) => byte.toString(36).padStart(2, "0")).join("").slice(0, 22);
+}
+
+/** Salted one-way hash of a client IP for audit logs. */
+export async function hashIp(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", encoder.encode(`odrive.ip:${value}`));
+  return toB64(new Uint8Array(digest)).slice(0, 22);
+}
