@@ -1,5 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 
+import { listAllShares, listShareAccessLogs, listShares } from "@/core/shares";
+
 import {
   getSettings,
   listActivity,
@@ -103,4 +105,19 @@ export const metricsQuery = queryOptions({
   queryKey: ["metrics"],
   queryFn: () => systemMetrics(),
   refetchInterval: 5000,
+});
+
+export const sharesQuery = queryOptions({
+  queryKey: ["shares"],
+  queryFn: () => listShares(),
+});
+
+export const allSharesQuery = queryOptions({
+  queryKey: ["shares", "all"],
+  queryFn: () => listAllShares(),
+});
+
+export const shareAccessLogsQuery = queryOptions({
+  queryKey: ["share-access-logs"],
+  queryFn: () => listShareAccessLogs({ limit: 60 }),
 });

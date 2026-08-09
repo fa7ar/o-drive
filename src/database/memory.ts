@@ -12,6 +12,8 @@ import type {
   SearchRepository,
   SecretManager,
   SettingsRepository,
+  ShareAccessLogRepository,
+  ShareRepository,
   SyncRepository,
   SystemLogRepository,
   TokenRepository,
@@ -32,6 +34,8 @@ import type {
   JobLogEntry,
   ProviderState,
   SearchResult,
+  Share,
+  ShareAccessLog,
   SyncHistoryEntry,
   SyncJob,
   SystemLog,
@@ -979,3 +983,152 @@ export const memoryTokenRepository: TokenRepository = {
 };
 
 export const DEMO_WORKSPACE_ID = WORKSPACE_ID;
+
+/* --------------------------------- sharing --------------------------------- */
+
+const shares: Share[] = [
+  {
+    id: "shr_brand_kit",
+    workspaceId: WORKSPACE_ID,
+    driveId: "drv_company",
+    resourceType: "folder",
+    resourceId: "file_brand_kit",
+    resourceName: "brand-kit",
+    token: "kq7f2mrz8w1xj4",
+    createdBy: "you",
+    shareType: "public",
+    status: "active",
+    expiresAt: "2026-09-05T09:00:00Z",
+    passwordHash: null,
+    allowDownload: true,
+    allowPreview: true,
+    maxDownloads: null,
+    downloadCount: 34,
+    createdAt: "2026-08-05T09:00:00Z",
+    updatedAt: "2026-08-06T12:00:00Z",
+  },
+  {
+    id: "shr_contract",
+    workspaceId: WORKSPACE_ID,
+    driveId: "drv_company",
+    resourceType: "file",
+    resourceId: "file_contract",
+    resourceName: "vendor-contract.pdf",
+    token: "p3d9tunb6ac0se",
+    createdBy: "you",
+    shareType: "password_protected",
+    status: "active",
+    expiresAt: "2026-08-12T18:00:00Z",
+    // password: "odrive-demo" — hashed lazily on first verify in demo mode.
+    passwordHash: null,
+    allowDownload: true,
+    allowPreview: false,
+    maxDownloads: 10,
+    downloadCount: 3,
+    createdAt: "2026-08-06T18:00:00Z",
+    updatedAt: "2026-08-06T18:00:00Z",
+  },
+  {
+    id: "shr_reel",
+    workspaceId: WORKSPACE_ID,
+    driveId: "drv_media",
+    resourceType: "file",
+    resourceId: "file_reel",
+    resourceName: "launch-reel-master.mov",
+    token: "z8vh1qkd5np2ru",
+    createdBy: "you",
+    shareType: "public",
+    status: "expired",
+    expiresAt: "2026-08-01T00:00:00Z",
+    passwordHash: null,
+    allowDownload: true,
+    allowPreview: true,
+    maxDownloads: 25,
+    downloadCount: 25,
+    createdAt: "2026-07-20T10:00:00Z",
+    updatedAt: "2026-08-01T00:00:00Z",
+  },
+];
+
+const shareAccessLogs: ShareAccessLog[] = [
+  {
+    id: "sal_1",
+    shareId: "shr_brand_kit",
+    resourceId: "file_brand_kit",
+    action: "download",
+    status: "success",
+    userId: null,
+    ipHash: "hV82kdlsQm0",
+    userAgent: "Mozilla/5.0 (Macintosh)",
+    createdAt: "2026-08-06T12:00:00Z",
+  },
+  {
+    id: "sal_2",
+    shareId: "shr_contract",
+    resourceId: "file_contract",
+    action: "password_failed",
+    status: "failed",
+    userId: null,
+    ipHash: "b71xPqzTme4",
+    userAgent: "Mozilla/5.0 (Windows NT 10.0)",
+    createdAt: "2026-08-06T19:22:00Z",
+  },
+  {
+    id: "sal_3",
+    shareId: "shr_brand_kit",
+    resourceId: "file_brand_kit",
+    action: "preview",
+    status: "success",
+    userId: null,
+    ipHash: "kk02mAqzXe9",
+    userAgent: "Mozilla/5.0 (iPhone)",
+    createdAt: "2026-08-07T08:11:00Z",
+  },
+];
+
+export const memoryShareRepository: ShareRepository = {
+  async list(workspaceId) {
+    return clone(shares.filter((share) => share.workspaceId === workspaceId));
+  },
+  async listAll() {
+    return clone(shares);
+  },
+  async get(idValue) {
+    return clone(shares.find((share) => share.id === idValue) ?? null);
+  },
+  async findByToken(token) {
+    return clone(shares.find((share) => share.token === token) ?? null);
+  },
+  async create(input) {
+    const now = new Date().toISOString();
+    const created: Share = { ...input, id: id("shr"), createdAt: now, updatedAt: now };
+    shares.unshift(created);
+    return clone(created);
+  },
+  async update(idValue, patch) {
+    const target = shares.find((share) => share.id === idValue);
+    if (!target) throw new Error("Share not found");
+    Object.assign(target, patch, { updatedAt: new Date().toISOString() });
+    return clone(target);
+  },
+  async remove(idValue) {
+    const index = shares.findIndex((share) => share.id === idValue);
+    if (index >= 0) shares.splice(index, 1);
+  },
+};
+
+export const memoryShareAccessLogRepository: ShareAccessLogRepository = {
+  async list(filter = {}) {
+    let list = [...shareAccessLogs].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    if (filter.shareId) list = list.filter((entry) => entry.shareId === filter.shareId);
+    return clone(list.slice(0, filter.limit ?? 100));
+  },
+  async countForShare(shareId) {
+    return shareAccessLogs.filter((entry) => entry.shareId === shareId).length;
+  },
+  async record(input) {
+    const created: ShareAccessLog = { ...input, id: id("sal"), createdAt: new Date().toISOString() };
+    shareAccessLogs.unshift(created);
+    return clone(created);
+  },
+};

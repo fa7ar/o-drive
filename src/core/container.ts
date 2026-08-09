@@ -13,6 +13,8 @@ import type {
   SearchRepository,
   SecretManager,
   SettingsRepository,
+  ShareAccessLogRepository,
+  ShareRepository,
   SyncRepository,
   SystemLogRepository,
   TokenRepository,
@@ -34,6 +36,8 @@ import {
   memoryProviderRepository,
   memorySearchRepository,
   memorySettingsRepository,
+  memoryShareAccessLogRepository,
+  memoryShareRepository,
   memorySyncRepository,
   memorySystemLogRepository,
   memoryTokenRepository,
@@ -58,6 +62,8 @@ export interface Container {
   logs: SystemLogRepository;
   credentials: CredentialRepository;
   config: ConfigRepository;
+  shares: ShareRepository;
+  shareLogs: ShareAccessLogRepository;
   sync: SyncRepository;
   activity: ActivityRepository;
   settings: SettingsRepository;
@@ -80,6 +86,8 @@ let container: Container = {
   logs: memorySystemLogRepository,
   credentials: memoryCredentialRepository,
   config: memoryConfigRepository,
+  shares: memoryShareRepository,
+  shareLogs: memoryShareAccessLogRepository,
   sync: memorySyncRepository,
   activity: memoryActivityRepository,
   settings: memorySettingsRepository,

@@ -18,7 +18,9 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDrivesRouteImport } from './routes/_authenticated/drives'
 import { Route as AuthenticatedExplorerRouteImport } from './routes/_authenticated/explorer'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedSharesRouteImport } from './routes/_authenticated/shares'
 import { Route as AuthenticatedTransfersRouteImport } from './routes/_authenticated/transfers'
+import { Route as STokenRouteImport } from './routes/s.$token'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminConfigurationsRouteImport } from './routes/_authenticated/admin.configurations'
 import { Route as AuthenticatedAdminConnectionsRouteImport } from './routes/_authenticated/admin.connections'
@@ -29,6 +31,7 @@ import { Route as AuthenticatedAdminHealthRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminLogsRouteImport } from './routes/_authenticated/admin.logs'
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminQueuesRouteImport } from './routes/_authenticated/admin.queues'
+import { Route as AuthenticatedAdminSharesRouteImport } from './routes/_authenticated/admin.shares'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -75,10 +78,20 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSharesRoute = AuthenticatedSharesRouteImport.update({
+  id: '/shares',
+  path: '/shares',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedTransfersRoute = AuthenticatedTransfersRouteImport.update({
   id: '/transfers',
   path: '/transfers',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const STokenRoute = STokenRouteImport.update({
+  id: '/s/$token',
+  path: '/s/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
@@ -137,6 +150,12 @@ const AuthenticatedAdminQueuesRoute =
     path: '/queues',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminSharesRoute =
+  AuthenticatedAdminSharesRouteImport.update({
+    id: '/shares',
+    path: '/shares',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -147,7 +166,9 @@ export interface FileRoutesByFullPath {
   '/drives': typeof AuthenticatedDrivesRoute
   '/explorer': typeof AuthenticatedExplorerRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/s/$token': typeof STokenRoute
   '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
   '/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/admin/credentials': typeof AuthenticatedAdminCredentialsRoute
@@ -157,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/admin/logs': typeof AuthenticatedAdminLogsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
+  '/admin/shares': typeof AuthenticatedAdminSharesRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -167,7 +189,9 @@ export interface FileRoutesByTo {
   '/drives': typeof AuthenticatedDrivesRoute
   '/explorer': typeof AuthenticatedExplorerRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/s/$token': typeof STokenRoute
   '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
   '/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/admin/credentials': typeof AuthenticatedAdminCredentialsRoute
@@ -177,6 +201,7 @@ export interface FileRoutesByTo {
   '/admin/logs': typeof AuthenticatedAdminLogsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
+  '/admin/shares': typeof AuthenticatedAdminSharesRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -190,7 +215,9 @@ export interface FileRoutesById {
   '/_authenticated/drives': typeof AuthenticatedDrivesRoute
   '/_authenticated/explorer': typeof AuthenticatedExplorerRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/shares': typeof AuthenticatedSharesRoute
   '/_authenticated/transfers': typeof AuthenticatedTransfersRoute
+  '/s/$token': typeof STokenRoute
   '/_authenticated/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
   '/_authenticated/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/_authenticated/admin/credentials': typeof AuthenticatedAdminCredentialsRoute
@@ -200,6 +227,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/logs': typeof AuthenticatedAdminLogsRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/admin/queues': typeof AuthenticatedAdminQueuesRoute
+  '/_authenticated/admin/shares': typeof AuthenticatedAdminSharesRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -213,7 +241,9 @@ export interface FileRouteTypes {
     | '/drives'
     | '/explorer'
     | '/settings'
+    | '/shares'
     | '/transfers'
+    | '/s/$token'
     | '/admin/configurations'
     | '/admin/connections'
     | '/admin/credentials'
@@ -223,6 +253,7 @@ export interface FileRouteTypes {
     | '/admin/logs'
     | '/admin/providers'
     | '/admin/queues'
+    | '/admin/shares'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -233,7 +264,9 @@ export interface FileRouteTypes {
     | '/drives'
     | '/explorer'
     | '/settings'
+    | '/shares'
     | '/transfers'
+    | '/s/$token'
     | '/admin/configurations'
     | '/admin/connections'
     | '/admin/credentials'
@@ -243,6 +276,7 @@ export interface FileRouteTypes {
     | '/admin/logs'
     | '/admin/providers'
     | '/admin/queues'
+    | '/admin/shares'
     | '/admin'
   id:
     | '__root__'
@@ -255,7 +289,9 @@ export interface FileRouteTypes {
     | '/_authenticated/drives'
     | '/_authenticated/explorer'
     | '/_authenticated/settings'
+    | '/_authenticated/shares'
     | '/_authenticated/transfers'
+    | '/s/$token'
     | '/_authenticated/admin/configurations'
     | '/_authenticated/admin/connections'
     | '/_authenticated/admin/credentials'
@@ -265,6 +301,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/logs'
     | '/_authenticated/admin/providers'
     | '/_authenticated/admin/queues'
+    | '/_authenticated/admin/shares'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -272,6 +309,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  STokenRoute: typeof STokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -339,12 +377,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/shares': {
+      id: '/_authenticated/shares'
+      path: '/shares'
+      fullPath: '/shares'
+      preLoaderRoute: typeof AuthenticatedSharesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/transfers': {
       id: '/_authenticated/transfers'
       path: '/transfers'
       fullPath: '/transfers'
       preLoaderRoute: typeof AuthenticatedTransfersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/s/$token': {
+      id: '/s/$token'
+      path: '/s/$token'
+      fullPath: '/s/$token'
+      preLoaderRoute: typeof STokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
@@ -416,6 +468,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminQueuesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/shares': {
+      id: '/_authenticated/admin/shares'
+      path: '/shares'
+      fullPath: '/admin/shares'
+      preLoaderRoute: typeof AuthenticatedAdminSharesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
@@ -429,6 +488,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminLogsRoute: typeof AuthenticatedAdminLogsRoute
   AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
   AuthenticatedAdminQueuesRoute: typeof AuthenticatedAdminQueuesRoute
+  AuthenticatedAdminSharesRoute: typeof AuthenticatedAdminSharesRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
@@ -442,6 +502,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminLogsRoute: AuthenticatedAdminLogsRoute,
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
   AuthenticatedAdminQueuesRoute: AuthenticatedAdminQueuesRoute,
+  AuthenticatedAdminSharesRoute: AuthenticatedAdminSharesRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
@@ -455,6 +516,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDrivesRoute: typeof AuthenticatedDrivesRoute
   AuthenticatedExplorerRoute: typeof AuthenticatedExplorerRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSharesRoute: typeof AuthenticatedSharesRoute
   AuthenticatedTransfersRoute: typeof AuthenticatedTransfersRoute
 }
 
@@ -465,6 +527,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDrivesRoute: AuthenticatedDrivesRoute,
   AuthenticatedExplorerRoute: AuthenticatedExplorerRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSharesRoute: AuthenticatedSharesRoute,
   AuthenticatedTransfersRoute: AuthenticatedTransfersRoute,
 }
 
@@ -475,6 +538,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  STokenRoute: STokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
