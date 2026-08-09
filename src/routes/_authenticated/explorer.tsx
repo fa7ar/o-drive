@@ -31,6 +31,7 @@ import { tryGetProvider } from "@/core/registry";
 import { queueTransfer, toggleFavorite, trashFile } from "@/core/services";
 import type { FileMetadata } from "@/core/types";
 import { formatBytes, formatDateTime } from "@/lib/format";
+import { ShareDialog, type ShareTarget } from "@/components/share-dialog";
 import { drivesQuery, filesQuery } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 
@@ -64,6 +65,7 @@ function ExplorerPage() {
   const queryClient = useQueryClient();
 
   const drives = useQuery(drivesQuery);
+  const [shareTarget, setShareTarget] = useState<ShareTarget | null>(null);
   const activeDrives = (drives.data ?? []).filter(
     (view) => view.drive.status === "active" && view.connection.status === "connected",
   );
@@ -166,6 +168,23 @@ function ExplorerPage() {
             Download
           </DropdownMenuItem>
         ) : null}
+        <DropdownMenuItem
+          onSelect={() => {
+            const view = activeDrives.find(
+              (entry) => entry.connection.id === file.connectionId,
+            );
+            if (!view) return;
+            setShareTarget({
+              driveId: view.drive.id,
+              driveName: view.drive.name,
+              resourceId: file.id,
+              resourceName: file.name,
+              resourceType: file.kind === "folder" ? "folder" : "file",
+            });
+          }}
+        >
+          Share
+        </DropdownMenuItem>
         <DropdownMenuItem
           onSelect={() => favoriteMutation.mutate({ id: file.id, favorite: !file.favorite })}
         >
