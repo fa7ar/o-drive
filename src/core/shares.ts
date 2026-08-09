@@ -349,7 +349,7 @@ export async function getShareResource(
   const connection = await connections.get(drive.connectionId);
   if (!connection || connection.status === "error") throw new ShareError("PROVIDER_UNAVAILABLE");
 
-  const indexed = await files.list([connection.id]);
+  const indexed = await files.listAll([connection.id]);
   const resource = indexed.find((file) => file.id === share.resourceId);
   const name = resource?.name ?? share.resourceName;
   const root = resource ? `${resource.path === "/" ? "" : resource.path}/${resource.name}` : "/";
@@ -418,7 +418,7 @@ export async function downloadShare(
   if (!connection) throw new ShareError("PROVIDER_UNAVAILABLE");
 
   const targetId = fileId ?? share.resourceId;
-  const indexed = await files.list([connection.id]);
+  const indexed = await files.listAll([connection.id]);
   const resource = indexed.find((file) => file.id === targetId);
   if (share.resourceType === "folder" && fileId) {
     // Folder shares may only serve descendants of the shared root.
