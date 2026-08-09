@@ -359,6 +359,13 @@ function ExplorerPage() {
           )}
         </div>
       </div>
+      <ShareDialog
+        target={shareTarget}
+        open={shareTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setShareTarget(null);
+        }}
+      />
     </AppShell>
   );
 }
