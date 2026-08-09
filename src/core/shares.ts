@@ -3,6 +3,7 @@ import { hashIp, hashPassword, randomToken, verifyPassword } from "./crypto";
 import { publish } from "./event-bus";
 import { log } from "./logs";
 import { tryGetProvider } from "./registry";
+import { listAllFiles } from "./services";
 import { StorageManager } from "./storage-manager";
 import type {
   PublicShareResource,
@@ -343,13 +344,13 @@ export async function getShareResource(
     await authenticateShare(token, password);
   }
 
-  const { drives, connections, files } = useContainer();
+  const { drives, connections } = useContainer();
   const drive = await drives.get(share.driveId);
   if (!drive) throw new ShareError("RESOURCE_NOT_FOUND");
   const connection = await connections.get(drive.connectionId);
   if (!connection || connection.status === "error") throw new ShareError("PROVIDER_UNAVAILABLE");
 
-  const indexed = await files.listAll([connection.id]);
+  const indexed = await listAllFiles([connection.id]);
   const resource = indexed.find((file) => file.id === share.resourceId);
   const name = resource?.name ?? share.resourceName;
   const root = resource ? `${resource.path === "/" ? "" : resource.path}/${resource.name}` : "/";
@@ -411,14 +412,14 @@ export async function downloadShare(
     await authenticateShare(token, password);
   }
 
-  const { drives, connections, files, shares } = useContainer();
+  const { drives, connections, shares } = useContainer();
   const drive = await drives.get(share.driveId);
   if (!drive) throw new ShareError("RESOURCE_NOT_FOUND");
   const connection = await connections.get(drive.connectionId);
   if (!connection) throw new ShareError("PROVIDER_UNAVAILABLE");
 
   const targetId = fileId ?? share.resourceId;
-  const indexed = await files.listAll([connection.id]);
+  const indexed = await listAllFiles([connection.id]);
   const resource = indexed.find((file) => file.id === targetId);
   if (share.resourceType === "folder" && fileId) {
     // Folder shares may only serve descendants of the shared root.
