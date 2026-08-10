@@ -36,8 +36,11 @@ import { drivesQuery } from "@/lib/queries";
 
 const TRIGGERS: Array<{ value: AutomationTriggerType; label: string }> = [
   { value: "file.created", label: "File created" },
-  { value: "file.modified", label: "File modified" },
+  { value: "file.updated", label: "File updated" },
+  { value: "file.moved", label: "File moved" },
+  { value: "file.copied", label: "File copied" },
   { value: "file.deleted", label: "File deleted" },
+
   { value: "upload.completed", label: "Upload completed" },
   { value: "transfer.completed", label: "Transfer completed" },
   { value: "drive.connected", label: "Drive connected" },
