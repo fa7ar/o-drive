@@ -11,6 +11,12 @@ import {
   listProviderStates,
   listTransfers,
 } from "@/core/services";
+import {
+  automationMetrics,
+  listAllAutomations,
+  listAutomations,
+  listRuns,
+} from "@/core/automations";
 import { listConfig } from "@/core/configurations";
 import { listDrives } from "@/core/drives";
 import { listCredentials } from "@/core/credentials";
@@ -120,4 +126,27 @@ export const allSharesQuery = queryOptions({
 export const shareAccessLogsQuery = queryOptions({
   queryKey: ["share-access-logs"],
   queryFn: () => listShareAccessLogs({ limit: 60 }),
+});
+
+export const automationsQuery = queryOptions({
+  queryKey: ["automations"],
+  queryFn: () => listAutomations(),
+});
+
+export const allAutomationsQuery = queryOptions({
+  queryKey: ["automations", "all"],
+  queryFn: () => listAllAutomations(),
+});
+
+export const automationRunsQuery = (automationId?: string) =>
+  queryOptions({
+    queryKey: ["automation-runs", automationId ?? "all"],
+    queryFn: () => listRuns(automationId ? { automationId, limit: 50 } : { limit: 50 }),
+    refetchInterval: 5000,
+  });
+
+export const automationMetricsQuery = queryOptions({
+  queryKey: ["automation-metrics"],
+  queryFn: () => automationMetrics(),
+  refetchInterval: 8000,
 });

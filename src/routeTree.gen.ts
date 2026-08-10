@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAutomationsRouteImport } from './routes/_authenticated/automations'
 import { Route as AuthenticatedConnectionsRouteImport } from './routes/_authenticated/connections'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDrivesRouteImport } from './routes/_authenticated/drives'
@@ -22,6 +23,7 @@ import { Route as AuthenticatedSharesRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedTransfersRouteImport } from './routes/_authenticated/transfers'
 import { Route as STokenRouteImport } from './routes/s.$token'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminAutomationsRouteImport } from './routes/_authenticated/admin.automations'
 import { Route as AuthenticatedAdminConfigurationsRouteImport } from './routes/_authenticated/admin.configurations'
 import { Route as AuthenticatedAdminConnectionsRouteImport } from './routes/_authenticated/admin.connections'
 import { Route as AuthenticatedAdminCredentialsRouteImport } from './routes/_authenticated/admin.credentials'
@@ -52,6 +54,12 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAutomationsRoute =
+  AuthenticatedAutomationsRouteImport.update({
+    id: '/automations',
+    path: '/automations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedConnectionsRoute =
   AuthenticatedConnectionsRouteImport.update({
     id: '/connections',
@@ -98,6 +106,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminAutomationsRoute =
+  AuthenticatedAdminAutomationsRouteImport.update({
+    id: '/automations',
+    path: '/automations',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminConfigurationsRoute =
   AuthenticatedAdminConfigurationsRouteImport.update({
     id: '/configurations',
@@ -161,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/automations': typeof AuthenticatedAutomationsRoute
   '/connections': typeof AuthenticatedConnectionsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/drives': typeof AuthenticatedDrivesRoute
@@ -169,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
   '/s/$token': typeof STokenRoute
+  '/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
   '/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/admin/credentials': typeof AuthenticatedAdminCredentialsRoute
@@ -184,6 +200,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/automations': typeof AuthenticatedAutomationsRoute
   '/connections': typeof AuthenticatedConnectionsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/drives': typeof AuthenticatedDrivesRoute
@@ -192,6 +209,7 @@ export interface FileRoutesByTo {
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
   '/s/$token': typeof STokenRoute
+  '/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
   '/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/admin/credentials': typeof AuthenticatedAdminCredentialsRoute
@@ -210,6 +228,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/automations': typeof AuthenticatedAutomationsRoute
   '/_authenticated/connections': typeof AuthenticatedConnectionsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/drives': typeof AuthenticatedDrivesRoute
@@ -218,6 +237,7 @@ export interface FileRoutesById {
   '/_authenticated/shares': typeof AuthenticatedSharesRoute
   '/_authenticated/transfers': typeof AuthenticatedTransfersRoute
   '/s/$token': typeof STokenRoute
+  '/_authenticated/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/_authenticated/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
   '/_authenticated/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/_authenticated/admin/credentials': typeof AuthenticatedAdminCredentialsRoute
@@ -236,6 +256,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/admin'
+    | '/automations'
     | '/connections'
     | '/dashboard'
     | '/drives'
@@ -244,6 +265,7 @@ export interface FileRouteTypes {
     | '/shares'
     | '/transfers'
     | '/s/$token'
+    | '/admin/automations'
     | '/admin/configurations'
     | '/admin/connections'
     | '/admin/credentials'
@@ -259,6 +281,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/automations'
     | '/connections'
     | '/dashboard'
     | '/drives'
@@ -267,6 +290,7 @@ export interface FileRouteTypes {
     | '/shares'
     | '/transfers'
     | '/s/$token'
+    | '/admin/automations'
     | '/admin/configurations'
     | '/admin/connections'
     | '/admin/credentials'
@@ -284,6 +308,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/admin'
+    | '/_authenticated/automations'
     | '/_authenticated/connections'
     | '/_authenticated/dashboard'
     | '/_authenticated/drives'
@@ -292,6 +317,7 @@ export interface FileRouteTypes {
     | '/_authenticated/shares'
     | '/_authenticated/transfers'
     | '/s/$token'
+    | '/_authenticated/admin/automations'
     | '/_authenticated/admin/configurations'
     | '/_authenticated/admin/connections'
     | '/_authenticated/admin/credentials'
@@ -340,6 +366,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/automations': {
+      id: '/_authenticated/automations'
+      path: '/automations'
+      fullPath: '/automations'
+      preLoaderRoute: typeof AuthenticatedAutomationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/connections': {
@@ -403,6 +436,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/automations': {
+      id: '/_authenticated/admin/automations'
+      path: '/automations'
+      fullPath: '/admin/automations'
+      preLoaderRoute: typeof AuthenticatedAdminAutomationsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/configurations': {
@@ -479,6 +519,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminAutomationsRoute: typeof AuthenticatedAdminAutomationsRoute
   AuthenticatedAdminConfigurationsRoute: typeof AuthenticatedAdminConfigurationsRoute
   AuthenticatedAdminConnectionsRoute: typeof AuthenticatedAdminConnectionsRoute
   AuthenticatedAdminCredentialsRoute: typeof AuthenticatedAdminCredentialsRoute
@@ -493,6 +534,7 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminAutomationsRoute: AuthenticatedAdminAutomationsRoute,
   AuthenticatedAdminConfigurationsRoute: AuthenticatedAdminConfigurationsRoute,
   AuthenticatedAdminConnectionsRoute: AuthenticatedAdminConnectionsRoute,
   AuthenticatedAdminCredentialsRoute: AuthenticatedAdminCredentialsRoute,
@@ -511,6 +553,7 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedAutomationsRoute: typeof AuthenticatedAutomationsRoute
   AuthenticatedConnectionsRoute: typeof AuthenticatedConnectionsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDrivesRoute: typeof AuthenticatedDrivesRoute
@@ -522,6 +565,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedAutomationsRoute: AuthenticatedAutomationsRoute,
   AuthenticatedConnectionsRoute: AuthenticatedConnectionsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDrivesRoute: AuthenticatedDrivesRoute,
