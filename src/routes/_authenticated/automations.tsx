@@ -129,7 +129,7 @@ function AutomationsPage() {
         <h2 className="font-display text-sm font-semibold">Rules</h2>
         {(automations.data ?? []).length === 0 ? (
           <EmptyState
-            icon={Zap}
+            icon={<Zap className="size-5" />}
             title="No automations yet"
             description="Create a rule to back up, mirror or archive files automatically."
           />

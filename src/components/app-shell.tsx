@@ -9,9 +9,7 @@ import {
   Plug,
   Search,
   Settings as SettingsIcon,
-  ShieldCheck,
-
-} from "lucide-react";
+  ShieldCheck,, Zap } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 import { OdriveLogo } from "@/components/odrive-logo";
@@ -34,6 +32,7 @@ const NAV = [
   { to: "/explorer", label: "Explorer", icon: FolderTree },
   { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },
   { to: "/shares", label: "Shares", icon: Link2 },
+  { to: "/automations", label: "Automations", icon: Zap },
   { to: "/settings", label: "Settings", icon: SettingsIcon },
   { to: "/admin", label: "Admin", icon: ShieldCheck },
 ] as const;
