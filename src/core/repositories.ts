@@ -193,3 +193,24 @@ export interface ShareAccessLogRepository {
 }
 
 import type { Share, ShareAccessLog } from "./types";
+
+export interface AutomationRepository {
+  list(workspaceId: string): Promise<Automation[]>;
+  listAll(): Promise<Automation[]>;
+  get(id: string): Promise<Automation | null>;
+  create(input: Omit<Automation, "id" | "createdAt" | "updatedAt">): Promise<Automation>;
+  update(id: string, patch: Partial<Automation>): Promise<Automation>;
+  remove(id: string): Promise<void>;
+}
+
+export interface AutomationRunRepository {
+  list(filter?: { automationId?: string; limit?: number }): Promise<AutomationRun[]>;
+  get(id: string): Promise<AutomationRun | null>;
+  create(input: Omit<AutomationRun, "id">): Promise<AutomationRun>;
+  update(id: string, patch: Partial<AutomationRun>): Promise<AutomationRun>;
+  appendAction(runId: string, action: Omit<AutomationRunAction, "id" | "runId">): Promise<AutomationRunAction>;
+  updateAction(runId: string, actionId: string, patch: Partial<AutomationRunAction>): Promise<void>;
+  findByIdempotencyKey(key: string): Promise<AutomationRunAction | null>;
+}
+
+import type { Automation, AutomationRun, AutomationRunAction } from "./types";
