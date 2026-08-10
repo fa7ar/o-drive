@@ -9,7 +9,9 @@ import {
   Plug,
   Search,
   Settings as SettingsIcon,
-  ShieldCheck,, Zap } from "lucide-react";
+  ShieldCheck,
+  Zap,
+} from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 import { OdriveLogo } from "@/components/odrive-logo";
