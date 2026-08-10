@@ -54,7 +54,6 @@ import { normalizePath } from "@/core/vfs";
 
 
 const WORKSPACE_ID = "ws_demo";
-export const DEMO_WORKSPACE_ID = WORKSPACE_ID;
 
 const id = (prefix: string) => `${prefix}_${Math.random().toString(36).slice(2, 10)}`;
 const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
