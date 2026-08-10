@@ -1,5 +1,7 @@
 import type {
   ActivityRepository,
+  AutomationRepository,
+  AutomationRunRepository,
   ConfigRepository,
   ConnectionRepository,
   CredentialRepository,
@@ -24,6 +26,9 @@ import type {
 import type {
   ActivityLog,
   AppSettings,
+  Automation,
+  AutomationRun,
+  AutomationRunAction,
   BackgroundJob,
   ConfigEntry,
   Connection,
@@ -1130,5 +1135,233 @@ export const memoryShareAccessLogRepository: ShareAccessLogRepository = {
     const created: ShareAccessLog = { ...input, id: id("sal"), createdAt: new Date().toISOString() };
     shareAccessLogs.unshift(created);
     return clone(created);
+  },
+};
+
+/* ------------------------------- automations ------------------------------- */
+
+const automations: Automation[] = [
+  {
+    id: "atm_daily_backup",
+    workspaceId: WORKSPACE_ID,
+    name: "Daily backup",
+    description: "Mirror the company drive into the archive vault every night.",
+    status: "active",
+    triggerType: "schedule",
+    schedule: { interval: "daily", hour: 2 },
+    conditionGroup: { match: "all", conditions: [] },
+    actions: [
+      {
+        id: "act_backup_mirror",
+        type: "mirror",
+        orderIndex: 0,
+        configuration: { sourceDriveId: "drv_company", targetDriveId: "drv_archive", path: "/" },
+      },
+    ],
+    createdBy: "you",
+    createdAt: "2026-07-18T09:00:00Z",
+    updatedAt: "2026-08-08T02:00:00Z",
+    lastRunAt: "2026-08-09T02:00:00Z",
+    nextRunAt: "2026-08-10T02:00:00Z",
+    runCount: 22,
+    failureCount: 1,
+    dangerous: false,
+    maxDepth: 5,
+  },
+  {
+    id: "atm_image_archive",
+    workspaceId: WORKSPACE_ID,
+    name: "Image archive",
+    description: "Copy new images to the archive drive.",
+    status: "active",
+    triggerType: "file.created",
+    conditionGroup: {
+      match: "any",
+      conditions: [
+        { id: "cnd_jpg", field: "extension", operator: "equals", value: "jpg" },
+        { id: "cnd_png", field: "extension", operator: "equals", value: "png" },
+      ],
+    },
+    actions: [
+      {
+        id: "act_image_copy",
+        type: "copy",
+        orderIndex: 0,
+        configuration: { targetDriveId: "drv_archive", targetPath: "/images", preserveMetadata: true },
+      },
+    ],
+    createdBy: "you",
+    createdAt: "2026-07-29T11:20:00Z",
+    updatedAt: "2026-08-07T15:40:00Z",
+    lastRunAt: "2026-08-09T18:12:00Z",
+    runCount: 148,
+    failureCount: 3,
+    dangerous: false,
+    maxDepth: 5,
+  },
+  {
+    id: "atm_large_files",
+    workspaceId: WORKSPACE_ID,
+    name: "Large file routing",
+    description: "Move anything above 500 MB out of hot storage.",
+    status: "paused",
+    triggerType: "upload.completed",
+    conditionGroup: {
+      match: "all",
+      conditions: [
+        { id: "cnd_size", field: "sizeBytes", operator: "greater_than", value: "524288000" },
+      ],
+    },
+    actions: [
+      {
+        id: "act_large_move",
+        type: "move",
+        orderIndex: 0,
+        configuration: { targetDriveId: "drv_archive", targetPath: "/cold", confirmed: true },
+      },
+      {
+        id: "act_large_notify",
+        type: "notify",
+        orderIndex: 1,
+        configuration: { message: "Large upload routed to cold storage" },
+      },
+    ],
+    createdBy: "you",
+    createdAt: "2026-08-02T08:05:00Z",
+    updatedAt: "2026-08-08T09:15:00Z",
+    lastRunAt: "2026-08-08T09:15:00Z",
+    runCount: 9,
+    failureCount: 0,
+    dangerous: true,
+    maxDepth: 5,
+  },
+];
+
+const automationRuns: AutomationRun[] = [
+  {
+    id: "run_backup_1",
+    automationId: "atm_daily_backup",
+    automationName: "Daily backup",
+    workspaceId: WORKSPACE_ID,
+    status: "success",
+    triggerSource: "schedule:daily",
+    startedAt: "2026-08-09T02:00:00Z",
+    completedAt: "2026-08-09T02:04:12Z",
+    filesProcessed: 118,
+    durationMs: 252000,
+    depth: 0,
+    eventChainId: "chain_backup_1",
+    actions: [
+      {
+        id: "runact_backup_1",
+        runId: "run_backup_1",
+        actionId: "act_backup_mirror",
+        actionType: "mirror",
+        status: "success",
+        idempotencyKey: "atm_daily_backup:act_backup_mirror:2026-08-09",
+        message: "118 objects mirrored",
+        startedAt: "2026-08-09T02:00:00Z",
+        finishedAt: "2026-08-09T02:04:12Z",
+      },
+    ],
+  },
+  {
+    id: "run_image_1",
+    automationId: "atm_image_archive",
+    automationName: "Image archive",
+    workspaceId: WORKSPACE_ID,
+    status: "failed",
+    triggerSource: "event:file.created",
+    startedAt: "2026-08-09T18:12:00Z",
+    completedAt: "2026-08-09T18:12:09Z",
+    filesProcessed: 0,
+    durationMs: 9000,
+    error: "Target drive quota exceeded",
+    depth: 1,
+    eventChainId: "chain_image_1",
+    actions: [
+      {
+        id: "runact_image_1",
+        runId: "run_image_1",
+        actionId: "act_image_copy",
+        actionType: "copy",
+        status: "failed",
+        idempotencyKey: "atm_image_archive:act_image_copy:file_hero",
+        message: "Target drive quota exceeded",
+        startedAt: "2026-08-09T18:12:00Z",
+        finishedAt: "2026-08-09T18:12:09Z",
+      },
+    ],
+  },
+];
+
+export const memoryAutomationRepository: AutomationRepository = {
+  async list(workspaceId) {
+    return clone(automations.filter((entry) => entry.workspaceId === workspaceId));
+  },
+  async listAll() {
+    return clone(automations);
+  },
+  async get(idValue) {
+    return clone(automations.find((entry) => entry.id === idValue) ?? null);
+  },
+  async create(input) {
+    const now = new Date().toISOString();
+    const created: Automation = { ...input, id: id("atm"), createdAt: now, updatedAt: now };
+    automations.unshift(created);
+    return clone(created);
+  },
+  async update(idValue, patch) {
+    const target = automations.find((entry) => entry.id === idValue);
+    if (!target) throw new Error("Automation not found");
+    Object.assign(target, patch, { updatedAt: new Date().toISOString() });
+    return clone(target);
+  },
+  async remove(idValue) {
+    const index = automations.findIndex((entry) => entry.id === idValue);
+    if (index >= 0) automations.splice(index, 1);
+  },
+};
+
+export const memoryAutomationRunRepository: AutomationRunRepository = {
+  async list(filter = {}) {
+    let list = [...automationRuns].sort((a, b) => b.startedAt.localeCompare(a.startedAt));
+    if (filter.automationId) list = list.filter((run) => run.automationId === filter.automationId);
+    return clone(list.slice(0, filter.limit ?? 50));
+  },
+  async get(idValue) {
+    return clone(automationRuns.find((run) => run.id === idValue) ?? null);
+  },
+  async create(input) {
+    const created: AutomationRun = { ...input, id: id("run") };
+    automationRuns.unshift(created);
+    return clone(created);
+  },
+  async update(idValue, patch) {
+    const target = automationRuns.find((run) => run.id === idValue);
+    if (!target) throw new Error("Automation run not found");
+    Object.assign(target, patch);
+    return clone(target);
+  },
+  async appendAction(runId, action) {
+    const run = automationRuns.find((entry) => entry.id === runId);
+    if (!run) throw new Error("Automation run not found");
+    const created: AutomationRunAction = { ...action, id: id("runact"), runId };
+    run.actions.push(created);
+    return clone(created);
+  },
+  async updateAction(runId, actionId, patch) {
+    const run = automationRuns.find((entry) => entry.id === runId);
+    const target = run?.actions.find((entry) => entry.id === actionId || entry.actionId === actionId);
+    if (target) Object.assign(target, patch);
+  },
+  async findByIdempotencyKey(key) {
+    for (const run of automationRuns) {
+      const hit = run.actions.find(
+        (action) => action.idempotencyKey === key && action.status === "success",
+      );
+      if (hit) return clone(hit);
+    }
+    return null;
   },
 };

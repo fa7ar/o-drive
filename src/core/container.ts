@@ -1,6 +1,8 @@
 import { registerAdapters } from "@/adapters";
 import type {
   ActivityRepository,
+  AutomationRepository,
+  AutomationRunRepository,
   ConfigRepository,
   ConnectionRepository,
   CredentialRepository,
@@ -25,6 +27,8 @@ import type {
 import {
   aesSecretManager,
   memoryActivityRepository,
+  memoryAutomationRepository,
+  memoryAutomationRunRepository,
   memoryConfigRepository,
   memoryConnectionRepository,
   memoryCredentialRepository,
@@ -65,6 +69,8 @@ export interface Container {
   shares: ShareRepository;
   shareLogs: ShareAccessLogRepository;
   sync: SyncRepository;
+  automations: AutomationRepository;
+  automationRuns: AutomationRunRepository;
   activity: ActivityRepository;
   settings: SettingsRepository;
   flags: FeatureFlagRepository;
@@ -89,6 +95,8 @@ let container: Container = {
   shares: memoryShareRepository,
   shareLogs: memoryShareAccessLogRepository,
   sync: memorySyncRepository,
+  automations: memoryAutomationRepository,
+  automationRuns: memoryAutomationRunRepository,
   activity: memoryActivityRepository,
   settings: memorySettingsRepository,
   flags: memoryFeatureFlagRepository,
