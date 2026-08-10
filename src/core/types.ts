@@ -109,7 +109,8 @@ export type JobKind =
   | "metadata.refresh"
   | "sync"
   | "transfer"
-  | "retry";
+  | "retry"
+  | "automation";
 export type JobStatus = "queued" | "running" | "done" | "failed" | "cancelled" | "paused";
 export type JobPriority = "high" | "medium" | "low";
 
@@ -155,7 +156,8 @@ export type LogCategory =
   | "search"
   | "transfer"
   | "sync"
-  | "share";
+  | "share"
+  | "automation";
 
 export type LogSeverity = "debug" | "info" | "warning" | "error" | "critical";
 
@@ -490,4 +492,183 @@ export interface ShareSecurityPolicy {
   maxPasswordAttempts: number;
   accessRatePerMinute: number;
   maxDownloadsDefault: number | null;
+}
+
+/* ------------------------------- automations ------------------------------- */
+
+export type AutomationTriggerType =
+  | "file.created"
+  | "file.updated"
+  | "file.deleted"
+  | "file.moved"
+  | "file.copied"
+  | "upload.completed"
+  | "transfer.completed"
+  | "drive.connected"
+  | "sync.completed"
+  | "schedule"
+  | "manual";
+
+export type AutomationStatus = "active" | "paused" | "draft";
+
+export type ScheduleInterval = "hourly" | "6h" | "daily" | "weekly" | "custom";
+
+export interface AutomationSchedule {
+  interval: ScheduleInterval;
+  /** Hour of day (0-23) for daily/weekly schedules. */
+  hour?: number;
+  /** 0 = Sunday, used by weekly schedules. */
+  weekday?: number;
+  /** Custom interval in minutes. */
+  everyMinutes?: number;
+}
+
+export type ConditionField =
+  | "name"
+  | "extension"
+  | "mimeType"
+  | "sizeBytes"
+  | "path"
+  | "createdAt"
+  | "modifiedAt"
+  | "driveId"
+  | "providerId"
+  | "connectionId"
+  | "transferStatus";
+
+export type ConditionOperator =
+  | "equals"
+  | "not_equals"
+  | "contains"
+  | "starts_with"
+  | "ends_with"
+  | "matches"
+  | "greater_than"
+  | "less_than"
+  | "before"
+  | "after";
+
+export interface AutomationCondition {
+  id: string;
+  field: ConditionField;
+  operator: ConditionOperator;
+  value: string;
+}
+
+export interface ConditionGroup {
+  match: "all" | "any";
+  conditions: AutomationCondition[];
+}
+
+export type AutomationActionType =
+  | "copy"
+  | "move"
+  | "delete"
+  | "sync"
+  | "mirror"
+  | "archive"
+  | "createFolder"
+  | "tag.add"
+  | "tag.remove"
+  | "notify"
+  | "webhook";
+
+export type AutomationActionConfig = Record<string, string | number | boolean | null>;
+
+export interface AutomationAction {
+  id: string;
+  type: AutomationActionType;
+  orderIndex: number;
+  configuration: AutomationActionConfig;
+}
+
+export interface Automation {
+  id: string;
+  workspaceId: string;
+  name: string;
+  description?: string;
+  status: AutomationStatus;
+  triggerType: AutomationTriggerType;
+  schedule?: AutomationSchedule;
+  conditionGroup: ConditionGroup;
+  actions: AutomationAction[];
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  lastRunAt: string | null;
+  nextRunAt?: string | null;
+  runCount: number;
+  failureCount: number;
+  /** Contains a destructive action (delete / cross-drive move). */
+  dangerous: boolean;
+  /** Loop protection ceiling for chained events. */
+  maxDepth: number;
+}
+
+export type AutomationRunStatus = "queued" | "running" | "success" | "partial" | "failed" | "skipped";
+
+export interface AutomationRunAction {
+  id: string;
+  runId: string;
+  actionId: string;
+  actionType: AutomationActionType;
+  status: AutomationRunStatus;
+  idempotencyKey: string;
+  message?: string;
+  jobId?: string;
+  startedAt: string;
+  finishedAt?: string;
+}
+
+export interface AutomationRun {
+  id: string;
+  automationId: string;
+  automationName: string;
+  workspaceId: string;
+  status: AutomationRunStatus;
+  triggerSource: string;
+  startedAt: string;
+  completedAt: string | null;
+  filesProcessed: number;
+  durationMs: number;
+  error?: string;
+  depth: number;
+  eventChainId: string;
+  actions: AutomationRunAction[];
+}
+
+/** Normalised trigger payload. Providers are never referenced by the engine. */
+export interface AutomationEvent {
+  type: AutomationTriggerType;
+  file?: FileMetadata;
+  driveId?: string;
+  connectionId?: string;
+  providerId?: string;
+  transferStatus?: string;
+  /** Loop protection metadata. */
+  eventChainId?: string;
+  depth?: number;
+  processedAutomationIds?: string[];
+  source?: string;
+}
+
+export interface AutomationMetrics {
+  total: number;
+  active: number;
+  paused: number;
+  scheduled: number;
+  runsToday: number;
+  failedRuns: number;
+  filesProcessed: number;
+  avgDurationMs: number;
+}
+
+export interface AutomationTemplate {
+  key: string;
+  name: string;
+  description: string;
+  triggerType: AutomationTriggerType;
+  schedule?: AutomationSchedule;
+  conditionGroup: ConditionGroup;
+  actions: Array<Omit<AutomationAction, "id">>;
 }
