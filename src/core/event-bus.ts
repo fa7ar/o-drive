@@ -10,7 +10,8 @@ export type DomainEvent =
   | { type: "sync.updated"; syncId: string }
   | { type: "credential.changed"; credentialId: string }
   | { type: "config.changed"; key: string }
-  | { type: "log.appended"; category: string };
+  | { type: "log.appended"; category: string }
+  | { type: "automation.run"; runId: string };
 
 type Listener = (event: DomainEvent) => void;
 
