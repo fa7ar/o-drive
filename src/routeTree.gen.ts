@@ -21,6 +21,7 @@ import { Route as AuthenticatedExplorerRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSharesRouteImport } from './routes/_authenticated/shares'
 import { Route as AuthenticatedTransfersRouteImport } from './routes/_authenticated/transfers'
+import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
 import { Route as STokenRouteImport } from './routes/s.$token'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAutomationsRouteImport } from './routes/_authenticated/admin.automations'
@@ -98,6 +99,11 @@ const AuthenticatedTransfersRoute = AuthenticatedTransfersRouteImport.update({
   id: '/transfers',
   path: '/transfers',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
+  id: '/legal/privacy',
+  path: '/legal/privacy',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const STokenRoute = STokenRouteImport.update({
   id: '/s/$token',
@@ -201,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
   '/s/$token': typeof STokenRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
@@ -229,6 +236,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
   '/s/$token': typeof STokenRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
@@ -260,6 +268,7 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/shares': typeof AuthenticatedSharesRoute
   '/_authenticated/transfers': typeof AuthenticatedTransfersRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
   '/s/$token': typeof STokenRoute
   '/_authenticated/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/_authenticated/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
@@ -291,6 +300,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shares'
     | '/transfers'
+    | '/legal/privacy'
     | '/s/$token'
     | '/admin/automations'
     | '/admin/configurations'
@@ -319,6 +329,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shares'
     | '/transfers'
+    | '/legal/privacy'
     | '/s/$token'
     | '/admin/automations'
     | '/admin/configurations'
@@ -349,6 +360,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/shares'
     | '/_authenticated/transfers'
+    | '/legal/privacy'
     | '/s/$token'
     | '/_authenticated/admin/automations'
     | '/_authenticated/admin/configurations'
@@ -371,6 +383,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  LegalPrivacyRoute: typeof LegalPrivacyRoute
   STokenRoute: typeof STokenRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRouteWithChildren
 }
@@ -460,6 +473,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/transfers'
       preLoaderRoute: typeof AuthenticatedTransfersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/legal/privacy': {
+      id: '/legal/privacy'
+      path: '/legal/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof LegalPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/s/$token': {
       id: '/s/$token'
@@ -654,6 +674,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  LegalPrivacyRoute: LegalPrivacyRoute,
   STokenRoute: STokenRoute,
   ApiPublicHealthRoute: ApiPublicHealthRouteWithChildren,
 }
