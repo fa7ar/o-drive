@@ -9,6 +9,9 @@ export type ConnectionStatus = "connected" | "disconnected" | "error" | "pending
 
 export type AuthKind = "oauth" | "api-key" | "bot-token";
 
+/** Launch maturity of a provider integration, surfaced in every UI surface. */
+export type ProviderReadiness = "production" | "beta" | "coming-soon";
+
 export interface ProviderDescriptor {
   id: ProviderId | string;
   name: string;
