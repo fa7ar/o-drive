@@ -23,6 +23,10 @@ export interface ProviderDescriptor {
   authKind: AuthKind;
   /** Real vendor integration vs. mock adapter. */
   capability: "live" | "mock";
+  /** Launch maturity: production / beta / coming-soon. */
+  readiness: ProviderReadiness;
+  /** Operations verified end-to-end for this provider. */
+  verifiedOperations?: string[];
   /** OAuth scopes requested at connect time. */
   scopes?: string[];
   /** Fields the connect wizard should collect. */
