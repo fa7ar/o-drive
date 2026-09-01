@@ -34,6 +34,7 @@ import { Route as AuthenticatedAdminLogsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminQueuesRouteImport } from './routes/_authenticated/admin.queues'
 import { Route as AuthenticatedAdminSharesRouteImport } from './routes/_authenticated/admin.shares'
+import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -170,6 +171,11 @@ const AuthenticatedAdminSharesRoute =
     path: '/shares',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
+  id: '/api/public/health',
+  path: '/api/public/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -195,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin/shares': typeof AuthenticatedAdminSharesRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -220,6 +227,7 @@ export interface FileRoutesByTo {
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin/shares': typeof AuthenticatedAdminSharesRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -248,6 +256,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/_authenticated/admin/shares': typeof AuthenticatedAdminSharesRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -276,6 +285,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/queues'
     | '/admin/shares'
+    | '/api/public/health'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -301,6 +311,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/queues'
     | '/admin/shares'
+    | '/api/public/health'
     | '/admin'
   id:
     | '__root__'
@@ -328,6 +339,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/providers'
     | '/_authenticated/admin/queues'
     | '/_authenticated/admin/shares'
+    | '/api/public/health'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -336,6 +348,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   STokenRoute: typeof STokenRoute
+  ApiPublicHealthRoute: typeof ApiPublicHealthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -515,6 +528,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSharesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/api/public/health': {
+      id: '/api/public/health'
+      path: '/api/public/health'
+      fullPath: '/api/public/health'
+      preLoaderRoute: typeof ApiPublicHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -583,6 +603,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   STokenRoute: STokenRoute,
+  ApiPublicHealthRoute: ApiPublicHealthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
