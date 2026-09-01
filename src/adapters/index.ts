@@ -20,6 +20,8 @@ export const DESCRIPTORS: ProviderDescriptor[] = [
     accent: "provider-drive",
     authKind: "oauth",
     capability: "live",
+    readiness: "production",
+    verifiedOperations: ["OAuth", "File operations", "Health", "Credential rotation"],
     scopes: ["https://www.googleapis.com/auth/drive", "openid", "email"],
     fields: [{ key: "name", label: "Connection name", placeholder: "Work Drive" }],
   },
@@ -31,6 +33,8 @@ export const DESCRIPTORS: ProviderDescriptor[] = [
     accent: "provider-r2",
     authKind: "api-key",
     capability: "live",
+    readiness: "production",
+    verifiedOperations: ["Upload", "Download", "Streaming", "Health"],
     fields: [
       { key: "name", label: "Connection name", placeholder: "R2 media" },
       { key: "endpoint", label: "S3 endpoint", placeholder: "https://<account>.r2.cloudflarestorage.com" },
@@ -47,6 +51,8 @@ export const DESCRIPTORS: ProviderDescriptor[] = [
     accent: "provider-s3",
     authKind: "api-key",
     capability: "live",
+    readiness: "beta",
+    verifiedOperations: ["Upload", "Download"],
     fields: [
       { key: "name", label: "Connection name", placeholder: "S3 cold storage" },
       { key: "region", label: "Region", placeholder: "eu-central-1" },
@@ -63,6 +69,7 @@ export const DESCRIPTORS: ProviderDescriptor[] = [
     accent: "provider-onedrive",
     authKind: "oauth",
     capability: "mock",
+    readiness: "coming-soon",
     scopes: ["Files.ReadWrite.All", "offline_access"],
     fields: [
       { key: "name", label: "Connection name", placeholder: "Microsoft 365" },
@@ -77,6 +84,7 @@ export const DESCRIPTORS: ProviderDescriptor[] = [
     accent: "provider-telegram",
     authKind: "bot-token",
     capability: "mock",
+    readiness: "coming-soon",
     fields: [
       { key: "name", label: "Connection name", placeholder: "Archive bot" },
       { key: "chat", label: "Chat ID", placeholder: "-1001234567890" },

@@ -9,6 +9,9 @@ export type ConnectionStatus = "connected" | "disconnected" | "error" | "pending
 
 export type AuthKind = "oauth" | "api-key" | "bot-token";
 
+/** Launch maturity of a provider integration, surfaced in every UI surface. */
+export type ProviderReadiness = "production" | "beta" | "coming-soon";
+
 export interface ProviderDescriptor {
   id: ProviderId | string;
   name: string;
@@ -20,6 +23,10 @@ export interface ProviderDescriptor {
   authKind: AuthKind;
   /** Real vendor integration vs. mock adapter. */
   capability: "live" | "mock";
+  /** Launch maturity: production / beta / coming-soon. */
+  readiness: ProviderReadiness;
+  /** Operations verified end-to-end for this provider. */
+  verifiedOperations?: string[];
   /** OAuth scopes requested at connect time. */
   scopes?: string[];
   /** Fields the connect wizard should collect. */

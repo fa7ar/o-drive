@@ -21,6 +21,8 @@ import { Route as AuthenticatedExplorerRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSharesRouteImport } from './routes/_authenticated/shares'
 import { Route as AuthenticatedTransfersRouteImport } from './routes/_authenticated/transfers'
+import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
+import { Route as LegalTermsRouteImport } from './routes/legal/terms'
 import { Route as STokenRouteImport } from './routes/s.$token'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAutomationsRouteImport } from './routes/_authenticated/admin.automations'
@@ -34,6 +36,9 @@ import { Route as AuthenticatedAdminLogsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminQueuesRouteImport } from './routes/_authenticated/admin.queues'
 import { Route as AuthenticatedAdminSharesRouteImport } from './routes/_authenticated/admin.shares'
+import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
+import { Route as ApiPublicHealthLiveRouteImport } from './routes/api/public/health.live'
+import { Route as ApiPublicHealthReadyRouteImport } from './routes/api/public/health.ready'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -95,6 +100,16 @@ const AuthenticatedTransfersRoute = AuthenticatedTransfersRouteImport.update({
   id: '/transfers',
   path: '/transfers',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
+  id: '/legal/privacy',
+  path: '/legal/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalTermsRoute = LegalTermsRouteImport.update({
+  id: '/legal/terms',
+  path: '/legal/terms',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const STokenRoute = STokenRouteImport.update({
   id: '/s/$token',
@@ -170,6 +185,21 @@ const AuthenticatedAdminSharesRoute =
     path: '/shares',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
+  id: '/api/public/health',
+  path: '/api/public/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicHealthLiveRoute = ApiPublicHealthLiveRouteImport.update({
+  id: '/live',
+  path: '/live',
+  getParentRoute: () => ApiPublicHealthRoute,
+} as any)
+const ApiPublicHealthReadyRoute = ApiPublicHealthReadyRouteImport.update({
+  id: '/ready',
+  path: '/ready',
+  getParentRoute: () => ApiPublicHealthRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -183,6 +213,8 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/s/$token': typeof STokenRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
@@ -195,7 +227,10 @@ export interface FileRoutesByFullPath {
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin/shares': typeof AuthenticatedAdminSharesRoute
+  '/api/public/health': typeof ApiPublicHealthRouteWithChildren
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/health/live': typeof ApiPublicHealthLiveRoute
+  '/api/public/health/ready': typeof ApiPublicHealthReadyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -208,6 +243,8 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/s/$token': typeof STokenRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
@@ -220,7 +257,10 @@ export interface FileRoutesByTo {
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin/shares': typeof AuthenticatedAdminSharesRoute
+  '/api/public/health': typeof ApiPublicHealthRouteWithChildren
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/api/public/health/live': typeof ApiPublicHealthLiveRoute
+  '/api/public/health/ready': typeof ApiPublicHealthReadyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -236,6 +276,8 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/shares': typeof AuthenticatedSharesRoute
   '/_authenticated/transfers': typeof AuthenticatedTransfersRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/s/$token': typeof STokenRoute
   '/_authenticated/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/_authenticated/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
@@ -248,7 +290,10 @@ export interface FileRoutesById {
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/_authenticated/admin/shares': typeof AuthenticatedAdminSharesRoute
+  '/api/public/health': typeof ApiPublicHealthRouteWithChildren
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/health/live': typeof ApiPublicHealthLiveRoute
+  '/api/public/health/ready': typeof ApiPublicHealthReadyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -264,6 +309,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shares'
     | '/transfers'
+    | '/legal/privacy'
+    | '/legal/terms'
     | '/s/$token'
     | '/admin/automations'
     | '/admin/configurations'
@@ -276,7 +323,10 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/queues'
     | '/admin/shares'
+    | '/api/public/health'
     | '/admin/'
+    | '/api/public/health/live'
+    | '/api/public/health/ready'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -289,6 +339,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shares'
     | '/transfers'
+    | '/legal/privacy'
+    | '/legal/terms'
     | '/s/$token'
     | '/admin/automations'
     | '/admin/configurations'
@@ -301,7 +353,10 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/queues'
     | '/admin/shares'
+    | '/api/public/health'
     | '/admin'
+    | '/api/public/health/live'
+    | '/api/public/health/ready'
   id:
     | '__root__'
     | '/'
@@ -316,6 +371,8 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/shares'
     | '/_authenticated/transfers'
+    | '/legal/privacy'
+    | '/legal/terms'
     | '/s/$token'
     | '/_authenticated/admin/automations'
     | '/_authenticated/admin/configurations'
@@ -328,14 +385,20 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/providers'
     | '/_authenticated/admin/queues'
     | '/_authenticated/admin/shares'
+    | '/api/public/health'
     | '/_authenticated/admin/'
+    | '/api/public/health/live'
+    | '/api/public/health/ready'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  LegalPrivacyRoute: typeof LegalPrivacyRoute
+  LegalTermsRoute: typeof LegalTermsRoute
   STokenRoute: typeof STokenRoute
+  ApiPublicHealthRoute: typeof ApiPublicHealthRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -423,6 +486,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/transfers'
       preLoaderRoute: typeof AuthenticatedTransfersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/legal/privacy': {
+      id: '/legal/privacy'
+      path: '/legal/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof LegalPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/terms': {
+      id: '/legal/terms'
+      path: '/legal/terms'
+      fullPath: '/legal/terms'
+      preLoaderRoute: typeof LegalTermsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/s/$token': {
       id: '/s/$token'
@@ -515,6 +592,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSharesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/api/public/health': {
+      id: '/api/public/health'
+      path: '/api/public/health'
+      fullPath: '/api/public/health'
+      preLoaderRoute: typeof ApiPublicHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/health/live': {
+      id: '/api/public/health/live'
+      path: '/live'
+      fullPath: '/api/public/health/live'
+      preLoaderRoute: typeof ApiPublicHealthLiveRouteImport
+      parentRoute: typeof ApiPublicHealthRoute
+    }
+    '/api/public/health/ready': {
+      id: '/api/public/health/ready'
+      path: '/ready'
+      fullPath: '/api/public/health/ready'
+      preLoaderRoute: typeof ApiPublicHealthReadyRouteImport
+      parentRoute: typeof ApiPublicHealthRoute
+    }
   }
 }
 
@@ -578,11 +676,28 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface ApiPublicHealthRouteChildren {
+  ApiPublicHealthLiveRoute: typeof ApiPublicHealthLiveRoute
+  ApiPublicHealthReadyRoute: typeof ApiPublicHealthReadyRoute
+}
+
+const ApiPublicHealthRouteChildren: ApiPublicHealthRouteChildren = {
+  ApiPublicHealthLiveRoute: ApiPublicHealthLiveRoute,
+  ApiPublicHealthReadyRoute: ApiPublicHealthReadyRoute,
+}
+
+const ApiPublicHealthRouteWithChildren = ApiPublicHealthRoute._addFileChildren(
+  ApiPublicHealthRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  LegalPrivacyRoute: LegalPrivacyRoute,
+  LegalTermsRoute: LegalTermsRoute,
   STokenRoute: STokenRoute,
+  ApiPublicHealthRoute: ApiPublicHealthRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
