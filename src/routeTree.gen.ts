@@ -22,6 +22,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedSharesRouteImport } from './routes/_authenticated/shares'
 import { Route as AuthenticatedTransfersRouteImport } from './routes/_authenticated/transfers'
 import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
+import { Route as LegalTermsRouteImport } from './routes/legal/terms'
 import { Route as STokenRouteImport } from './routes/s.$token'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAutomationsRouteImport } from './routes/_authenticated/admin.automations'
@@ -103,6 +104,11 @@ const AuthenticatedTransfersRoute = AuthenticatedTransfersRouteImport.update({
 const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
   id: '/legal/privacy',
   path: '/legal/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalTermsRoute = LegalTermsRouteImport.update({
+  id: '/legal/terms',
+  path: '/legal/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const STokenRoute = STokenRouteImport.update({
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
   '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/s/$token': typeof STokenRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
@@ -237,6 +244,7 @@ export interface FileRoutesByTo {
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
   '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/s/$token': typeof STokenRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
@@ -269,6 +277,7 @@ export interface FileRoutesById {
   '/_authenticated/shares': typeof AuthenticatedSharesRoute
   '/_authenticated/transfers': typeof AuthenticatedTransfersRoute
   '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/s/$token': typeof STokenRoute
   '/_authenticated/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/_authenticated/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
@@ -301,6 +310,7 @@ export interface FileRouteTypes {
     | '/shares'
     | '/transfers'
     | '/legal/privacy'
+    | '/legal/terms'
     | '/s/$token'
     | '/admin/automations'
     | '/admin/configurations'
@@ -330,6 +340,7 @@ export interface FileRouteTypes {
     | '/shares'
     | '/transfers'
     | '/legal/privacy'
+    | '/legal/terms'
     | '/s/$token'
     | '/admin/automations'
     | '/admin/configurations'
@@ -361,6 +372,7 @@ export interface FileRouteTypes {
     | '/_authenticated/shares'
     | '/_authenticated/transfers'
     | '/legal/privacy'
+    | '/legal/terms'
     | '/s/$token'
     | '/_authenticated/admin/automations'
     | '/_authenticated/admin/configurations'
@@ -384,6 +396,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
+  LegalTermsRoute: typeof LegalTermsRoute
   STokenRoute: typeof STokenRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRouteWithChildren
 }
@@ -479,6 +492,13 @@ declare module '@tanstack/react-router' {
       path: '/legal/privacy'
       fullPath: '/legal/privacy'
       preLoaderRoute: typeof LegalPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/terms': {
+      id: '/legal/terms'
+      path: '/legal/terms'
+      fullPath: '/legal/terms'
+      preLoaderRoute: typeof LegalTermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/s/$token': {
@@ -675,6 +695,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,
+  LegalTermsRoute: LegalTermsRoute,
   STokenRoute: STokenRoute,
   ApiPublicHealthRoute: ApiPublicHealthRouteWithChildren,
 }
