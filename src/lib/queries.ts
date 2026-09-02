@@ -45,6 +45,11 @@ export const activityQuery = queryOptions({
   queryFn: () => listActivity(8),
 });
 
+export const activityFeedQuery = queryOptions({
+  queryKey: ["activity", "feed"],
+  queryFn: () => listActivity(200),
+});
+
 export const settingsQuery = queryOptions({
   queryKey: ["settings"],
   queryFn: () => getSettings(),

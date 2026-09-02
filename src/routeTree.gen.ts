@@ -12,12 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticated/activity'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAutomationsRouteImport } from './routes/_authenticated/automations'
 import { Route as AuthenticatedConnectionsRouteImport } from './routes/_authenticated/connections'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDrivesRouteImport } from './routes/_authenticated/drives'
 import { Route as AuthenticatedExplorerRouteImport } from './routes/_authenticated/explorer'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSharesRouteImport } from './routes/_authenticated/shares'
 import { Route as AuthenticatedTransfersRouteImport } from './routes/_authenticated/transfers'
@@ -56,6 +58,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedActivityRoute = AuthenticatedActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -86,6 +93,11 @@ const AuthenticatedDrivesRoute = AuthenticatedDrivesRouteImport.update({
 const AuthenticatedExplorerRoute = AuthenticatedExplorerRouteImport.update({
   id: '/explorer',
   path: '/explorer',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
@@ -216,12 +228,14 @@ const ApiPublicHealthReadyRoute = ApiPublicHealthReadyRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/activity': typeof AuthenticatedActivityRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/automations': typeof AuthenticatedAutomationsRoute
   '/connections': typeof AuthenticatedConnectionsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/drives': typeof AuthenticatedDrivesRoute
   '/explorer': typeof AuthenticatedExplorerRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
@@ -249,11 +263,13 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/activity': typeof AuthenticatedActivityRoute
   '/automations': typeof AuthenticatedAutomationsRoute
   '/connections': typeof AuthenticatedConnectionsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/drives': typeof AuthenticatedDrivesRoute
   '/explorer': typeof AuthenticatedExplorerRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
@@ -283,12 +299,14 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/activity': typeof AuthenticatedActivityRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/automations': typeof AuthenticatedAutomationsRoute
   '/_authenticated/connections': typeof AuthenticatedConnectionsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/drives': typeof AuthenticatedDrivesRoute
   '/_authenticated/explorer': typeof AuthenticatedExplorerRoute
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/shares': typeof AuthenticatedSharesRoute
   '/_authenticated/transfers': typeof AuthenticatedTransfersRoute
@@ -318,12 +336,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/activity'
     | '/admin'
     | '/automations'
     | '/connections'
     | '/dashboard'
     | '/drives'
     | '/explorer'
+    | '/onboarding'
     | '/settings'
     | '/shares'
     | '/transfers'
@@ -351,11 +371,13 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/activity'
     | '/automations'
     | '/connections'
     | '/dashboard'
     | '/drives'
     | '/explorer'
+    | '/onboarding'
     | '/settings'
     | '/shares'
     | '/transfers'
@@ -384,12 +406,14 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/activity'
     | '/_authenticated/admin'
     | '/_authenticated/automations'
     | '/_authenticated/connections'
     | '/_authenticated/dashboard'
     | '/_authenticated/drives'
     | '/_authenticated/explorer'
+    | '/_authenticated/onboarding'
     | '/_authenticated/settings'
     | '/_authenticated/shares'
     | '/_authenticated/transfers'
@@ -450,6 +474,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/activity': {
+      id: '/_authenticated/activity'
+      path: '/activity'
+      fullPath: '/activity'
+      preLoaderRoute: typeof AuthenticatedActivityRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -490,6 +521,13 @@ declare module '@tanstack/react-router' {
       path: '/explorer'
       fullPath: '/explorer'
       preLoaderRoute: typeof AuthenticatedExplorerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
@@ -690,24 +728,28 @@ const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedActivityRoute: typeof AuthenticatedActivityRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedAutomationsRoute: typeof AuthenticatedAutomationsRoute
   AuthenticatedConnectionsRoute: typeof AuthenticatedConnectionsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDrivesRoute: typeof AuthenticatedDrivesRoute
   AuthenticatedExplorerRoute: typeof AuthenticatedExplorerRoute
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSharesRoute: typeof AuthenticatedSharesRoute
   AuthenticatedTransfersRoute: typeof AuthenticatedTransfersRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedActivityRoute: AuthenticatedActivityRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedAutomationsRoute: AuthenticatedAutomationsRoute,
   AuthenticatedConnectionsRoute: AuthenticatedConnectionsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDrivesRoute: AuthenticatedDrivesRoute,
   AuthenticatedExplorerRoute: AuthenticatedExplorerRoute,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSharesRoute: AuthenticatedSharesRoute,
   AuthenticatedTransfersRoute: AuthenticatedTransfersRoute,

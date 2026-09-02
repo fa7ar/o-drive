@@ -3,6 +3,7 @@ import {
   ArrowLeftRight,
   FolderTree,
   HardDrive,
+  History,
   LayoutDashboard,
   Link2,
   LogOut,
@@ -35,6 +36,7 @@ const NAV = [
   { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },
   { to: "/shares", label: "Shares", icon: Link2 },
   { to: "/automations", label: "Automations", icon: Zap },
+  { to: "/activity", label: "Activity", icon: History },
   { to: "/settings", label: "Settings", icon: SettingsIcon },
   { to: "/admin", label: "Admin", icon: ShieldCheck },
 ] as const;
