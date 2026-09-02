@@ -135,13 +135,15 @@ function Onboarding() {
 
             {driveCount > 0 ? (
               <div className="mt-6 space-y-2">
-                {drives.data?.slice(0, 4).map((drive) => (
+                {drives.data?.slice(0, 4).map((view) => (
                   <div
-                    key={drive.id}
+                    key={view.drive.id}
                     className="flex items-center gap-3 rounded-lg border border-border px-3 py-2"
                   >
-                    <ProviderIcon providerId={drive.providerId} />
-                    <span className="text-sm font-medium">{drive.name}</span>
+                    {view.descriptor ? (
+                      <ProviderIcon icon={view.descriptor.icon} accent={view.descriptor.accent} />
+                    ) : null}
+                    <span className="text-sm font-medium">{view.drive.name}</span>
                   </div>
                 ))}
               </div>
