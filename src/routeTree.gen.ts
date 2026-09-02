@@ -21,6 +21,8 @@ import { Route as AuthenticatedExplorerRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSharesRouteImport } from './routes/_authenticated/shares'
 import { Route as AuthenticatedTransfersRouteImport } from './routes/_authenticated/transfers'
+import { Route as LegalAcceptableUseRouteImport } from './routes/legal/acceptable-use'
+import { Route as LegalDataDeletionRouteImport } from './routes/legal/data-deletion'
 import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
 import { Route as LegalTermsRouteImport } from './routes/legal/terms'
 import { Route as STokenRouteImport } from './routes/s.$token'
@@ -100,6 +102,16 @@ const AuthenticatedTransfersRoute = AuthenticatedTransfersRouteImport.update({
   id: '/transfers',
   path: '/transfers',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const LegalAcceptableUseRoute = LegalAcceptableUseRouteImport.update({
+  id: '/legal/acceptable-use',
+  path: '/legal/acceptable-use',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalDataDeletionRoute = LegalDataDeletionRouteImport.update({
+  id: '/legal/data-deletion',
+  path: '/legal/data-deletion',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
   id: '/legal/privacy',
@@ -213,6 +225,8 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/legal/acceptable-use': typeof LegalAcceptableUseRoute
+  '/legal/data-deletion': typeof LegalDataDeletionRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/s/$token': typeof STokenRoute
@@ -243,6 +257,8 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/legal/acceptable-use': typeof LegalAcceptableUseRoute
+  '/legal/data-deletion': typeof LegalDataDeletionRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/s/$token': typeof STokenRoute
@@ -276,6 +292,8 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/shares': typeof AuthenticatedSharesRoute
   '/_authenticated/transfers': typeof AuthenticatedTransfersRoute
+  '/legal/acceptable-use': typeof LegalAcceptableUseRoute
+  '/legal/data-deletion': typeof LegalDataDeletionRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/s/$token': typeof STokenRoute
@@ -309,6 +327,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shares'
     | '/transfers'
+    | '/legal/acceptable-use'
+    | '/legal/data-deletion'
     | '/legal/privacy'
     | '/legal/terms'
     | '/s/$token'
@@ -339,6 +359,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shares'
     | '/transfers'
+    | '/legal/acceptable-use'
+    | '/legal/data-deletion'
     | '/legal/privacy'
     | '/legal/terms'
     | '/s/$token'
@@ -371,6 +393,8 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/shares'
     | '/_authenticated/transfers'
+    | '/legal/acceptable-use'
+    | '/legal/data-deletion'
     | '/legal/privacy'
     | '/legal/terms'
     | '/s/$token'
@@ -395,6 +419,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  LegalAcceptableUseRoute: typeof LegalAcceptableUseRoute
+  LegalDataDeletionRoute: typeof LegalDataDeletionRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalTermsRoute: typeof LegalTermsRoute
   STokenRoute: typeof STokenRoute
@@ -486,6 +512,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/transfers'
       preLoaderRoute: typeof AuthenticatedTransfersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/legal/acceptable-use': {
+      id: '/legal/acceptable-use'
+      path: '/legal/acceptable-use'
+      fullPath: '/legal/acceptable-use'
+      preLoaderRoute: typeof LegalAcceptableUseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/data-deletion': {
+      id: '/legal/data-deletion'
+      path: '/legal/data-deletion'
+      fullPath: '/legal/data-deletion'
+      preLoaderRoute: typeof LegalDataDeletionRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/legal/privacy': {
       id: '/legal/privacy'
@@ -694,6 +734,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  LegalAcceptableUseRoute: LegalAcceptableUseRoute,
+  LegalDataDeletionRoute: LegalDataDeletionRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,
   LegalTermsRoute: LegalTermsRoute,
   STokenRoute: STokenRoute,
