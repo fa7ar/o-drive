@@ -106,16 +106,14 @@ function Home() {
           <div className="flex items-center gap-3">
             <OdriveLogo />
             <span className="text-sm text-muted-foreground">
-              by Fajar Tri (
+              by
               <a
                 href="https://www.linkedin.com/in/fajartri"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary hover:underline"
               >
-                live link
+                Fajar Tri
               </a>
-              )
             </span>
           </div>
           <nav className="flex flex-wrap gap-6 text-sm text-muted-foreground">
