@@ -576,7 +576,7 @@ License information will be added before the public release.
 
 ODrive is created by **[Fajar Tri](https://www.linkedin.com/in/fajartri)**.
 
-SEO practitioner since 2011, programmer, AI Product Engineer, and builder of SaaS and digital products.
+A T-shaped professional with deep expertise in SEO since 2011, complemented by broad knowledge across digital marketing, vibe coding, PHP native programmer (2008-2011) and related disciplines.
 
 **Fajar Tri**
 [LinkedIn](https://www.linkedin.com/in/fajartri)
