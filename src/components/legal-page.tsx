@@ -33,20 +33,37 @@ export function LegalPage({
         </div>
       </main>
       <footer className="border-t border-border">
-        <nav className="mx-auto flex max-w-3xl flex-wrap gap-6 px-6 py-8 text-sm text-muted-foreground">
-          <Link to="/legal/privacy" className="hover:text-foreground">
-            Privacy
-          </Link>
-          <Link to="/legal/terms" className="hover:text-foreground">
-            Terms
-          </Link>
-          <Link to="/legal/acceptable-use" className="hover:text-foreground">
-            Acceptable use
-          </Link>
-          <Link to="/legal/data-deletion" className="hover:text-foreground">
-            Data deletion
-          </Link>
-        </nav>
+        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-4 px-6 py-8">
+          <div className="flex items-center gap-3">
+            <OdriveLogo />
+            <span className="text-sm text-muted-foreground">
+              by Fajar Tri (
+              <a
+                href="https://www.linkedin.com/in/fajartri"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                live link
+              </a>
+              )
+            </span>
+          </div>
+          <nav className="flex flex-wrap gap-6 text-sm text-muted-foreground">
+            <Link to="/legal/privacy" className="hover:text-foreground">
+              Privacy
+            </Link>
+            <Link to="/legal/terms" className="hover:text-foreground">
+              Terms
+            </Link>
+            <Link to="/legal/acceptable-use" className="hover:text-foreground">
+              Acceptable use
+            </Link>
+            <Link to="/legal/data-deletion" className="hover:text-foreground">
+              Data deletion
+            </Link>
+          </nav>
+        </div>
       </footer>
     </div>
   );

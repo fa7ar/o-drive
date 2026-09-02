@@ -103,7 +103,21 @@ function Home() {
       {/* 3 — Footer */}
       <footer className="border-t border-border bg-surface">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-10">
-          <OdriveLogo />
+          <div className="flex items-center gap-3">
+            <OdriveLogo />
+            <span className="text-sm text-muted-foreground">
+              by Fajar Tri (
+              <a
+                href="https://www.linkedin.com/in/fajartri"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                live link
+              </a>
+              )
+            </span>
+          </div>
           <nav className="flex flex-wrap gap-6 text-sm text-muted-foreground">
             <Link to="/legal/privacy" className="hover:text-foreground">
               Privacy
