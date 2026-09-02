@@ -106,7 +106,7 @@ function Home() {
           <div className="flex items-center gap-3">
             <OdriveLogo />
             <span className="text-sm text-muted-foreground">
-              by
+              by 
               <a
                 href="https://www.linkedin.com/in/fajartri"
                 target="_blank"
