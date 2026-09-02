@@ -7,8 +7,9 @@ import { AppShell } from "@/components/app-shell";
 import { EmptyState } from "@/components/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { relativeTime } from "@/lib/format";
+import { formatDateTime } from "@/lib/format";
 import { activityFeedQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/_authenticated/activity")({
@@ -65,14 +66,14 @@ function ActivityPage() {
         </div>
       ) : isError ? (
         <EmptyState
-          icon={History}
+          icon={<History className="size-6" strokeWidth={1.6} />}
           title="Activity unavailable"
           description="We could not load the audit trail. Try again in a moment."
-          action={{ label: "Retry", onClick: () => void refetch() }}
+          action={<Button onClick={() => void refetch()}>Retry</Button>}
         />
       ) : entries.length === 0 ? (
         <EmptyState
-          icon={History}
+          icon={<History className="size-6" strokeWidth={1.6} />}
           title={term ? "No matching events" : "No activity yet"}
           description={
             term
@@ -90,7 +91,7 @@ function ActivityPage() {
               <span className="min-w-0 flex-1 truncate text-sm">{entry.target}</span>
               <span className="text-xs text-muted-foreground">{entry.actor}</span>
               <span className="font-mono text-xs text-muted-foreground">
-                {relativeTime(entry.createdAt)}
+                {formatDateTime(entry.createdAt)}
               </span>
             </li>
           ))}
