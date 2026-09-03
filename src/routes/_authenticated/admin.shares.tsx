@@ -4,6 +4,7 @@ import { Link2, ShieldOff } from "lucide-react";
 import { toast } from "sonner";
 
 import { AdminNav } from "@/components/admin-nav";
+import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { revokeShare } from "@/core/shares";
@@ -126,6 +127,6 @@ function AdminSharesPage() {
           )}
         </div>
       </section>
-    </div>
+    </AppShell>
   );
 }
