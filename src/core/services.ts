@@ -186,3 +186,72 @@ export async function listFlags() {
 export async function toggleFlag(key: string, enabled: boolean) {
   return useContainer().flags.toggle(key, enabled);
 }
+
+/* --------------------------- file-level operations ------------------------ */
+
+export async function getFile(fileId: string): Promise<FileMetadata | null> {
+  return useContainer().files.get(fileId);
+}
+
+/** Moves a file to another virtual folder inside the same connection. */
+export async function moveFile(fileId: string, path: string): Promise<FileMetadata> {
+  const updated = await useContainer().files.update(fileId, { path });
+  await useContainer().activity.record({ actor: "api", action: "file.moved", target: updated.name });
+  return updated;
+}
+
+/** Copies a file's metadata into a target path (same or another connection). */
+export async function copyFile(
+  fileId: string,
+  input: { path?: string; connectionId?: string; name?: string },
+): Promise<FileMetadata> {
+  const { files, activity } = useContainer();
+  const source = await files.get(fileId);
+  if (!source) throw new Error("File not found");
+  const { id: _ignored, ...rest } = source;
+  const created = await files.create({
+    ...rest,
+    connectionId: input.connectionId ?? source.connectionId,
+    path: input.path ?? source.path,
+    name: input.name ?? source.name,
+    modifiedAt: new Date().toISOString(),
+  });
+  await activity.record({ actor: "api", action: "file.copied", target: created.name });
+  return created;
+}
+
+export async function deleteFile(fileId: string): Promise<void> {
+  const { files, activity } = useContainer();
+  const target = await files.get(fileId);
+  await files.remove(fileId);
+  if (target) await activity.record({ actor: "api", action: "file.deleted", target: target.name });
+}
+
+/** Registers an uploaded object in the index and queues the transfer job. */
+export async function registerUpload(input: {
+  connectionId: string;
+  path: string;
+  name: string;
+  sizeBytes: number;
+  mimeType?: string;
+}): Promise<FileMetadata> {
+  const { files } = useContainer();
+  const created = await files.create({
+    connectionId: input.connectionId,
+    name: input.name,
+    path: input.path,
+    kind: "file",
+    mimeType: input.mimeType ?? "application/octet-stream",
+    sizeBytes: input.sizeBytes,
+    modifiedAt: new Date().toISOString(),
+    favorite: false,
+    trashed: false,
+  });
+  await queueTransfer({
+    connectionId: input.connectionId,
+    fileName: input.name,
+    direction: "upload",
+    sizeBytes: input.sizeBytes,
+  });
+  return created;
+}
