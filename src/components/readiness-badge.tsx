@@ -9,7 +9,7 @@ const LABELS: Record<ProviderReadiness, string> = {
 };
 
 const STYLES: Record<ProviderReadiness, string> = {
-  production: "border-success/40 text-success-foreground bg-success/10",
+  production: "border-success/40 bg-success/10 text-success",
   beta: "border-warning/40 text-warning-foreground bg-warning/10",
   "coming-soon": "border-border text-muted-foreground",
 };

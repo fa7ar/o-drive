@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 
+import logo from "@/assets/odrive-logo.png.asset.json";
 import { cn } from "@/lib/utils";
 
 export function OdriveLogo({
@@ -11,10 +12,7 @@ export function OdriveLogo({
 }) {
   const content = (
     <span className={cn("inline-flex items-center gap-2", className)}>
-      <span className="relative inline-flex size-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-        <span className="font-display text-sm font-bold">O</span>
-        <span className="absolute -right-0.5 -bottom-0.5 size-2 rounded-full bg-success ring-2 ring-background" />
-      </span>
+      <img src={logo.url} alt="ODrive" className="size-7 object-contain" width={28} height={28} />
       <span className="font-display text-base font-semibold tracking-tight">ODrive</span>
     </span>
   );

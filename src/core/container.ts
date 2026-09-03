@@ -1,6 +1,8 @@
 import { registerAdapters } from "@/adapters";
 import type {
   ActivityRepository,
+  ApiKeyRepository,
+  ApiRequestLogRepository,
   AutomationRepository,
   AutomationRunRepository,
   ConfigRepository,
@@ -22,11 +24,15 @@ import type {
   TokenRepository,
   TransferRepository,
   UserRepository,
+  WebhookDeliveryRepository,
+  WebhookRepository,
   WorkspaceRepository,
 } from "@/core/repositories";
 import {
   aesSecretManager,
   memoryActivityRepository,
+  memoryApiKeyRepository,
+  memoryApiRequestLogRepository,
   memoryAutomationRepository,
   memoryAutomationRunRepository,
   memoryConfigRepository,
@@ -47,6 +53,8 @@ import {
   memoryTokenRepository,
   memoryTransferRepository,
   memoryUserRepository,
+  memoryWebhookDeliveryRepository,
+  memoryWebhookRepository,
   memoryWorkspaceRepository,
 } from "@/database/memory";
 
@@ -78,6 +86,10 @@ export interface Container {
   users: UserRepository;
   tokens: TokenRepository;
   secrets: SecretManager;
+  apiKeys: ApiKeyRepository;
+  webhooks: WebhookRepository;
+  webhookDeliveries: WebhookDeliveryRepository;
+  apiRequestLogs: ApiRequestLogRepository;
 }
 
 let container: Container = {
@@ -104,6 +116,10 @@ let container: Container = {
   users: memoryUserRepository,
   tokens: memoryTokenRepository,
   secrets: aesSecretManager,
+  apiKeys: memoryApiKeyRepository,
+  webhooks: memoryWebhookRepository,
+  webhookDeliveries: memoryWebhookDeliveryRepository,
+  apiRequestLogs: memoryApiRequestLogRepository,
 };
 
 registerAdapters();

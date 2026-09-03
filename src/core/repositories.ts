@@ -214,3 +214,36 @@ export interface AutomationRunRepository {
 }
 
 import type { Automation, AutomationRun, AutomationRunAction } from "./types";
+
+/* ------------------------- developer platform (v1 API) ------------------- */
+
+export interface ApiKeyRepository {
+  list(workspaceId: string): Promise<ApiKey[]>;
+  get(id: string): Promise<ApiKey | null>;
+  findByPrefix(prefix: string): Promise<ApiKey | null>;
+  create(input: Omit<ApiKey, "id" | "createdAt">): Promise<ApiKey>;
+  update(id: string, patch: Partial<ApiKey>): Promise<ApiKey>;
+  remove(id: string): Promise<void>;
+}
+
+export interface WebhookRepository {
+  list(workspaceId: string): Promise<WebhookEndpoint[]>;
+  get(id: string): Promise<WebhookEndpoint | null>;
+  create(input: Omit<WebhookEndpoint, "id" | "createdAt">): Promise<WebhookEndpoint>;
+  update(id: string, patch: Partial<WebhookEndpoint>): Promise<WebhookEndpoint>;
+  remove(id: string): Promise<void>;
+}
+
+export interface WebhookDeliveryRepository {
+  list(filter?: { endpointId?: string; limit?: number }): Promise<WebhookDelivery[]>;
+  get(id: string): Promise<WebhookDelivery | null>;
+  create(input: Omit<WebhookDelivery, "id" | "createdAt" | "updatedAt">): Promise<WebhookDelivery>;
+  update(id: string, patch: Partial<WebhookDelivery>): Promise<WebhookDelivery>;
+}
+
+export interface ApiRequestLogRepository {
+  list(filter?: { keyId?: string; limit?: number }): Promise<ApiRequestLog[]>;
+  record(input: Omit<ApiRequestLog, "id" | "createdAt">): Promise<ApiRequestLog>;
+}
+
+import type { ApiKey, ApiRequestLog, WebhookDelivery, WebhookEndpoint } from "./types";

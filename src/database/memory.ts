@@ -1365,3 +1365,106 @@ export const memoryAutomationRunRepository: AutomationRunRepository = {
     return null;
   },
 };
+
+/* ------------------------- developer platform (v1 API) ------------------- */
+
+const apiKeys: ApiKey[] = [];
+const webhooks: WebhookEndpoint[] = [];
+const webhookDeliveries: WebhookDelivery[] = [];
+const apiRequestLogs: ApiRequestLog[] = [];
+
+export const memoryApiKeyRepository: ApiKeyRepository = {
+  async list(workspaceId) {
+    return clone(apiKeys.filter((key) => key.workspaceId === workspaceId));
+  },
+  async get(keyId) {
+    return clone(apiKeys.find((key) => key.id === keyId) ?? null);
+  },
+  async findByPrefix(prefix) {
+    return clone(apiKeys.find((key) => key.prefix === prefix) ?? null);
+  },
+  async create(input) {
+    const created: ApiKey = { ...input, id: id("apikey"), createdAt: new Date().toISOString() };
+    apiKeys.unshift(created);
+    return clone(created);
+  },
+  async update(keyId, patch) {
+    const target = apiKeys.find((key) => key.id === keyId);
+    if (!target) throw new Error("API key not found");
+    Object.assign(target, patch);
+    return clone(target);
+  },
+  async remove(keyId) {
+    const index = apiKeys.findIndex((key) => key.id === keyId);
+    if (index >= 0) apiKeys.splice(index, 1);
+  },
+};
+
+export const memoryWebhookRepository: WebhookRepository = {
+  async list(workspaceId) {
+    return clone(webhooks.filter((hook) => hook.workspaceId === workspaceId));
+  },
+  async get(hookId) {
+    return clone(webhooks.find((hook) => hook.id === hookId) ?? null);
+  },
+  async create(input) {
+    const created: WebhookEndpoint = { ...input, id: id("whk"), createdAt: new Date().toISOString() };
+    webhooks.unshift(created);
+    return clone(created);
+  },
+  async update(hookId, patch) {
+    const target = webhooks.find((hook) => hook.id === hookId);
+    if (!target) throw new Error("Webhook not found");
+    Object.assign(target, patch);
+    return clone(target);
+  },
+  async remove(hookId) {
+    const index = webhooks.findIndex((hook) => hook.id === hookId);
+    if (index >= 0) webhooks.splice(index, 1);
+  },
+};
+
+export const memoryWebhookDeliveryRepository: WebhookDeliveryRepository = {
+  async list(filter = {}) {
+    const rows = webhookDeliveries.filter(
+      (row) => !filter.endpointId || row.endpointId === filter.endpointId,
+    );
+    return clone(rows.slice(0, filter.limit ?? 50));
+  },
+  async get(deliveryId) {
+    return clone(webhookDeliveries.find((row) => row.id === deliveryId) ?? null);
+  },
+  async create(input) {
+    const now = new Date().toISOString();
+    const created: WebhookDelivery = { ...input, id: id("whd"), createdAt: now, updatedAt: now };
+    webhookDeliveries.unshift(created);
+    return clone(created);
+  },
+  async update(deliveryId, patch) {
+    const target = webhookDeliveries.find((row) => row.id === deliveryId);
+    if (!target) throw new Error("Delivery not found");
+    Object.assign(target, patch, { updatedAt: new Date().toISOString() });
+    return clone(target);
+  },
+};
+
+export const memoryApiRequestLogRepository: ApiRequestLogRepository = {
+  async list(filter = {}) {
+    const rows = apiRequestLogs.filter((row) => !filter.keyId || row.keyId === filter.keyId);
+    return clone(rows.slice(0, filter.limit ?? 100));
+  },
+  async record(input) {
+    const created: ApiRequestLog = { ...input, id: id("apilog"), createdAt: new Date().toISOString() };
+    apiRequestLogs.unshift(created);
+    if (apiRequestLogs.length > 500) apiRequestLogs.length = 500;
+    return clone(created);
+  },
+};
+
+import type {
+  ApiKeyRepository,
+  ApiRequestLogRepository,
+  WebhookDeliveryRepository,
+  WebhookRepository,
+} from "@/core/repositories";
+import type { ApiKey, ApiRequestLog, WebhookDelivery, WebhookEndpoint } from "@/core/types";

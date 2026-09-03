@@ -4,6 +4,7 @@ import { Link2, ShieldOff } from "lucide-react";
 import { toast } from "sonner";
 
 import { AdminNav } from "@/components/admin-nav";
+import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { revokeShare } from "@/core/shares";
@@ -47,7 +48,7 @@ function AdminSharesPage() {
   const totalDownloads = rows.reduce((sum, row) => sum + row.share.downloadCount, 0);
 
   return (
-    <div className="space-y-6">
+    <AppShell title="Share audit" description="Every share link in the workspace, with access logs.">
       <AdminNav />
 
       <section className="grid gap-4 sm:grid-cols-3">
@@ -126,6 +127,6 @@ function AdminSharesPage() {
           )}
         </div>
       </section>
-    </div>
+    </AppShell>
   );
 }
