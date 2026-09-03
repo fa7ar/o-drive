@@ -1,5 +1,5 @@
 import { useContainer } from "@/core/container";
-import { assertSafeUrl } from "@/core/validation";
+import { assertUrlAllowed } from "@/core/validation";
 import { DEMO_WORKSPACE_ID } from "@/database/memory";
 import type { WebhookDelivery, WebhookEndpoint, WebhookEventType } from "@/core/types";
 
@@ -52,7 +52,7 @@ export async function createWebhook(input: {
   events: WebhookEventType[];
   workspaceId?: string;
 }): Promise<{ endpoint: WebhookEndpoint; secret: string }> {
-  assertSafeUrl(input.url);
+  assertUrlAllowed(input.url);
   const secret = `whsec_${randomHex(24)}`;
   const endpoint = await useContainer().webhooks.create({
     workspaceId: input.workspaceId ?? DEMO_WORKSPACE_ID,
@@ -71,7 +71,7 @@ export async function updateWebhook(
   endpointId: string,
   patch: Partial<Pick<WebhookEndpoint, "url" | "events" | "status">>,
 ): Promise<WebhookEndpoint> {
-  if (patch.url) assertSafeUrl(patch.url);
+  if (patch.url) assertUrlAllowed(patch.url);
   return useContainer().webhooks.update(endpointId, patch);
 }
 
@@ -81,7 +81,7 @@ export async function deleteWebhook(endpointId: string): Promise<void> {
 }
 
 export async function listDeliveries(endpointId?: string, limit = 50): Promise<WebhookDelivery[]> {
-  return useContainer().webhookDeliveries.list({ endpointId, limit });
+  return useContainer().webhookDeliveries.list(endpointId ? { endpointId, limit } : { limit });
 }
 
 /** Fan-out: one delivery row per subscribed endpoint, then attempt each. */
