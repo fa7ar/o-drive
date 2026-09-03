@@ -679,3 +679,82 @@ export interface AutomationTemplate {
   conditionGroup: ConditionGroup;
   actions: Array<Omit<AutomationAction, "id">>;
 }
+
+/* ------------------------- developer platform (v1 API) ------------------- */
+
+/** Least-privilege scopes exposed to external developers. */
+export type ApiScope =
+  | "drive:read"
+  | "drive:write"
+  | "file:read"
+  | "file:write"
+  | "transfer:write"
+  | "share:read"
+  | "webhook:write";
+
+export type ApiKeyStatus = "active" | "revoked" | "expired";
+
+export interface ApiKey {
+  id: string;
+  workspaceId: string;
+  name: string;
+  /** Public, non-secret identifier shown in the UI, e.g. odv_live_a1b2c3. */
+  prefix: string;
+  /** SHA-256 of the full secret. The raw secret is never stored. */
+  hash: string;
+  scopes: ApiScope[];
+  status: ApiKeyStatus;
+  createdAt: string;
+  lastUsedAt?: string | null;
+  expiresAt?: string | null;
+  revokedAt?: string | null;
+}
+
+export type WebhookEventType =
+  | "file.created"
+  | "file.updated"
+  | "file.deleted"
+  | "transfer.completed"
+  | "transfer.failed"
+  | "drive.connected"
+  | "share.accessed";
+
+export interface WebhookEndpoint {
+  id: string;
+  workspaceId: string;
+  url: string;
+  events: WebhookEventType[];
+  /** Signing secret (whsec_…), revealed once at creation. */
+  secretMasked: string;
+  status: "active" | "paused" | "failing";
+  createdAt: string;
+  failureCount: number;
+  lastDeliveryAt?: string | null;
+}
+
+export interface WebhookDelivery {
+  id: string;
+  endpointId: string;
+  /** Stable id used for consumer-side idempotency. */
+  eventId: string;
+  event: WebhookEventType;
+  payload: Record<string, unknown>;
+  status: "pending" | "delivered" | "failed" | "retrying";
+  attempt: number;
+  responseStatus?: number | null;
+  error?: string | null;
+  nextAttemptAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ApiRequestLog {
+  id: string;
+  requestId: string;
+  keyId: string | null;
+  method: string;
+  path: string;
+  status: number;
+  durationMs: number;
+  createdAt: string;
+}
