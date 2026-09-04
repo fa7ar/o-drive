@@ -1,5 +1,9 @@
 import { queryOptions } from "@tanstack/react-query";
 
+import { listApiKeys } from "@/core/api-keys";
+import { listDeliveries, listWebhooks } from "@/core/webhooks";
+import { listApiRequestLogs } from "@/core/api-usage";
+
 import { listAllShares, listShareAccessLogs, listShares } from "@/core/shares";
 
 import {
@@ -154,4 +158,27 @@ export const automationMetricsQuery = queryOptions({
   queryKey: ["automation-metrics"],
   queryFn: () => automationMetrics(),
   refetchInterval: 8000,
+});
+
+/* ---------------------------- developer platform -------------------------- */
+
+export const apiKeysQuery = queryOptions({
+  queryKey: ["api-keys"],
+  queryFn: () => listApiKeys(),
+});
+
+export const webhooksQuery = queryOptions({
+  queryKey: ["webhooks"],
+  queryFn: () => listWebhooks(),
+});
+
+export const webhookDeliveriesQuery = queryOptions({
+  queryKey: ["webhook-deliveries"],
+  queryFn: () => listDeliveries(undefined, 40),
+});
+
+export const apiRequestLogsQuery = queryOptions({
+  queryKey: ["api-request-logs"],
+  queryFn: () => listApiRequestLogs(60),
+  refetchInterval: 5000,
 });
