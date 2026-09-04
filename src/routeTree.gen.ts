@@ -17,6 +17,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAutomationsRouteImport } from './routes/_authenticated/automations'
 import { Route as AuthenticatedConnectionsRouteImport } from './routes/_authenticated/connections'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDeveloperRouteImport } from './routes/_authenticated/developer'
 import { Route as AuthenticatedDrivesRouteImport } from './routes/_authenticated/drives'
 import { Route as AuthenticatedExplorerRouteImport } from './routes/_authenticated/explorer'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
@@ -41,8 +42,11 @@ import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminQueuesRouteImport } from './routes/_authenticated/admin.queues'
 import { Route as AuthenticatedAdminSharesRouteImport } from './routes/_authenticated/admin.shares'
 import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
+import { Route as ApiV1SplatRouteImport } from './routes/api/v1/$'
 import { Route as ApiPublicHealthLiveRouteImport } from './routes/api/public/health.live'
 import { Route as ApiPublicHealthReadyRouteImport } from './routes/api/public/health.ready'
+import { Route as ApiPublicV1SplatRouteImport } from './routes/api/public/v1/$'
+import { Route as ApiPublicV1OpenapiDotjsonRouteImport } from './routes/api/public/v1/openapi[.]json'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -83,6 +87,11 @@ const AuthenticatedConnectionsRoute =
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDeveloperRoute = AuthenticatedDeveloperRouteImport.update({
+  id: '/developer',
+  path: '/developer',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDrivesRoute = AuthenticatedDrivesRouteImport.update({
@@ -214,6 +223,11 @@ const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
   path: '/api/public/health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1SplatRoute = ApiV1SplatRouteImport.update({
+  id: '/api/v1/$',
+  path: '/api/v1/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHealthLiveRoute = ApiPublicHealthLiveRouteImport.update({
   id: '/live',
   path: '/live',
@@ -224,6 +238,17 @@ const ApiPublicHealthReadyRoute = ApiPublicHealthReadyRouteImport.update({
   path: '/ready',
   getParentRoute: () => ApiPublicHealthRoute,
 } as any)
+const ApiPublicV1SplatRoute = ApiPublicV1SplatRouteImport.update({
+  id: '/api/public/v1/$',
+  path: '/api/public/v1/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicV1OpenapiDotjsonRoute =
+  ApiPublicV1OpenapiDotjsonRouteImport.update({
+    id: '/api/public/v1/openapi.json',
+    path: '/api/public/v1/openapi.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -233,6 +258,7 @@ export interface FileRoutesByFullPath {
   '/automations': typeof AuthenticatedAutomationsRoute
   '/connections': typeof AuthenticatedConnectionsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/developer': typeof AuthenticatedDeveloperRoute
   '/drives': typeof AuthenticatedDrivesRoute
   '/explorer': typeof AuthenticatedExplorerRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -256,9 +282,12 @@ export interface FileRoutesByFullPath {
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin/shares': typeof AuthenticatedAdminSharesRoute
   '/api/public/health': typeof ApiPublicHealthRouteWithChildren
+  '/api/v1/$': typeof ApiV1SplatRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/health/live': typeof ApiPublicHealthLiveRoute
   '/api/public/health/ready': typeof ApiPublicHealthReadyRoute
+  '/api/public/v1/$': typeof ApiPublicV1SplatRoute
+  '/api/public/v1/openapi.json': typeof ApiPublicV1OpenapiDotjsonRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -267,6 +296,7 @@ export interface FileRoutesByTo {
   '/automations': typeof AuthenticatedAutomationsRoute
   '/connections': typeof AuthenticatedConnectionsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/developer': typeof AuthenticatedDeveloperRoute
   '/drives': typeof AuthenticatedDrivesRoute
   '/explorer': typeof AuthenticatedExplorerRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -290,9 +320,12 @@ export interface FileRoutesByTo {
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin/shares': typeof AuthenticatedAdminSharesRoute
   '/api/public/health': typeof ApiPublicHealthRouteWithChildren
+  '/api/v1/$': typeof ApiV1SplatRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/api/public/health/live': typeof ApiPublicHealthLiveRoute
   '/api/public/health/ready': typeof ApiPublicHealthReadyRoute
+  '/api/public/v1/$': typeof ApiPublicV1SplatRoute
+  '/api/public/v1/openapi.json': typeof ApiPublicV1OpenapiDotjsonRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -304,6 +337,7 @@ export interface FileRoutesById {
   '/_authenticated/automations': typeof AuthenticatedAutomationsRoute
   '/_authenticated/connections': typeof AuthenticatedConnectionsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/developer': typeof AuthenticatedDeveloperRoute
   '/_authenticated/drives': typeof AuthenticatedDrivesRoute
   '/_authenticated/explorer': typeof AuthenticatedExplorerRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -327,9 +361,12 @@ export interface FileRoutesById {
   '/_authenticated/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/_authenticated/admin/shares': typeof AuthenticatedAdminSharesRoute
   '/api/public/health': typeof ApiPublicHealthRouteWithChildren
+  '/api/v1/$': typeof ApiV1SplatRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/health/live': typeof ApiPublicHealthLiveRoute
   '/api/public/health/ready': typeof ApiPublicHealthReadyRoute
+  '/api/public/v1/$': typeof ApiPublicV1SplatRoute
+  '/api/public/v1/openapi.json': typeof ApiPublicV1OpenapiDotjsonRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -341,6 +378,7 @@ export interface FileRouteTypes {
     | '/automations'
     | '/connections'
     | '/dashboard'
+    | '/developer'
     | '/drives'
     | '/explorer'
     | '/onboarding'
@@ -364,9 +402,12 @@ export interface FileRouteTypes {
     | '/admin/queues'
     | '/admin/shares'
     | '/api/public/health'
+    | '/api/v1/$'
     | '/admin/'
     | '/api/public/health/live'
     | '/api/public/health/ready'
+    | '/api/public/v1/$'
+    | '/api/public/v1/openapi.json'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -375,6 +416,7 @@ export interface FileRouteTypes {
     | '/automations'
     | '/connections'
     | '/dashboard'
+    | '/developer'
     | '/drives'
     | '/explorer'
     | '/onboarding'
@@ -398,9 +440,12 @@ export interface FileRouteTypes {
     | '/admin/queues'
     | '/admin/shares'
     | '/api/public/health'
+    | '/api/v1/$'
     | '/admin'
     | '/api/public/health/live'
     | '/api/public/health/ready'
+    | '/api/public/v1/$'
+    | '/api/public/v1/openapi.json'
   id:
     | '__root__'
     | '/'
@@ -411,6 +456,7 @@ export interface FileRouteTypes {
     | '/_authenticated/automations'
     | '/_authenticated/connections'
     | '/_authenticated/dashboard'
+    | '/_authenticated/developer'
     | '/_authenticated/drives'
     | '/_authenticated/explorer'
     | '/_authenticated/onboarding'
@@ -434,9 +480,12 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/queues'
     | '/_authenticated/admin/shares'
     | '/api/public/health'
+    | '/api/v1/$'
     | '/_authenticated/admin/'
     | '/api/public/health/live'
     | '/api/public/health/ready'
+    | '/api/public/v1/$'
+    | '/api/public/v1/openapi.json'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -449,6 +498,9 @@ export interface RootRouteChildren {
   LegalTermsRoute: typeof LegalTermsRoute
   STokenRoute: typeof STokenRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRouteWithChildren
+  ApiV1SplatRoute: typeof ApiV1SplatRoute
+  ApiPublicV1SplatRoute: typeof ApiPublicV1SplatRoute
+  ApiPublicV1OpenapiDotjsonRoute: typeof ApiPublicV1OpenapiDotjsonRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -507,6 +559,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/developer': {
+      id: '/_authenticated/developer'
+      path: '/developer'
+      fullPath: '/developer'
+      preLoaderRoute: typeof AuthenticatedDeveloperRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/drives': {
@@ -677,6 +736,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/$': {
+      id: '/api/v1/$'
+      path: '/api/v1/$'
+      fullPath: '/api/v1/$'
+      preLoaderRoute: typeof ApiV1SplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/health/live': {
       id: '/api/public/health/live'
       path: '/live'
@@ -690,6 +756,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/public/health/ready'
       preLoaderRoute: typeof ApiPublicHealthReadyRouteImport
       parentRoute: typeof ApiPublicHealthRoute
+    }
+    '/api/public/v1/$': {
+      id: '/api/public/v1/$'
+      path: '/api/public/v1/$'
+      fullPath: '/api/public/v1/$'
+      preLoaderRoute: typeof ApiPublicV1SplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/v1/openapi.json': {
+      id: '/api/public/v1/openapi.json'
+      path: '/api/public/v1/openapi.json'
+      fullPath: '/api/public/v1/openapi.json'
+      preLoaderRoute: typeof ApiPublicV1OpenapiDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -733,6 +813,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAutomationsRoute: typeof AuthenticatedAutomationsRoute
   AuthenticatedConnectionsRoute: typeof AuthenticatedConnectionsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDeveloperRoute: typeof AuthenticatedDeveloperRoute
   AuthenticatedDrivesRoute: typeof AuthenticatedDrivesRoute
   AuthenticatedExplorerRoute: typeof AuthenticatedExplorerRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
@@ -747,6 +828,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAutomationsRoute: AuthenticatedAutomationsRoute,
   AuthenticatedConnectionsRoute: AuthenticatedConnectionsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDeveloperRoute: AuthenticatedDeveloperRoute,
   AuthenticatedDrivesRoute: AuthenticatedDrivesRoute,
   AuthenticatedExplorerRoute: AuthenticatedExplorerRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
@@ -782,6 +864,9 @@ const rootRouteChildren: RootRouteChildren = {
   LegalTermsRoute: LegalTermsRoute,
   STokenRoute: STokenRoute,
   ApiPublicHealthRoute: ApiPublicHealthRouteWithChildren,
+  ApiV1SplatRoute: ApiV1SplatRoute,
+  ApiPublicV1SplatRoute: ApiPublicV1SplatRoute,
+  ApiPublicV1OpenapiDotjsonRoute: ApiPublicV1OpenapiDotjsonRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
