@@ -45,6 +45,7 @@ import { Route as ApiV1SplatRouteImport } from './routes/api/v1/$'
 import { Route as ApiPublicHealthLiveRouteImport } from './routes/api/public/health.live'
 import { Route as ApiPublicHealthReadyRouteImport } from './routes/api/public/health.ready'
 import { Route as ApiPublicV1SplatRouteImport } from './routes/api/public/v1/$'
+import { Route as ApiPublicV1OpenapiDotjsonRouteImport } from './routes/api/public/v1/openapi[.]json'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -236,6 +237,12 @@ const ApiPublicV1SplatRoute = ApiPublicV1SplatRouteImport.update({
   path: '/api/public/v1/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicV1OpenapiDotjsonRoute =
+  ApiPublicV1OpenapiDotjsonRouteImport.update({
+    id: '/api/public/v1/openapi.json',
+    path: '/api/public/v1/openapi.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -273,6 +280,7 @@ export interface FileRoutesByFullPath {
   '/api/public/health/live': typeof ApiPublicHealthLiveRoute
   '/api/public/health/ready': typeof ApiPublicHealthReadyRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
+  '/api/public/v1/openapi.json': typeof ApiPublicV1OpenapiDotjsonRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -309,6 +317,7 @@ export interface FileRoutesByTo {
   '/api/public/health/live': typeof ApiPublicHealthLiveRoute
   '/api/public/health/ready': typeof ApiPublicHealthReadyRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
+  '/api/public/v1/openapi.json': typeof ApiPublicV1OpenapiDotjsonRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -348,6 +357,7 @@ export interface FileRoutesById {
   '/api/public/health/live': typeof ApiPublicHealthLiveRoute
   '/api/public/health/ready': typeof ApiPublicHealthReadyRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
+  '/api/public/v1/openapi.json': typeof ApiPublicV1OpenapiDotjsonRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -387,6 +397,7 @@ export interface FileRouteTypes {
     | '/api/public/health/live'
     | '/api/public/health/ready'
     | '/api/public/v1/$'
+    | '/api/public/v1/openapi.json'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -423,6 +434,7 @@ export interface FileRouteTypes {
     | '/api/public/health/live'
     | '/api/public/health/ready'
     | '/api/public/v1/$'
+    | '/api/public/v1/openapi.json'
   id:
     | '__root__'
     | '/'
@@ -461,6 +473,7 @@ export interface FileRouteTypes {
     | '/api/public/health/live'
     | '/api/public/health/ready'
     | '/api/public/v1/$'
+    | '/api/public/v1/openapi.json'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -475,6 +488,7 @@ export interface RootRouteChildren {
   ApiPublicHealthRoute: typeof ApiPublicHealthRouteWithChildren
   ApiV1SplatRoute: typeof ApiV1SplatRoute
   ApiPublicV1SplatRoute: typeof ApiPublicV1SplatRoute
+  ApiPublicV1OpenapiDotjsonRoute: typeof ApiPublicV1OpenapiDotjsonRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -731,6 +745,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicV1SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/v1/openapi.json': {
+      id: '/api/public/v1/openapi.json'
+      path: '/api/public/v1/openapi.json'
+      fullPath: '/api/public/v1/openapi.json'
+      preLoaderRoute: typeof ApiPublicV1OpenapiDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -824,6 +845,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHealthRoute: ApiPublicHealthRouteWithChildren,
   ApiV1SplatRoute: ApiV1SplatRoute,
   ApiPublicV1SplatRoute: ApiPublicV1SplatRoute,
+  ApiPublicV1OpenapiDotjsonRoute: ApiPublicV1OpenapiDotjsonRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
