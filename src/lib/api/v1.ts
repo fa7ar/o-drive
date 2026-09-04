@@ -17,8 +17,6 @@ import {
 import { listShares } from "@/core/shares";
 import { createWebhook, listWebhooks, WEBHOOK_EVENTS } from "@/core/webhooks";
 import type { WebhookEventType } from "@/core/types";
-import { DEMO_WORKSPACE_ID } from "@/database/memory";
-
 import {
   ApiError,
   fail,
@@ -344,7 +342,14 @@ async function route(
     if (!term.trim()) throw new ApiError("VALIDATION_ERROR", 'Query parameter "q" is required.');
     const results = await searchEverything(term, await allConnectionIds());
     const { page, meta } = paginate(
-      results.map((result) => ({ ...fileDto(result.file), provider: result.providerId })),
+      results.map((result) => ({
+        id: result.id,
+        type: result.type,
+        title: result.title,
+        subtitle: result.subtitle,
+        path: result.path ?? null,
+        connection_id: result.connectionId ?? null,
+      })),
       params,
     );
     return ok(page, requestId, meta);
@@ -371,7 +376,8 @@ async function route(
       id: view.share.id,
       token: view.share.token,
       status: view.share.status,
-      resource_kind: view.share.resourceKind,
+      resource_type: view.share.resourceType,
+      resource_name: view.share.resourceName,
       expires_at: view.share.expiresAt ?? null,
       created_at: view.share.createdAt,
     }));
@@ -404,7 +410,7 @@ async function route(
       const { endpoint, secret } = await createWebhook({
         url: requireString(body, "url"),
         events,
-        workspaceId: principal.workspaceId === DEMO_WORKSPACE_ID ? undefined : principal.workspaceId,
+        workspaceId: principal.workspaceId,
       });
       return ok(
         { id: endpoint.id, url: endpoint.url, events: endpoint.events, secret },
