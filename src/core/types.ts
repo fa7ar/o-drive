@@ -77,8 +77,13 @@ export interface FileMetadata {
   mimeType: string;
   sizeBytes: number;
   modifiedAt: string;
+  createdAt?: string;
   favorite: boolean;
   trashed: boolean;
+  /** ODrive metadata: user-defined tags. Never written back to the provider. */
+  tags?: string[];
+  /** ODrive metadata: last time the user opened this file (drives "Recent"). */
+  lastOpenedAt?: string | null;
   /** Vendor-native identifier, hidden behind the virtual filesystem. */
   providerFileId?: string;
 }

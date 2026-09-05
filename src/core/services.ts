@@ -255,3 +255,35 @@ export async function registerUpload(input: {
   });
   return created;
 }
+
+/* ------------------------- ODrive file metadata --------------------------- */
+/* Tags, favorites and recents live in the ODrive metadata layer only — they  */
+/* are never pushed to the underlying provider.                               */
+
+export async function setFileTags(fileId: string, tags: string[]): Promise<FileMetadata> {
+  const cleaned = [...new Set(tags.map((tag) => tag.trim().replace(/^#/, "").toLowerCase()))]
+    .filter(Boolean)
+    .slice(0, 12);
+  const updated = await useContainer().files.update(fileId, { tags: cleaned });
+  await useContainer().activity.record({
+    actor: "you",
+    action: "file.tagged",
+    target: updated.name,
+  });
+  return updated;
+}
+
+/** Records an open/preview so the Recent view stays truthful. */
+export async function touchFile(fileId: string): Promise<void> {
+  try {
+    await useContainer().files.update(fileId, { lastOpenedAt: new Date().toISOString() });
+  } catch {
+    /* non-fatal: recents are best-effort metadata */
+  }
+}
+
+/** Secure content access for preview/download: always via the adapter layer. */
+export async function downloadBlob(connectionId: string, fileId: string): Promise<Blob> {
+  const provider = await StorageManager.forConnection(connectionId);
+  return provider.download(connectionId, fileId);
+}
