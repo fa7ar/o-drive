@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeftRight,
+  Code2,
   FolderTree,
   HardDrive,
   History,
@@ -37,6 +38,7 @@ const NAV = [
   { to: "/shares", label: "Shares", icon: Link2 },
   { to: "/automations", label: "Automations", icon: Zap },
   { to: "/activity", label: "Activity", icon: History },
+  { to: "/developer", label: "Developer", icon: Code2 },
   { to: "/settings", label: "Settings", icon: SettingsIcon },
   { to: "/admin", label: "Admin", icon: ShieldCheck },
 ] as const;
