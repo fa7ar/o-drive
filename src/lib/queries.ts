@@ -7,6 +7,7 @@ import { listApiRequestLogs } from "@/core/api-usage";
 import { listAllShares, listShareAccessLogs, listShares } from "@/core/shares";
 
 import {
+  getFile,
   getSettings,
   listActivity,
   listAllFiles,
@@ -69,6 +70,12 @@ export const filesQuery = (connectionIds: string[]) =>
     queryKey: ["files", [...connectionIds].sort()],
     queryFn: () => listAllFiles(connectionIds),
     enabled: connectionIds.length > 0,
+  });
+
+export const fileQuery = (fileId: string) =>
+  queryOptions({
+    queryKey: ["files", "detail", fileId],
+    queryFn: () => getFile(fileId),
   });
 
 /* --------------------------------- admin --------------------------------- */
