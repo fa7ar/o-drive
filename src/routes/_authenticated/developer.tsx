@@ -241,7 +241,7 @@ function DeveloperPage() {
 
           {(keys.data ?? []).length === 0 ? (
             <EmptyState
-              icon={KeyRound}
+              icon={<KeyRound className="size-5" />}
               title="No API keys yet"
               description="Create a scoped key to call the ODrive v1 API from your own services."
             />
@@ -351,7 +351,7 @@ function DeveloperPage() {
 
           {(hooks.data ?? []).length === 0 ? (
             <EmptyState
-              icon={Webhook}
+              icon={<Webhook className="size-5" />}
               title="No webhook endpoints"
               description="Subscribe to file, transfer, drive and share events with signed deliveries and retries."
             />
