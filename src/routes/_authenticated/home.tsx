@@ -1,1 +1,112 @@
-import { createFileRoute } from "@tanstack/react-router\";\nimport { useQuery } from \"@tanstack/react-query\";\n\nimport { AppShell } from \"@/components/app-shell\";\nimport { metricsQuery } from \"@/lib/queries\";\nimport { formatBytes } from \"@/lib/format\";\n\nexport const Route = createFileRoute(\"/_authenticated/home\")(\n  {\n    head: () => ({\n      meta: [\n        { title: \"Dashboard — ODrive\" },\n        {\n          name: \"description\",\n          content: \"Overview of your ODrive workspace: storage usage, recent activity, and quick access to key features.\",\n        },\n        { property: \"og:title\", content: \"Dashboard — ODrive\" },\n        {\n          property: \"og:description\",\n          content: \"Workspace overview and key metrics.\",\n        },\n      ],\n    }),\n    component: HomePage,\n  }\n);\n\nfunction HomePage() {\n  const metrics = useQuery(metricsQuery);\n  const data = metrics.data;\n\n  const storagePercent =\n    data && data.storageTotalBytes > 0\n      ? Math.round((data.storageUsedBytes / data.storageTotalBytes) * 100)\n      : 0;\n\n  return (\n    <AppShell\n      title=\"Dashboard\"\n      description=\"Overview of your ODrive workspace, storage usage, and quick insights.\"\n    >\n      <div className=\"grid gap-4 sm:grid-cols-2 lg:grid-cols-4\">\n        <div className=\"panel p-4\">\n          <p className=\"text-xs tracking-wide text-muted-foreground uppercase\">Storage Used</p>\n          <p className=\"mt-2 text-2xl font-semibold\">{formatBytes(data?.storageUsedBytes ?? 0)}</p>\n          <p className=\"mt-1 text-xs text-muted-foreground\">\n            {storagePercent}% of {formatBytes(data?.storageTotalBytes ?? 0)}\n          </p>\n        </div>\n        <div className=\"panel p-4\">\n          <p className=\"text-xs tracking-wide text-muted-foreground uppercase\">Connections</p>\n          <p className=\"mt-2 text-2xl font-semibold\">{data?.connectionsActive ?? 0}</p>\n          <p className=\"mt-1 text-xs text-muted-foreground\">Active providers</p>\n        </div>\n        <div className=\"panel p-4\">\n          <p className=\"text-xs tracking-wide text-muted-foreground uppercase\">Transfers</p>\n          <p className=\"mt-2 text-2xl font-semibold\">{data?.jobsRunning ?? 0}</p>\n          <p className=\"mt-1 text-xs text-muted-foreground\">{data?.jobsQueued ?? 0} queued</p>\n        </div>\n        <div className=\"panel p-4\">\n          <p className=\"text-xs tracking-wide text-muted-foreground uppercase\">Automations</p>\n          <p className=\"mt-2 text-2xl font-semibold\">—</p>\n          <p className=\"mt-1 text-xs text-muted-foreground\">Configure in Settings</p>\n        </div>\n      </div>\n\n      <div className=\"mt-6 grid gap-4 lg:grid-cols-2\">\n        <section className=\"panel p-5\">\n          <h2 className=\"font-display text-sm font-semibold\">Welcome to ODrive</h2>\n          <p className=\"mt-2 text-sm text-muted-foreground\">\n            ODrive is your unified workspace for managing storage across multiple providers. Connect drives, browse files, run transfers, and automate workflows without vendor lock-in.\n          </p>\n          <div className=\"mt-4 space-y-2 text-sm text-muted-foreground\">\n            <p>✓ Connect unlimited storage accounts (Google Drive, OneDrive, S3, R2, and more)</p>\n            <p>✓ Browse and search files from every provider in one place</p>\n            <p>✓ Transfer files between providers seamlessly</p>\n            <p>✓ Create public share links and set expiration dates</p>\n            <p>✓ Automate repetitive tasks with rules and automations</p>\n          </div>\n        </section>\n\n        <section className=\"panel p-5\">\n          <h2 className=\"font-display text-sm font-semibold\">Quick Start</h2>\n          <ul className=\"mt-4 space-y-3 text-sm\">\n            <li className=\"flex items-start gap-3\">\n              <span className=\"shrink-0 text-primary\">1.</span>\n              <span className=\"text-muted-foreground\">\n                <strong>Add a drive</strong> in the Files menu to connect your first storage account\n              </span>\n            </li>\n            <li className=\"flex items-start gap-3\">\n              <span className=\"shrink-0 text-primary\">2.</span>\n              <span className=\"text-muted-foreground\">\n                <strong>Explore</strong> files and browse your storage across all connected accounts\n              </span>\n            </li>\n            <li className=\"flex items-start gap-3\">\n              <span className=\"shrink-0 text-primary\">3.</span>\n              <span className=\"text-muted-foreground\">\n                <strong>Create transfers</strong> to move files between providers\n              </span>\n            </li>\n            <li className=\"flex items-start gap-3\">\n              <span className=\"shrink-0 text-primary\">4.</span>\n              <span className=\"text-muted-foreground\">\n                <strong>Set up automations</strong> to run rules on schedules or events\n              </span>\n            </li>\n          </ul>\n        </section>\n      </div>\n    </AppShell>\n  );\n}\n
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+
+import { AppShell } from "@/components/app-shell";
+import { metricsQuery } from "@/lib/queries";
+import { formatBytes } from "@/lib/format";
+
+export const Route = createFileRoute("/_authenticated/home")({
+  head: () => ({
+    meta: [
+      { title: "Dashboard — ODrive" },
+      {
+        name: "description",
+        content: "Overview of your ODrive workspace: storage usage, recent activity, and quick access to key features.",
+      },
+      { property: "og:title", content: "Dashboard — ODrive" },
+      {
+        property: "og:description",
+        content: "Workspace overview and key metrics.",
+      },
+    ],
+  }),
+  component: HomePage,
+});
+
+function HomePage() {
+  const metrics = useQuery(metricsQuery);
+  const data = metrics.data;
+
+  const storagePercent =
+    data && data.storageTotalBytes > 0
+      ? Math.round((data.storageUsedBytes / data.storageTotalBytes) * 100)
+      : 0;
+
+  return (
+    <AppShell
+      title="Dashboard"
+      description="Overview of your ODrive workspace, storage usage, and quick insights."
+    >
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="panel p-4">
+          <p className="text-xs tracking-wide text-muted-foreground uppercase">Storage Used</p>
+          <p className="mt-2 text-2xl font-semibold">{formatBytes(data?.storageUsedBytes ?? 0)}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {storagePercent}% of {formatBytes(data?.storageTotalBytes ?? 0)}
+          </p>
+        </div>
+        <div className="panel p-4">
+          <p className="text-xs tracking-wide text-muted-foreground uppercase">Connections</p>
+          <p className="mt-2 text-2xl font-semibold">{data?.connectionsActive ?? 0}</p>
+          <p className="mt-1 text-xs text-muted-foreground">Active providers</p>
+        </div>
+        <div className="panel p-4">
+          <p className="text-xs tracking-wide text-muted-foreground uppercase">Transfers</p>
+          <p className="mt-2 text-2xl font-semibold">{data?.jobsRunning ?? 0}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{data?.jobsQueued ?? 0} queued</p>
+        </div>
+        <div className="panel p-4">
+          <p className="text-xs tracking-wide text-muted-foreground uppercase">Automations</p>
+          <p className="mt-2 text-2xl font-semibold">—</p>
+          <p className="mt-1 text-xs text-muted-foreground">Configure in Settings</p>
+        </div>
+      </div>
+
+      <div className="mt-6 grid gap-4 lg:grid-cols-2">
+        <section className="panel p-5">
+          <h2 className="font-display text-sm font-semibold">Welcome to ODrive</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            ODrive is your unified workspace for managing storage across multiple providers. Connect drives, browse files, run transfers, and automate workflows without vendor lock-in.
+          </p>
+          <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+            <p>✓ Connect unlimited storage accounts (Google Drive, OneDrive, S3, R2, and more)</p>
+            <p>✓ Browse and search files from every provider in one place</p>
+            <p>✓ Transfer files between providers seamlessly</p>
+            <p>✓ Create public share links and set expiration dates</p>
+            <p>✓ Automate repetitive tasks with rules and automations</p>
+          </div>
+        </section>
+
+        <section className="panel p-5">
+          <h2 className="font-display text-sm font-semibold">Quick Start</h2>
+          <ul className="mt-4 space-y-3 text-sm">
+            <li className="flex items-start gap-3">
+              <span className="shrink-0 text-primary">1.</span>
+              <span className="text-muted-foreground">
+                <strong>Add a drive</strong> in the Files menu to connect your first storage account
+              </span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="shrink-0 text-primary">2.</span>
+              <span className="text-muted-foreground">
+                <strong>Explore</strong> files and browse your storage across all connected accounts
+              </span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="shrink-0 text-primary">3.</span>
+              <span className="text-muted-foreground">
+                <strong>Create transfers</strong> to move files between providers
+              </span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="shrink-0 text-primary">4.</span>
+              <span className="text-muted-foreground">
+                <strong>Set up automations</strong> to run rules on schedules or events
+              </span>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </AppShell>
+  );
+}
