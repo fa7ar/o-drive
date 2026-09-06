@@ -36,6 +36,7 @@ function SettingsPage() {
   const flags = useQuery(flagsQuery);
   const queryClient = useQueryClient();
   const [workspaceName, setWorkspaceName] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const providers = listProviders();
 
   const saveMutation = useMutation({
@@ -53,12 +54,22 @@ function SettingsPage() {
 
   const data = settings.data;
   const nameValue = workspaceName ?? data?.workspaceName ?? "";
+  const displayNameValue = displayName ?? data?.displayName ?? "";
 
   return (
     <AppShell title="General" description="Workspace preferences and adapter registry.">
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="panel p-5">
-          <h2 className="font-display text-sm font-semibold">Workspace</h2>
+          <h2 className="font-display text-sm font-semibold">Workspace & Profile</h2>
+          <div className="mt-4 space-y-2">
+            <Label htmlFor="displayName">Display Name</Label>
+            <Input
+              id="displayName"
+              value={displayNameValue}
+              onChange={(event) => setDisplayName(event.target.value)}
+              placeholder="Your name"
+            />
+          </div>
           <div className="mt-4 space-y-2">
             <Label htmlFor="workspace">Workspace name</Label>
             <Input
@@ -83,9 +94,14 @@ function SettingsPage() {
           <Button
             className="mt-5"
             disabled={!nameValue.trim() || saveMutation.isPending}
-            onClick={() => saveMutation.mutate({ workspaceName: nameValue.trim() })}
+            onClick={() =>
+              saveMutation.mutate({
+                workspaceName: nameValue.trim(),
+                displayName: displayNameValue.trim(),
+              })
+            }
           >
-            Save workspace
+            Save settings
           </Button>
         </section>
 

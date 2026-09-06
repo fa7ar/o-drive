@@ -13,7 +13,7 @@ import {
   Search,
   Settings as SettingsIcon,
   Shield,
-  ShieldCheck,
+  Home as HomeIcon,
   Zap,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
@@ -32,7 +32,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
-type SectionKey = "files" | "activity" | "settings";
+type SectionKey = "home" | "files" | "activity" | "settings";
 
 const SECTIONS: Array<{
   key: SectionKey;
@@ -41,6 +41,15 @@ const SECTIONS: Array<{
   to: string;
   children: Array<{ to: string; label: string; icon: typeof Files }>;
 }> = [
+  {
+    key: "home",
+    label: "Home",
+    icon: HomeIcon,
+    to: "/home",
+    children: [
+      { to: "/home", label: "Dashboard", icon: HomeIcon },
+    ],
+  },
   {
     key: "files",
     label: "Files",
@@ -78,6 +87,7 @@ const SECTIONS: Array<{
 ];
 
 function sectionForPath(pathname: string): SectionKey {
+  if (pathname.startsWith("/home")) return "home";
   if (
     pathname.startsWith("/transfers") ||
     pathname.startsWith("/shares") ||
@@ -105,6 +115,7 @@ export function AppShell({
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const [query, setQuery] = useState("");
 
+  const displayName = user?.displayName || "ODrive User";
   const initials = (user?.displayName ?? "od").slice(0, 2).toUpperCase();
   const activeSection = SECTIONS.find((section) => section.key === sectionForPath(pathname))!;
   const isAdmin = pathname.startsWith("/admin");
@@ -158,22 +169,16 @@ export function AppShell({
                 <span className="inline-flex size-7 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">
                   {initials}
                 </span>
-                <span className="hidden text-sm sm:inline">{user?.email}</span>
+                <span className="hidden text-sm sm:inline">{displayName}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel className="truncate text-xs font-normal text-muted-foreground">
-                {user?.email}
+                {displayName}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link to="/settings">Settings</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/admin">
-                  <ShieldCheck className="size-4" />
-                  Admin
-                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={async () => {
@@ -211,15 +216,6 @@ export function AppShell({
               </Link>
             ))}
           </nav>
-          <div className="mt-8 border-t border-border pt-4">
-            <Link
-              to="/admin"
-              className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            >
-              <ShieldCheck className="size-4" strokeWidth={1.8} />
-              Admin
-            </Link>
-          </div>
         </aside>
 
         <main className="min-w-0 flex-1 px-4 py-6 lg:px-8">
