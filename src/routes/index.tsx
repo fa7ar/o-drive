@@ -57,7 +57,7 @@ function Home() {
 
           <div className="py-24 text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 font-mono text-xs text-muted-foreground">
-              Beta 1.0
+              Storage Multilayer Beta 1.0
             </span>
             <h1 className="mx-auto mt-6 max-w-3xl text-5xl leading-[1.05] font-semibold sm:text-6xl">
               Omni <span className="text-primary">Drive</span>
