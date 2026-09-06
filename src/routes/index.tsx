@@ -42,7 +42,9 @@ function Home() {
             <OdriveLogo />
             <div className="flex items-center gap-2">
               <Button asChild variant="ghost" size="sm">
-                <Link to="/auth">Sign in</Link>
+                <Link to={user ? "/explorer" : "/auth"}>
+                  {user ? "Dashboard" : "Sign in"}
+                </Link>
               </Button>
               <Button asChild size="sm">
                 <Link to={user ? "/explorer" : "/auth"}>
@@ -55,7 +57,7 @@ function Home() {
 
           <div className="py-24 text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 font-mono text-xs text-muted-foreground">
-              multiple storage layer
+              Beta 1.0
             </span>
             <h1 className="mx-auto mt-6 max-w-3xl text-5xl leading-[1.05] font-semibold sm:text-6xl">
               Omni <span className="text-primary">Drive</span>
@@ -108,16 +110,15 @@ function Home() {
           <div className="flex items-center gap-3">
             <OdriveLogo />
             <span className="text-sm text-muted-foreground">
-              by (
+              by
               <a
                 href="https://www.linkedin.com/in/fajartri"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary hover:underline"
+                className="text-primary hover:underline ml-1"
               >
                 Fajar Tri
               </a>
-              )
             </span>
           </div>
           <nav className="flex flex-wrap gap-6 text-sm text-muted-foreground">
