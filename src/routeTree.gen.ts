@@ -40,6 +40,7 @@ import { Route as AuthenticatedAdminLogsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminQueuesRouteImport } from './routes/_authenticated/admin.queues'
 import { Route as AuthenticatedAdminSharesRouteImport } from './routes/_authenticated/admin.shares'
+import { Route as AuthenticatedFilesFileIdRouteImport } from './routes/_authenticated/files.$fileId'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings.index'
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings.security'
 import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
@@ -214,6 +215,12 @@ const AuthenticatedAdminSharesRoute =
     path: '/shares',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedFilesFileIdRoute =
+  AuthenticatedFilesFileIdRouteImport.update({
+    id: '/files/$fileId',
+    path: '/files/$fileId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsIndexRoute =
   AuthenticatedSettingsIndexRouteImport.update({
     id: '/settings/',
@@ -288,6 +295,7 @@ export interface FileRoutesByFullPath {
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin/shares': typeof AuthenticatedAdminSharesRoute
+  '/files/$fileId': typeof AuthenticatedFilesFileIdRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/api/public/health': typeof ApiPublicHealthRouteWithChildren
   '/api/v1/$': typeof ApiV1SplatRoute
@@ -327,6 +335,7 @@ export interface FileRoutesByTo {
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin/shares': typeof AuthenticatedAdminSharesRoute
+  '/files/$fileId': typeof AuthenticatedFilesFileIdRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/api/public/health': typeof ApiPublicHealthRouteWithChildren
   '/api/v1/$': typeof ApiV1SplatRoute
@@ -369,6 +378,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/_authenticated/admin/shares': typeof AuthenticatedAdminSharesRoute
+  '/_authenticated/files/$fileId': typeof AuthenticatedFilesFileIdRoute
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/api/public/health': typeof ApiPublicHealthRouteWithChildren
   '/api/v1/$': typeof ApiV1SplatRoute
@@ -411,6 +421,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/queues'
     | '/admin/shares'
+    | '/files/$fileId'
     | '/settings/security'
     | '/api/public/health'
     | '/api/v1/$'
@@ -450,6 +461,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/queues'
     | '/admin/shares'
+    | '/files/$fileId'
     | '/settings/security'
     | '/api/public/health'
     | '/api/v1/$'
@@ -491,6 +503,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/providers'
     | '/_authenticated/admin/queues'
     | '/_authenticated/admin/shares'
+    | '/_authenticated/files/$fileId'
     | '/_authenticated/settings/security'
     | '/api/public/health'
     | '/api/v1/$'
@@ -736,6 +749,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSharesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/files/$fileId': {
+      id: '/_authenticated/files/$fileId'
+      path: '/files/$fileId'
+      fullPath: '/files/$fileId'
+      preLoaderRoute: typeof AuthenticatedFilesFileIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
       path: '/settings'
@@ -840,6 +860,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedSharesRoute: typeof AuthenticatedSharesRoute
   AuthenticatedTransfersRoute: typeof AuthenticatedTransfersRoute
+  AuthenticatedFilesFileIdRoute: typeof AuthenticatedFilesFileIdRoute
   AuthenticatedSettingsSecurityRoute: typeof AuthenticatedSettingsSecurityRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
@@ -856,6 +877,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedSharesRoute: AuthenticatedSharesRoute,
   AuthenticatedTransfersRoute: AuthenticatedTransfersRoute,
+  AuthenticatedFilesFileIdRoute: AuthenticatedFilesFileIdRoute,
   AuthenticatedSettingsSecurityRoute: AuthenticatedSettingsSecurityRoute,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
 }
