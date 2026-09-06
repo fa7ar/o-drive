@@ -13,7 +13,7 @@ import { listProviders } from "@/core/registry";
 import { toggleFlag, updateSettings } from "@/core/services";
 import { flagsQuery, settingsQuery } from "@/lib/queries";
 
-export const Route = createFileRoute("/_authenticated/settings")({
+export const Route = createFileRoute("/_authenticated/settings/")({
   head: () => ({
     meta: [
       { title: "General settings — ODrive" },
