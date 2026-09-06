@@ -11,18 +11,17 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { listProviders } from "@/core/registry";
 import { toggleFlag, updateSettings } from "@/core/services";
-import { useAuth } from "@/hooks/useAuth";
 import { flagsQuery, settingsQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — ODrive" },
+      { title: "General settings — ODrive" },
       {
         name: "description",
         content: "Workspace preferences, transfer concurrency and the registered provider adapters.",
       },
-      { property: "og:title", content: "Settings — ODrive" },
+      { property: "og:title", content: "General settings — ODrive" },
       {
         property: "og:description",
         content: "Workspace preferences and the registered storage adapters.",
@@ -36,7 +35,6 @@ function SettingsPage() {
   const settings = useQuery(settingsQuery);
   const flags = useQuery(flagsQuery);
   const queryClient = useQueryClient();
-  const { user, signOut } = useAuth();
   const [workspaceName, setWorkspaceName] = useState<string | null>(null);
   const providers = listProviders();
 
@@ -57,7 +55,7 @@ function SettingsPage() {
   const nameValue = workspaceName ?? data?.workspaceName ?? "";
 
   return (
-    <AppShell title="Settings" description="Workspace preferences and adapter registry.">
+    <AppShell title="General" description="Workspace preferences and adapter registry.">
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="panel p-5">
           <h2 className="font-display text-sm font-semibold">Workspace</h2>
@@ -92,46 +90,6 @@ function SettingsPage() {
         </section>
 
         <section className="panel p-5">
-          <h2 className="font-display text-sm font-semibold">Security &amp; privacy</h2>
-          <div className="mt-4 space-y-4">
-            <label className="flex items-center justify-between gap-4">
-              <span className="text-sm">
-                Require magic-link re-auth
-                <span className="block text-xs text-muted-foreground">
-                  Ask for a fresh link on every new device.
-                </span>
-              </span>
-              <Switch
-                checked={data?.requireMagicLinkReauth ?? false}
-                onCheckedChange={(checked) =>
-                  saveMutation.mutate({ requireMagicLinkReauth: checked })
-                }
-              />
-            </label>
-            <label className="flex items-center justify-between gap-4">
-              <span className="text-sm">
-                Anonymous telemetry
-                <span className="block text-xs text-muted-foreground">
-                  Share adapter performance metrics.
-                </span>
-              </span>
-              <Switch
-                checked={data?.telemetry ?? false}
-                onCheckedChange={(checked) => saveMutation.mutate({ telemetry: checked })}
-              />
-            </label>
-          </div>
-          <div className="mt-6 border-t border-border pt-4">
-            <p className="text-sm">
-              Signed in as <span className="font-medium">{user?.email}</span>
-            </p>
-            <Button variant="outline" size="sm" className="mt-3" onClick={() => signOut()}>
-              Sign out
-            </Button>
-          </div>
-        </section>
-
-        <section className="panel p-5">
           <h2 className="font-display text-sm font-semibold">Registered adapters</h2>
           <ul className="mt-4 space-y-3">
             {providers.map((provider) => (
@@ -152,7 +110,7 @@ function SettingsPage() {
           </ul>
         </section>
 
-        <section className="panel p-5">
+        <section className="panel p-5 lg:col-span-2">
           <h2 className="font-display text-sm font-semibold">Feature flags</h2>
           <ul className="mt-4 space-y-4">
             {(flags.data ?? []).map((flag) => (

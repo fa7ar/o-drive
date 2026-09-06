@@ -41,6 +41,7 @@ import { Route as AuthenticatedAdminLogsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminQueuesRouteImport } from './routes/_authenticated/admin.queues'
 import { Route as AuthenticatedAdminSharesRouteImport } from './routes/_authenticated/admin.shares'
+import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings.security'
 import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as ApiV1SplatRouteImport } from './routes/api/v1/$'
 import { Route as ApiPublicHealthLiveRouteImport } from './routes/api/public/health.live'
@@ -218,6 +219,12 @@ const AuthenticatedAdminSharesRoute =
     path: '/shares',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedSettingsSecurityRoute =
+  AuthenticatedSettingsSecurityRouteImport.update({
+    id: '/security',
+    path: '/security',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
 const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
   id: '/api/public/health',
   path: '/api/public/health',
@@ -262,7 +269,7 @@ export interface FileRoutesByFullPath {
   '/drives': typeof AuthenticatedDrivesRoute
   '/explorer': typeof AuthenticatedExplorerRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/settings': typeof AuthenticatedSettingsRoute
+  '/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
@@ -281,6 +288,7 @@ export interface FileRoutesByFullPath {
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin/shares': typeof AuthenticatedAdminSharesRoute
+  '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/api/public/health': typeof ApiPublicHealthRouteWithChildren
   '/api/v1/$': typeof ApiV1SplatRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -300,7 +308,7 @@ export interface FileRoutesByTo {
   '/drives': typeof AuthenticatedDrivesRoute
   '/explorer': typeof AuthenticatedExplorerRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/settings': typeof AuthenticatedSettingsRoute
+  '/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
@@ -319,6 +327,7 @@ export interface FileRoutesByTo {
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin/shares': typeof AuthenticatedAdminSharesRoute
+  '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/api/public/health': typeof ApiPublicHealthRouteWithChildren
   '/api/v1/$': typeof ApiV1SplatRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -341,7 +350,7 @@ export interface FileRoutesById {
   '/_authenticated/drives': typeof AuthenticatedDrivesRoute
   '/_authenticated/explorer': typeof AuthenticatedExplorerRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
-  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/_authenticated/shares': typeof AuthenticatedSharesRoute
   '/_authenticated/transfers': typeof AuthenticatedTransfersRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
@@ -360,6 +369,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/_authenticated/admin/shares': typeof AuthenticatedAdminSharesRoute
+  '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/api/public/health': typeof ApiPublicHealthRouteWithChildren
   '/api/v1/$': typeof ApiV1SplatRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -401,6 +411,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/queues'
     | '/admin/shares'
+    | '/settings/security'
     | '/api/public/health'
     | '/api/v1/$'
     | '/admin/'
@@ -439,6 +450,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/queues'
     | '/admin/shares'
+    | '/settings/security'
     | '/api/public/health'
     | '/api/v1/$'
     | '/admin'
@@ -479,6 +491,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/providers'
     | '/_authenticated/admin/queues'
     | '/_authenticated/admin/shares'
+    | '/_authenticated/settings/security'
     | '/api/public/health'
     | '/api/v1/$'
     | '/_authenticated/admin/'
@@ -729,6 +742,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSharesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/settings/security': {
+      id: '/_authenticated/settings/security'
+      path: '/security'
+      fullPath: '/settings/security'
+      preLoaderRoute: typeof AuthenticatedSettingsSecurityRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
     '/api/public/health': {
       id: '/api/public/health'
       path: '/api/public/health'
@@ -807,6 +827,19 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
 const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
+interface AuthenticatedSettingsRouteChildren {
+  AuthenticatedSettingsSecurityRoute: typeof AuthenticatedSettingsSecurityRoute
+}
+
+const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
+  AuthenticatedSettingsSecurityRoute: AuthenticatedSettingsSecurityRoute,
+}
+
+const AuthenticatedSettingsRouteWithChildren =
+  AuthenticatedSettingsRoute._addFileChildren(
+    AuthenticatedSettingsRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedActivityRoute: typeof AuthenticatedActivityRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
@@ -817,7 +850,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDrivesRoute: typeof AuthenticatedDrivesRoute
   AuthenticatedExplorerRoute: typeof AuthenticatedExplorerRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
-  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRouteWithChildren
   AuthenticatedSharesRoute: typeof AuthenticatedSharesRoute
   AuthenticatedTransfersRoute: typeof AuthenticatedTransfersRoute
 }
@@ -832,7 +865,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDrivesRoute: AuthenticatedDrivesRoute,
   AuthenticatedExplorerRoute: AuthenticatedExplorerRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
-  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRouteWithChildren,
   AuthenticatedSharesRoute: AuthenticatedSharesRoute,
   AuthenticatedTransfersRoute: AuthenticatedTransfersRoute,
 }
