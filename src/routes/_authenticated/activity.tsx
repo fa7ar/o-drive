@@ -33,15 +33,19 @@ export const Route = createFileRoute("/_authenticated/activity")({
 
 function ActivityPage() {
   const [filter, setFilter] = useState("");
+  const [category, setCategory] = useState<string | null>(null);
   const { data, isPending, isError, refetch } = useQuery(activityFeedQuery);
 
   const term = filter.trim().toLowerCase();
+  const categories = [...new Set((data ?? []).map((entry) => entry.action))].sort();
+  
   const entries = (data ?? []).filter(
     (entry) =>
-      !term ||
-      entry.action.toLowerCase().includes(term) ||
-      entry.target.toLowerCase().includes(term) ||
-      entry.actor.toLowerCase().includes(term),
+      (!term ||
+        entry.action.toLowerCase().includes(term) ||
+        entry.target.toLowerCase().includes(term) ||
+        entry.actor.toLowerCase().includes(term)) &&
+      (!category || entry.action === category),
   );
 
   return (
@@ -58,6 +62,28 @@ function ActivityPage() {
         />
       }
     >
+      {categories.length > 0 ? (
+        <div className="mb-4 flex flex-wrap gap-2">
+          <Button
+            variant={category === null ? "default" : "outline"}
+            size="sm"
+            onClick={() => setCategory(null)}
+          >
+            All
+          </Button>
+          {categories.map((cat) => (
+            <Button
+              key={cat}
+              variant={category === cat ? "default" : "outline"}
+              size="sm"
+              onClick={() => setCategory(cat)}
+            >
+              {cat}
+            </Button>
+          ))}
+        </div>
+      ) : null}
+
       {isPending ? (
         <div className="space-y-2">
           {Array.from({ length: 6 }).map((_, index) => (
@@ -74,9 +100,9 @@ function ActivityPage() {
       ) : entries.length === 0 ? (
         <EmptyState
           icon={<History className="size-6" strokeWidth={1.6} />}
-          title={term ? "No matching events" : "No activity yet"}
+          title={term || category ? "No matching events" : "No activity yet"}
           description={
-            term
+            term || category
               ? "Nothing matches that filter. Clear it to see the full trail."
               : "Connect a drive or run a transfer and events will appear here."
           }

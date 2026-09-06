@@ -9,23 +9,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 
-export const Route = createFileRoute("/auth")({
-  head: () => ({
-    meta: [
-      { title: "Sign in to ODrive" },
-      {
-        name: "description",
-        content: "Passwordless magic-link sign in for your ODrive storage workspace.",
-      },
-      { property: "og:title", content: "Sign in to ODrive" },
-      {
-        property: "og:description",
-        content: "Passwordless magic-link sign in for your ODrive storage workspace.",
-      },
-    ],
-  }),
-  component: AuthPage,
-});
+export const Route = createFileRoute("/auth")(
+  {
+    head: () => ({
+      meta: [
+        { title: "Sign in to ODrive" },
+        {
+          name: "description",
+          content: "Passwordless magic-link sign in for your ODrive storage workspace.",
+        },
+        { property: "og:title", content: "Sign in to ODrive" },
+        {
+          property: "og:description",
+          content: "Passwordless magic-link sign in for your ODrive storage workspace.",
+        },
+      ],
+    }),
+    component: AuthPage,
+  }
+);
 
 function AuthPage() {
   const { user, ready, requestMagicLink, verifyMagicLink } = useAuth();
@@ -35,7 +37,7 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (ready && user) navigate({ to: "/dashboard", replace: true });
+    if (ready && user) navigate({ to: "/explorer", replace: true });
   }, [ready, user, navigate]);
 
   async function handleRequest(event: React.FormEvent) {
@@ -59,7 +61,7 @@ function AuthPage() {
     setBusy(true);
     try {
       await verifyMagicLink(token);
-      navigate({ to: "/dashboard", replace: true });
+      navigate({ to: "/explorer", replace: true });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not verify link");
     } finally {

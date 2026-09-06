@@ -153,9 +153,9 @@ function Onboarding() {
               <AddDriveDialog triggerLabel={driveCount > 0 ? "Add another drive" : "Add drive"} />
               <Button
                 variant={driveCount > 0 ? "default" : "outline"}
-                onClick={() => navigate({ to: "/dashboard" })}
+                onClick={() => navigate({ to: "/explorer" })}
               >
-                {driveCount > 0 ? "Go to dashboard" : "Do this later"}
+                {driveCount > 0 ? "Go to explorer" : "Do this later"}
                 <ArrowRight className="size-4" />
               </Button>
             </div>
@@ -165,7 +165,7 @@ function Onboarding() {
 
       <p className="mt-6 text-center text-xs text-muted-foreground">
         Need the full picture?{" "}
-        <Link to="/dashboard" className="text-primary hover:underline">
+        <Link to="/explorer" className="text-primary hover:underline">
           Skip onboarding
         </Link>
       </p>

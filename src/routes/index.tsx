@@ -12,19 +12,21 @@ const TITLE = "Omni Drive — one workspace for every storage account";
 const DESCRIPTION =
   "Connect unlimited accounts across providers and manage them seamlessly in a single workspace. Google Drive and Cloudflare R2 are production ready today.";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: TITLE },
-      { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESCRIPTION },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
-  component: Home,
-});
+export const Route = createFileRoute("/")(
+  {
+    head: () => ({
+      meta: [
+        { title: TITLE },
+        { name: "description", content: DESCRIPTION },
+        { property: "og:title", content: TITLE },
+        { property: "og:description", content: DESCRIPTION },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+    }),
+    component: Home,
+  }
+);
 
 function Home() {
   const { user } = useAuth();
@@ -43,8 +45,8 @@ function Home() {
                 <Link to="/auth">Sign in</Link>
               </Button>
               <Button asChild size="sm">
-                <Link to={user ? "/dashboard" : "/auth"}>
-                  {user ? "Open dashboard" : "Get started"}
+                <Link to={user ? "/explorer" : "/auth"}>
+                  {user ? "Open explorer" : "Get started"}
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>
@@ -70,7 +72,7 @@ function Home() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link to="/dashboard">Explore the workspace</Link>
+                <Link to="/explorer">Explore the workspace</Link>
               </Button>
             </div>
           </div>
@@ -106,14 +108,16 @@ function Home() {
           <div className="flex items-center gap-3">
             <OdriveLogo />
             <span className="text-sm text-muted-foreground">
-              by 
+              by (
               <a
                 href="https://www.linkedin.com/in/fajartri"
                 target="_blank"
                 rel="noopener noreferrer"
+                className="text-primary hover:underline"
               >
                 Fajar Tri
               </a>
+              )
             </span>
           </div>
           <nav className="flex flex-wrap gap-6 text-sm text-muted-foreground">
