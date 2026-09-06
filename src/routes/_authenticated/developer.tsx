@@ -144,6 +144,11 @@ function DeveloperPage() {
   });
 
   const usage = summariseUsage(logs.data ?? []);
+  
+  // Get current domain dynamically
+  const currentDomain = typeof window !== 'undefined' 
+    ? window.location.origin 
+    : 'https://odrive.plab.workers.dev';
 
   return (
     <AppShell
@@ -464,7 +469,7 @@ function DeveloperPage() {
             </CardHeader>
             <CardContent>
               <pre className="overflow-x-auto rounded-md bg-surface p-3 text-xs">
-{`curl https://o-drive.lovable.app/api/public/v1/me \\
+{`curl ${currentDomain}/api/public/v1/me \\
   -H "Authorization: Bearer odv_live_…"`}
               </pre>
             </CardContent>
