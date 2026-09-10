@@ -37,6 +37,7 @@ import type {
   Automation,
   AutomationRun,
   AutomationRunAction,
+  AutomationSchedule,
   BackgroundJob,
   ConfigEntry,
   Connection,
