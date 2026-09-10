@@ -222,6 +222,7 @@ const activity: ActivityLog[] = [
 
 let settings: AppSettings = {
   workspaceName: "ODrive Demo Workspace",
+  displayName: "",
   defaultConnectionId: "conn_drive_1",
   concurrentTransfers: 3,
   requireMagicLinkReauth: true,
