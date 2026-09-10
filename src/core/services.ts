@@ -3,7 +3,7 @@ import { getProvider } from "@/core/registry";
 import { StorageManager } from "@/core/storage-manager";
 import { folderPath } from "@/core/vfs";
 import type { Connection, FileMetadata, TransferJob } from "@/core/types";
-import { DEMO_WORKSPACE_ID } from "@/database/memory";
+import { CURRENT_WORKSPACE } from "@/core/workspace";
 
 /**
  * Application services. All provider work goes through the adapter registry
@@ -11,7 +11,7 @@ import { DEMO_WORKSPACE_ID } from "@/database/memory";
  */
 
 export async function listConnections(): Promise<Connection[]> {
-  return useContainer().connections.list(DEMO_WORKSPACE_ID);
+  return useContainer().connections.list(CURRENT_WORKSPACE);
 }
 
 export async function createConnection(
@@ -20,7 +20,7 @@ export async function createConnection(
 ): Promise<Connection> {
   const { connections, activity, tokens, secrets } = useContainer();
   const draft = await getProvider(providerId).connect(input);
-  const created = await connections.create({ ...draft, workspaceId: DEMO_WORKSPACE_ID });
+  const created = await connections.create({ ...draft, workspaceId: CURRENT_WORKSPACE });
   const rawToken = input["token"] ?? input["secret"] ?? `oauth-${providerId}-${created.id}`;
   await tokens.save(created.id, await secrets.seal(rawToken));
   await activity.record({

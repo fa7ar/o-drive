@@ -13,7 +13,7 @@ import type {
   AutomationRun,
   AutomationRunStatus,
 } from "./types";
-import { DEMO_WORKSPACE_ID } from "@/database/memory";
+import { CURRENT_WORKSPACE } from "@/core/workspace";
 
 /**
  * Automation Engine — Event → Condition → Action.
@@ -334,7 +334,7 @@ async function finish(
 /** Fan-out: every active automation listening on this trigger gets evaluated. */
 export async function dispatchEvent(event: AutomationEvent): Promise<AutomationRun[]> {
   initAutomationEngine();
-  const all = await useContainer().automations.list(DEMO_WORKSPACE_ID);
+  const all = await useContainer().automations.list(CURRENT_WORKSPACE);
   const matching = all.filter(
     (automation) => automation.status === "active" && automation.triggerType === event.type,
   );

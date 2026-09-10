@@ -5,7 +5,7 @@ import { tryGetProvider } from "./registry";
 import { StorageManager } from "./storage-manager";
 import { sync } from "./sync-engine";
 import type { Drive, DriveView, SyncJob } from "./types";
-import { DEMO_WORKSPACE_ID } from "@/database/memory";
+import { CURRENT_WORKSPACE } from "@/core/workspace";
 import { createConnection } from "./services";
 
 /**
@@ -17,8 +17,8 @@ import { createConnection } from "./services";
 export async function listDrives(): Promise<DriveView[]> {
   const { drives, connections } = useContainer();
   const [all, accounts] = await Promise.all([
-    drives.list(DEMO_WORKSPACE_ID),
-    connections.list(DEMO_WORKSPACE_ID),
+    drives.list(CURRENT_WORKSPACE),
+    connections.list(CURRENT_WORKSPACE),
   ]);
   return all
     .filter((drive) => accounts.some((account) => account.id === drive.connectionId))
@@ -49,7 +49,7 @@ export async function createDrive(input: {
   const { drives } = useContainer();
   const connection = await createConnection(input.providerId, input.credentials);
   const drive = await drives.create({
-    workspaceId: DEMO_WORKSPACE_ID,
+    workspaceId: CURRENT_WORKSPACE,
     connectionId: connection.id,
     name: input.name.trim() || connection.name,
     ...(input.description ? { description: input.description } : {}),
@@ -76,7 +76,7 @@ export async function updateDrive(driveId: string, patch: Partial<Drive>): Promi
 }
 
 export async function setDefaultDrive(driveId: string): Promise<Drive[]> {
-  return useContainer().drives.setDefault(DEMO_WORKSPACE_ID, driveId);
+  return useContainer().drives.setDefault(CURRENT_WORKSPACE, driveId);
 }
 
 /** Deletes the drive. The backing connection is removed with it. */

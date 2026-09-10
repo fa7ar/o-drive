@@ -9,7 +9,7 @@ import type {
   AutomationRun,
   AutomationTemplate,
 } from "./types";
-import { DEMO_WORKSPACE_ID } from "@/database/memory";
+import { CURRENT_WORKSPACE } from "@/core/workspace";
 
 /** Automation service — CRUD, templates, metrics and manual/test execution. */
 
@@ -65,7 +65,7 @@ export const AUTOMATION_TEMPLATES: AutomationTemplate[] = [
 ];
 
 export async function listAutomations(): Promise<Automation[]> {
-  return useContainer().automations.list(DEMO_WORKSPACE_ID);
+  return useContainer().automations.list(CURRENT_WORKSPACE);
 }
 
 export async function listAllAutomations(): Promise<Automation[]> {
@@ -95,7 +95,7 @@ export interface AutomationDraft {
 export async function createAutomation(draft: AutomationDraft): Promise<Automation> {
   const dangerous = draft.actions.some((action) => DESTRUCTIVE.has(action.type));
   const created = await useContainer().automations.create({
-    workspaceId: DEMO_WORKSPACE_ID,
+    workspaceId: CURRENT_WORKSPACE,
     name: draft.name.trim() || "Untitled automation",
     ...(draft.description ? { description: draft.description } : {}),
     status: draft.status ?? "active",

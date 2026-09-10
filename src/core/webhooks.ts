@@ -1,6 +1,6 @@
 import { useContainer } from "@/core/container";
 import { assertUrlAllowed } from "@/core/validation";
-import { DEMO_WORKSPACE_ID } from "@/database/memory";
+import { CURRENT_WORKSPACE } from "@/core/workspace";
 import type { WebhookDelivery, WebhookEndpoint, WebhookEventType } from "@/core/types";
 
 /**
@@ -43,7 +43,7 @@ export async function signPayload(secret: string, timestamp: number, body: strin
     .join("")}`;
 }
 
-export async function listWebhooks(workspaceId = DEMO_WORKSPACE_ID): Promise<WebhookEndpoint[]> {
+export async function listWebhooks(workspaceId = CURRENT_WORKSPACE): Promise<WebhookEndpoint[]> {
   return useContainer().webhooks.list(workspaceId);
 }
 
@@ -55,7 +55,7 @@ export async function createWebhook(input: {
   assertUrlAllowed(input.url);
   const secret = `whsec_${randomHex(24)}`;
   const endpoint = await useContainer().webhooks.create({
-    workspaceId: input.workspaceId ?? DEMO_WORKSPACE_ID,
+    workspaceId: input.workspaceId ?? CURRENT_WORKSPACE,
     url: input.url,
     events: input.events.length ? input.events : ["file.created"],
     secretMasked: `whsec_••••${secret.slice(-4)}`,
@@ -88,7 +88,7 @@ export async function listDeliveries(endpointId?: string, limit = 50): Promise<W
 export async function emitWebhookEvent(
   event: WebhookEventType,
   payload: Record<string, unknown>,
-  workspaceId = DEMO_WORKSPACE_ID,
+  workspaceId = CURRENT_WORKSPACE,
 ): Promise<WebhookDelivery[]> {
   const endpoints = (await listWebhooks(workspaceId)).filter(
     (endpoint) => endpoint.status !== "paused" && endpoint.events.includes(event),
