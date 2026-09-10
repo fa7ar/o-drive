@@ -2,7 +2,7 @@ import { useContainer } from "./container";
 import { queueAutomation } from "./automation-engine";
 import { log } from "./logs";
 import type { Automation, AutomationSchedule } from "./types";
-import { DEMO_WORKSPACE_ID } from "@/database/memory";
+import { CURRENT_WORKSPACE } from "@/core/workspace";
 
 /**
  * Scheduler adapter. In production this is driven by Cloudflare Cron Triggers
@@ -54,7 +54,7 @@ function isDue(automation: Automation, now: Date): boolean {
 
 /** Entry point for a cron trigger. Returns the automations it enqueued. */
 export async function runDueAutomations(now = new Date()): Promise<string[]> {
-  const automations = await useContainer().automations.list(DEMO_WORKSPACE_ID);
+  const automations = await useContainer().automations.list(CURRENT_WORKSPACE);
   const due = automations.filter(
     (automation) =>
       automation.status === "active" && automation.triggerType === "schedule" && isDue(automation, now),

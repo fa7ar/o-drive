@@ -1,5 +1,5 @@
 import { useContainer } from "@/core/container";
-import { DEMO_WORKSPACE_ID } from "@/database/memory";
+import { CURRENT_WORKSPACE } from "@/core/workspace";
 import type { ApiKey, ApiScope } from "@/core/types";
 
 /**
@@ -38,7 +38,7 @@ function digestsMatch(a: string, b: string): boolean {
   return diff === 0;
 }
 
-export async function listApiKeys(workspaceId = DEMO_WORKSPACE_ID): Promise<ApiKey[]> {
+export async function listApiKeys(workspaceId = CURRENT_WORKSPACE): Promise<ApiKey[]> {
   return useContainer().apiKeys.list(workspaceId);
 }
 
@@ -52,7 +52,7 @@ export async function createApiKey(input: {
   const prefix = `odv_live_${randomString(6)}`;
   const secret = `${prefix}_${randomString(32)}`;
   const key = await useContainer().apiKeys.create({
-    workspaceId: input.workspaceId ?? DEMO_WORKSPACE_ID,
+    workspaceId: input.workspaceId ?? CURRENT_WORKSPACE,
     name: input.name.trim() || "Untitled key",
     prefix,
     hash: await hashSecret(secret),

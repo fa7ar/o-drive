@@ -15,7 +15,7 @@ import type {
   ShareType,
   ShareView,
 } from "./types";
-import { DEMO_WORKSPACE_ID } from "@/database/memory";
+import { CURRENT_WORKSPACE } from "@/core/workspace";
 
 /**
  * Share service — the provider-agnostic sharing core.
@@ -81,9 +81,9 @@ function rateLimit(key: string, limit: number, windowMs = 60_000): void {
 export async function listShares(): Promise<ShareView[]> {
   const { shares, drives, connections, shareLogs } = useContainer();
   const [all, driveList, accounts] = await Promise.all([
-    shares.list(DEMO_WORKSPACE_ID),
-    drives.list(DEMO_WORKSPACE_ID),
-    connections.list(DEMO_WORKSPACE_ID),
+    shares.list(CURRENT_WORKSPACE),
+    drives.list(CURRENT_WORKSPACE),
+    connections.list(CURRENT_WORKSPACE),
   ]);
   return Promise.all(
     all.map(async (share) => {
@@ -135,7 +135,7 @@ export async function createShare(input: CreateShareInput): Promise<Share> {
   }
   const hours = input.expiresInHours === null ? null : (input.expiresInHours ?? policy.defaultExpiryHours);
   const created = await shares.create({
-    workspaceId: DEMO_WORKSPACE_ID,
+    workspaceId: CURRENT_WORKSPACE,
     driveId: input.driveId,
     resourceType: input.resourceType,
     resourceId: input.resourceId,

@@ -300,6 +300,8 @@ export interface User {
 
 export interface AppSettings {
   workspaceName: string;
+  /** Display name of the signed-in operator. */
+  displayName: string;
   defaultConnectionId: string | null;
   concurrentTransfers: number;
   requireMagicLinkReauth: boolean;
