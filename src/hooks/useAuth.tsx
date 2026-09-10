@@ -1,14 +1,17 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
-import { magicLinkAuthService, type AuthService } from "@/auth/magic-link";
+import { cloudAuthService, type AuthService } from "@/auth/cloud-auth";
 import type { User } from "@/core/types";
 
 interface AuthContextValue {
   user: User | null;
   ready: boolean;
-  requestMagicLink: (email: string) => Promise<{ token: string }>;
-  verifyMagicLink: (token: string) => Promise<User>;
+  signIn: AuthService["signIn"];
+  signUp: AuthService["signUp"];
+  signInWithGoogle: AuthService["signInWithGoogle"];
+  sendPasswordReset: AuthService["sendPasswordReset"];
+  updatePassword: AuthService["updatePassword"];
   signOut: () => Promise<void>;
 }
 
@@ -16,7 +19,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({
   children,
-  service = magicLinkAuthService,
+  service = cloudAuthService,
 }: {
   children: ReactNode;
   service?: AuthService;
@@ -24,19 +27,24 @@ export function AuthProvider({
   const [user, setUser] = useState<User | null>(null);
   const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    setUser(service.currentUser());
-    setReady(true);
+  const refresh = useCallback(async () => {
+    try {
+      setUser(await service.currentUser());
+    } catch {
+      setUser(null);
+    } finally {
+      setReady(true);
+    }
   }, [service]);
 
-  const requestMagicLink = useCallback(
-    (email: string) => service.requestMagicLink(email),
-    [service],
-  );
+  useEffect(() => {
+    void refresh();
+    return service.onChange(() => void refresh());
+  }, [service, refresh]);
 
-  const verifyMagicLink = useCallback(
-    async (token: string) => {
-      const signedIn = await service.verifyMagicLink(token);
+  const signIn = useCallback(
+    async (input: Parameters<AuthService["signIn"]>[0]) => {
+      const signedIn = await service.signIn(input);
       setUser(signedIn);
       return signedIn;
     },
@@ -49,8 +57,17 @@ export function AuthProvider({
   }, [service]);
 
   const value = useMemo(
-    () => ({ user, ready, requestMagicLink, verifyMagicLink, signOut }),
-    [user, ready, requestMagicLink, verifyMagicLink, signOut],
+    () => ({
+      user,
+      ready,
+      signIn,
+      signUp: service.signUp,
+      signInWithGoogle: service.signInWithGoogle,
+      sendPasswordReset: service.sendPasswordReset,
+      updatePassword: service.updatePassword,
+      signOut,
+    }),
+    [user, ready, signIn, service, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
