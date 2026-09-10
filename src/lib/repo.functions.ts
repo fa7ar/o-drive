@@ -11,6 +11,14 @@ import type { RepositoryBundle } from "@/database/postgres-repositories.server";
  * workspace's rows regardless of the arguments it sends.
  */
 
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | { [key: string]: JsonValue };
+
 export interface RepoCallInput {
   repo: string;
   method: string;
@@ -75,7 +83,8 @@ export const repoCall = createServerFn({ method: "POST" })
       repository,
       args,
     );
-    return (result ?? null) as unknown;
+    // Serialize to plain JSON so the transport contract stays explicit.
+    return JSON.parse(JSON.stringify(result ?? null)) as JsonValue;
   });
 
 export type RepositoryName = keyof RepositoryBundle;
