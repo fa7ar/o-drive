@@ -1200,7 +1200,7 @@ export function createPostgresRepositories(
       dangerous: Boolean(a["dangerous"]),
       maxDepth: num(a["maxDepth"], 3),
       ...(a["description"] ? { description: String(a["description"]) } : {}),
-      ...(a["schedule"] ? { schedule: a["schedule"] as Automation["schedule"] } : {}),
+      ...(a["schedule"] ? { schedule: a["schedule"] as AutomationSchedule } : {}),
     };
   };
 
