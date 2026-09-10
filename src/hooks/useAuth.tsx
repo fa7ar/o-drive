@@ -7,11 +7,7 @@ import type { User } from "@/core/types";
 interface AuthContextValue {
   user: User | null;
   ready: boolean;
-  signIn: AuthService["signIn"];
-  signUp: AuthService["signUp"];
-  signInWithGoogle: AuthService["signInWithGoogle"];
-  sendPasswordReset: AuthService["sendPasswordReset"];
-  updatePassword: AuthService["updatePassword"];
+  sendMagicLink: AuthService["sendMagicLink"];
   signOut: () => Promise<void>;
 }
 
@@ -42,15 +38,6 @@ export function AuthProvider({
     return service.onChange(() => void refresh());
   }, [service, refresh]);
 
-  const signIn = useCallback(
-    async (input: Parameters<AuthService["signIn"]>[0]) => {
-      const signedIn = await service.signIn(input);
-      setUser(signedIn);
-      return signedIn;
-    },
-    [service],
-  );
-
   const signOut = useCallback(async () => {
     await service.signOut();
     setUser(null);
@@ -60,14 +47,10 @@ export function AuthProvider({
     () => ({
       user,
       ready,
-      signIn,
-      signUp: service.signUp,
-      signInWithGoogle: service.signInWithGoogle,
-      sendPasswordReset: service.sendPasswordReset,
-      updatePassword: service.updatePassword,
+      sendMagicLink: service.sendMagicLink,
       signOut,
     }),
-    [user, ready, signIn, service, signOut],
+    [user, ready, service, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
