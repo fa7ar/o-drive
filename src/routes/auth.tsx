@@ -1,5 +1,4 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, MailCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -9,116 +8,150 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 
-export const Route = createFileRoute("/auth")(
-  {
-    head: () => ({
-      meta: [
-        { title: "Sign in to ODrive" },
-        {
-          name: "description",
-          content: "Passwordless magic-link sign in for your ODrive storage workspace.",
-        },
-        { property: "og:title", content: "Sign in to ODrive" },
-        {
-          property: "og:description",
-          content: "Passwordless magic-link sign in for your ODrive storage workspace.",
-        },
-      ],
-    }),
-    component: AuthPage,
-  }
-);
+export const Route = createFileRoute("/auth")({
+  head: () => ({
+    meta: [
+      { title: "Sign in to ODrive" },
+      {
+        name: "description",
+        content: "Sign in or create an account for your ODrive storage workspace.",
+      },
+      { property: "og:title", content: "Sign in to ODrive" },
+      {
+        property: "og:description",
+        content: "Sign in or create an account for your ODrive storage workspace.",
+      },
+    ],
+  }),
+  component: AuthPage,
+});
 
 function AuthPage() {
-  const { user, ready, requestMagicLink, verifyMagicLink } = useAuth();
+  const { user, ready, signIn, signUp, sendPasswordReset } = useAuth();
   const navigate = useNavigate();
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
-  const [token, setToken] = useState<string | null>(null);
+  const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     if (ready && user) navigate({ to: "/explorer", replace: true });
   }, [ready, user, navigate]);
 
-  async function handleRequest(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (!email.includes("@")) {
       toast.error("Enter a valid email address");
       return;
     }
+    if (password.length < 8) {
+      toast.error("Use a password of at least 8 characters");
+      return;
+    }
     setBusy(true);
     try {
-      const result = await requestMagicLink(email);
-      setToken(result.token);
-      toast.success("Magic link sent", { description: `Delivered to ${email}` });
+      if (mode === "signup") {
+        await signUp({ email, password, displayName });
+        toast.success("Account created", {
+          description: "Check your inbox if confirmation is required, then sign in.",
+        });
+        setMode("signin");
+      } else {
+        await signIn({ email, password });
+        navigate({ to: "/explorer", replace: true });
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Something went wrong");
     } finally {
       setBusy(false);
     }
   }
 
-  async function handleVerify() {
-    if (!token) return;
-    setBusy(true);
+  async function handleReset() {
+    if (!email.includes("@")) {
+      toast.error("Enter your email address first");
+      return;
+    }
     try {
-      await verifyMagicLink(token);
-      navigate({ to: "/explorer", replace: true });
+      await sendPasswordReset(email);
+      toast.success("Reset link sent", { description: `Check ${email}` });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not verify link");
-    } finally {
-      setBusy(false);
+      toast.error(error instanceof Error ? error.message : "Could not send reset link");
     }
   }
 
   return (
     <div className="relative flex min-h-screen items-center justify-center px-4">
-      <div className="absolute inset-0 grid-backdrop opacity-50" aria-hidden />
-      <div className="absolute inset-0 hero-glow" aria-hidden />
+      <div className="grid-backdrop absolute inset-0 opacity-50" aria-hidden />
+      <div className="hero-glow absolute inset-0" aria-hidden />
       <div className="panel relative w-full max-w-md p-8">
         <OdriveLogo />
-        <h1 className="mt-6 text-2xl font-semibold">Sign in to ODrive</h1>
+        <h1 className="mt-6 text-2xl font-semibold">
+          {mode === "signin" ? "Sign in to ODrive" : "Create your ODrive workspace"}
+        </h1>
         <p className="mt-1.5 text-sm text-muted-foreground">
-          Passwordless by design. Magic link today, OAuth providers drop in later without changing
-          this screen.
+          Your workspace, drives and files stay isolated to your account.
         </p>
 
-        {token ? (
-          <div className="mt-7 space-y-4">
-            <div className="flex items-start gap-3 rounded-lg border border-primary/25 bg-accent p-4">
-              <MailCheck className="mt-0.5 size-5 shrink-0 text-primary" strokeWidth={1.8} />
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-accent-foreground">Check {email}</p>
-                <p className="mt-1 text-xs break-all text-muted-foreground">
-                  Demo mode — no mail is sent. Your link token:{" "}
-                  <span className="font-mono">{token}</span>
-                </p>
-              </div>
-            </div>
-            <Button className="w-full" onClick={handleVerify} disabled={busy}>
-              Open magic link
-              <ArrowRight className="size-4" />
-            </Button>
-            <Button variant="ghost" className="w-full" onClick={() => setToken(null)}>
-              Use a different email
-            </Button>
-          </div>
-        ) : (
-          <form className="mt-7 space-y-4" onSubmit={handleRequest}>
+        <form className="mt-7 space-y-4" onSubmit={handleSubmit}>
+          {mode === "signup" ? (
             <div className="space-y-2">
-              <Label htmlFor="email">Work email</Label>
+              <Label htmlFor="name">Your name</Label>
               <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                placeholder="you@company.com"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                id="name"
+                autoComplete="name"
+                placeholder="Fajar Tri"
+                value={displayName}
+                onChange={(event) => setDisplayName(event.target.value)}
               />
             </div>
-            <Button type="submit" className="w-full" disabled={busy}>
-              {busy ? "Sending…" : "Send magic link"}
-            </Button>
-          </form>
-        )}
+          ) : null}
+          <div className="space-y-2">
+            <Label htmlFor="email">Work email</Label>
+            <Input
+              id="email"
+              type="email"
+              autoComplete="email"
+              placeholder="you@company.com"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              autoComplete={mode === "signin" ? "current-password" : "new-password"}
+              placeholder="At least 8 characters"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </div>
+          <Button type="submit" className="w-full" disabled={busy}>
+            {busy ? "Working…" : mode === "signin" ? "Sign in" : "Create account"}
+          </Button>
+        </form>
+
+        <div className="mt-4 flex items-center justify-between text-xs">
+          <button
+            type="button"
+            className="text-muted-foreground hover:text-foreground"
+            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+          >
+            {mode === "signin" ? "Need an account? Sign up" : "Already have an account? Sign in"}
+          </button>
+          {mode === "signin" ? (
+            <button
+              type="button"
+              className="text-muted-foreground hover:text-foreground"
+              onClick={handleReset}
+            >
+              Forgot password?
+            </button>
+          ) : null}
+        </div>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
           <Link to="/" className="hover:text-foreground">
