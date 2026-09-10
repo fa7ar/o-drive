@@ -1121,7 +1121,7 @@ export function createPostgresRepositories(
         drive_id: input.driveId || null,
         token: input.token,
         status: input.status,
-        attrs: shareAttrs({ downloadCount: 0, ...input }),
+        attrs: shareAttrs(input),
       });
       return toShare(row);
     },
@@ -1244,7 +1244,7 @@ export function createPostgresRepositories(
         name: input.name,
         status: input.status,
         trigger_type: input.triggerType,
-        attrs: automationAttrs({ runCount: 0, failureCount: 0, ...input }),
+        attrs: automationAttrs(input),
       });
       return toAutomation(row);
     },
