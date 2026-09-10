@@ -1,4 +1,3 @@
-import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@/core/types";
 import { getSessionUser } from "@/lib/session.functions";
@@ -53,10 +52,8 @@ export const cloudAuthService: AuthService = {
   },
 
   async signInWithGoogle() {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) throw new Error(result.error.message ?? "Google sign-in failed");
+    // Google sign-in is not enabled for this workspace yet.
+    throw new Error("Google sign-in is not enabled yet. Use your email and password.");
   },
 
   async sendPasswordReset(email) {
