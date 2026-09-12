@@ -22,9 +22,11 @@ import {
   s3CreateFolder,
   s3Delete,
   s3Download,
+  s3Head,
   s3Health,
   s3ListPath,
   s3Quota,
+  s3StreamChunk,
   s3Upload,
 } from "./s3-ops.server";
 
@@ -102,6 +104,17 @@ export async function dispatch(call: Call): Promise<unknown> {
         });
       case "download":
         return s3Download(connectionId, providerId, str(args, "fileId"));
+      case "stream": {
+        const num = (key: string, fallback: number) =>
+          typeof args[key] === "number" ? (args[key] as number) : fallback;
+        return s3StreamChunk(
+          connectionId,
+          providerId,
+          str(args, "fileId"),
+          num("offset", 0),
+          num("length", 4 * 1024 * 1024),
+        );
+      }
       case "delete":
         return s3Delete(connectionId, providerId, str(args, "fileId"));
       case "rename": {
@@ -129,7 +142,7 @@ export async function dispatch(call: Call): Promise<unknown> {
       case "user":
         return { id: connectionId, label: `${providerId.toUpperCase()} bucket` };
       case "metadata":
-        return null;
+        return s3Head(connectionId, providerId, str(args, "fileId"));
       case "health":
         return { status: (await s3Health(connectionId, providerId)) ? "healthy" : "degraded" };
       case "refresh":

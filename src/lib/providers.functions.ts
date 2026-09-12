@@ -14,6 +14,7 @@ const callSchema = z.object({
     "search",
     "upload",
     "download",
+    "stream",
     "delete",
     "rename",
     "move",

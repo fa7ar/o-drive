@@ -66,6 +66,8 @@ export async function s3Fetch(
     query?: Record<string, string>;
     body?: Uint8Array;
     contentType?: string;
+    /** Byte range for streaming reads, e.g. "bytes=0-1048575". */
+    range?: string;
   },
 ): Promise<Response> {
   const url = new URL(`${config.endpoint}/${config.bucket}${input.key ? `/${encodeKey(input.key)}` : ""}`);
@@ -83,6 +85,7 @@ export async function s3Fetch(
     "x-amz-date": amzDate,
   };
   if (input.contentType) headers["content-type"] = input.contentType;
+  if (input.range) headers["range"] = input.range;
 
   const signedHeaders = Object.keys(headers).sort();
   const canonicalHeaders = signedHeaders.map((key) => `${key}:${headers[key]}\n`).join("");

@@ -51,8 +51,8 @@ export const DESCRIPTORS: ProviderDescriptor[] = [
     accent: "provider-s3",
     authKind: "api-key",
     capability: "live",
-    readiness: "beta",
-    verifiedOperations: ["Upload", "Download"],
+    readiness: "production",
+    verifiedOperations: ["Upload", "Download", "Streaming", "Metadata", "Health"],
     fields: [
       { key: "name", label: "Connection name", placeholder: "S3 cold storage" },
       { key: "region", label: "Region", placeholder: "eu-central-1" },
