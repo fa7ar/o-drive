@@ -1141,6 +1141,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_profile_workspace_id: { Args: never; Returns: string }
       current_workspace_id: { Args: never; Returns: string }
       has_role: {
         Args: {
