@@ -22,9 +22,11 @@ import {
   s3CreateFolder,
   s3Delete,
   s3Download,
+  s3Head,
   s3Health,
   s3ListPath,
   s3Quota,
+  s3StreamChunk,
   s3Upload,
 } from "./s3-ops.server";
 

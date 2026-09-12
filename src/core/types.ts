@@ -373,7 +373,14 @@ export interface StorageProvider {
   getDownloadStream?(connectionId: string, fileId: string): Promise<ReadableStream<Uint8Array> | null>;
   /** Optional capability: inline preview stream (images, PDF, text). */
   getPreviewStream?(connectionId: string, fileId: string): Promise<ReadableStream<Uint8Array> | null>;
-  healthCheck(): Promise<{ status: ProviderState["health"]; detail?: string }>;
+  healthCheck(connectionId?: string): Promise<{ status: ProviderState["health"]; detail?: string }>;
+  /** Range read for streaming downloads and previews. Optional per provider. */
+  streamChunk?(
+    connectionId: string,
+    fileId: string,
+    offset: number,
+    length: number,
+  ): Promise<{ bytes: Uint8Array; totalBytes: number; done: boolean; contentType: string }>;
 }
 
 /* ---------------------------------- drives --------------------------------- */

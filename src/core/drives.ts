@@ -113,7 +113,7 @@ export async function healthCheckDrive(driveId: string): Promise<string> {
   if (!drive) throw new Error("Drive not found");
   const connection = await connections.get(drive.connectionId);
   const provider = await StorageManager.forConnection(drive.connectionId);
-  const result = await provider.healthCheck();
+  const result = await provider.healthCheck(drive.connectionId);
   await drives.update(driveId, {
     lastHealthCheckAt: new Date().toISOString(),
     status: result.status === "down" ? "error" : "active",
