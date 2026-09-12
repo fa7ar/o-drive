@@ -104,6 +104,17 @@ export async function dispatch(call: Call): Promise<unknown> {
         });
       case "download":
         return s3Download(connectionId, providerId, str(args, "fileId"));
+      case "stream": {
+        const num = (key: string, fallback: number) =>
+          typeof args[key] === "number" ? (args[key] as number) : fallback;
+        return s3StreamChunk(
+          connectionId,
+          providerId,
+          str(args, "fileId"),
+          num("offset", 0),
+          num("length", 4 * 1024 * 1024),
+        );
+      }
       case "delete":
         return s3Delete(connectionId, providerId, str(args, "fileId"));
       case "rename": {
