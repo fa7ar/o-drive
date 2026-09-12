@@ -83,12 +83,46 @@ export function createLiveAdapter(
       call<FileMetadata | null>("metadata", connectionId, { fileId: fileId(id) }, () =>
         mock.getMetadata(connectionId, id),
       ),
-    healthCheck: async () => {
-      const result: { status: ProviderState["health"]; detail?: string } = {
-        status: "healthy",
-        detail: `${descriptor.name} adapter registered`,
+    streamChunk: async (connectionId, id, offset, length) => {
+      const chunk = await call<{
+        base64: string;
+        totalBytes: number;
+        done: boolean;
+        contentType: string;
+      } | null>("stream", connectionId, { fileId: fileId(id), offset, length }, async () => null);
+      if (!chunk) {
+        const blob = await mock.download(connectionId, id);
+        const bytes = new Uint8Array(await blob.arrayBuffer());
+        return {
+          bytes,
+          totalBytes: bytes.byteLength,
+          done: true,
+          contentType: blob.type || "application/octet-stream",
+        };
+      }
+      return {
+        bytes: Uint8Array.from(atob(chunk.base64), (c) => c.charCodeAt(0)),
+        totalBytes: chunk.totalBytes,
+        done: chunk.done,
+        contentType: chunk.contentType,
       };
-      return result;
+    },
+    healthCheck: async (connectionId?: string) => {
+      if (!connectionId) {
+        return {
+          status: "unknown" as ProviderState["health"],
+          detail: `${descriptor.name} adapter registered, no connection probed`,
+        };
+      }
+      const probe = await call<{ status: ProviderState["health"] } | null>(
+        "health",
+        connectionId,
+        {},
+        async () => null,
+      );
+      return probe
+        ? { status: probe.status, detail: `${descriptor.name} responded to a live probe` }
+        : { status: "down" as ProviderState["health"], detail: `${descriptor.name} probe failed` };
     },
   };
 }

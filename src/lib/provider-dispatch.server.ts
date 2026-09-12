@@ -142,7 +142,7 @@ export async function dispatch(call: Call): Promise<unknown> {
       case "user":
         return { id: connectionId, label: `${providerId.toUpperCase()} bucket` };
       case "metadata":
-        return null;
+        return s3Head(connectionId, providerId, str(args, "fileId"));
       case "health":
         return { status: (await s3Health(connectionId, providerId)) ? "healthy" : "degraded" };
       case "refresh":
