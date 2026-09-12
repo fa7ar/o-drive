@@ -574,7 +574,7 @@ License information will be added before the public release.
 
 # 👤 Creator
 
-ODrive is created by **[Fajar Tri](https://www.linkedin.com/in/fajartri)**.
+ODrive is created by **[Fajar Tri](https://www.linkedin.com/in/fajartri)** built with **[Lovable](https://lovable.dev/invite/VG98I04)**
 
 A T-shaped professional with deep expertise in SEO since 2011, complemented by broad knowledge across digital marketing, vibe coding, PHP native programmer (2008-2011) and related disciplines.
 
