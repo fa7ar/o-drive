@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, ChevronUp } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { DESCRIPTORS } from "@/adapters";
 import { OdriveLogo } from "@/components/odrive-logo";
@@ -31,6 +32,70 @@ export const Route = createFileRoute("/")({
   }),
   component: Home,
 });
+
+const LEGAL_LINKS = [
+  { to: "/legal/privacy", label: "Privacy" },
+  { to: "/legal/terms", label: "Terms" },
+  { to: "/legal/acceptable-use", label: "Acceptable use" },
+  { to: "/legal/data-deletion", label: "Data deletion" },
+] as const;
+
+function LegalMenu() {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  return (
+    <div ref={rootRef} className="relative">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls="legal-menu"
+        onClick={() => setOpen((value) => !value)}
+        className="inline-flex min-h-11 items-center gap-1 text-sm text-muted-foreground hover:text-foreground sm:min-h-0"
+      >
+        Legal
+        <ChevronUp
+          className={`size-3.5 transition-transform ${open ? "" : "rotate-180"}`}
+          aria-hidden
+        />
+      </button>
+      {open ? (
+        <nav
+          id="legal-menu"
+          aria-label="Legal"
+          className="absolute bottom-full left-1/2 mb-2 w-44 -translate-x-1/2 rounded-lg border border-border bg-card p-1 shadow-lg sm:left-auto sm:right-0 sm:translate-x-0"
+        >
+          {LEGAL_LINKS.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              onClick={() => setOpen(false)}
+              className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      ) : null}
+    </div>
+  );
+}
 
 function Home() {
   const { user } = useAuth();
@@ -133,29 +198,16 @@ function Home() {
             <span className="text-sm text-muted-foreground">
               by
               <a
-                href="https://www.linkedin.com/in/fajartri"
+                href="https://clab.my.id"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="ml-1 text-primary hover:underline"
               >
-                Fajar Tri
+                Codelab
               </a>
             </span>
           </div>
-          <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-            <Link to="/legal/privacy" className="hover:text-foreground">
-              Privacy
-            </Link>
-            <Link to="/legal/terms" className="hover:text-foreground">
-              Terms
-            </Link>
-            <Link to="/legal/acceptable-use" className="hover:text-foreground">
-              Acceptable use
-            </Link>
-            <Link to="/legal/data-deletion" className="hover:text-foreground">
-              Data deletion
-            </Link>
-          </nav>
+          <LegalMenu />
         </div>
       </footer>
     </div>

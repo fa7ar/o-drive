@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/app-shell";
+import { DeveloperDocs } from "@/components/developer-docs";
 import { EmptyState } from "@/components/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -462,48 +463,8 @@ function DeveloperPage() {
         </TabsContent>
 
         {/* ---------------------------- quickstart -------------------------- */}
-        <TabsContent value="quickstart" className="mt-4 space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">1. Authenticate</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <pre className="overflow-x-auto rounded-md bg-surface p-3 text-xs">
-{`curl ${currentDomain}/api/public/v1/me \\
-  -H "Authorization: Bearer odv_live_…"`}
-              </pre>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">2. List drives and files</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <pre className="overflow-x-auto rounded-md bg-surface p-3 text-xs">
-{`GET /api/public/v1/drives
-GET /api/public/v1/drives/{drive_id}/files?path=/&limit=50
-GET /api/public/v1/search?q=invoice`}
-              </pre>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">3. Move data between providers</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <pre className="overflow-x-auto rounded-md bg-surface p-3 text-xs">
-{`POST /api/public/v1/transfers
-{ "drive_id": "drv_…", "name": "report.pdf", "direction": "upload", "size_bytes": 91234 }
-
-GET /api/public/v1/jobs/{job_id}`}
-              </pre>
-              <p className="mt-3 text-xs text-muted-foreground">
-                Every response is <code>{"{ data, meta? }"}</code>; errors are{" "}
-                <code>{"{ error: { code, message, request_id } }"}</code>. Pagination uses{" "}
-                <code>cursor</code> and <code>limit</code>.
-              </p>
-            </CardContent>
-          </Card>
+        <TabsContent value="quickstart" className="mt-4">
+          <DeveloperDocs baseUrl={currentDomain} />
         </TabsContent>
       </Tabs>
 

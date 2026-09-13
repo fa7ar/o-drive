@@ -123,8 +123,8 @@ export function AppShell({
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-card/85 backdrop-blur">
-        <div className="flex h-14 items-center gap-4 px-4 lg:px-6">
-          <OdriveLogo />
+        <div className="flex h-14 items-center gap-2 px-3 sm:gap-4 sm:px-4 lg:px-6">
+          <OdriveLogo hideTextOnMobile />
 
           {/* Three top-level tabs — the entire product lives under these. */}
           <nav className="ml-2 hidden items-center gap-1 md:flex" aria-label="Primary">
@@ -148,7 +148,7 @@ export function AppShell({
           </nav>
 
           <form
-            className="relative ml-auto w-full max-w-sm"
+            className="relative ml-auto w-full min-w-0 flex-1 sm:max-w-sm sm:flex-none"
             onSubmit={(event) => {
               event.preventDefault();
               navigate({ to: "/explorer", search: { q: query || undefined } });
@@ -159,13 +159,14 @@ export function AppShell({
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search across every drive"
-              className="h-9 bg-surface pl-9"
+              className="h-10 bg-surface pl-9 sm:h-9"
               aria-label="Search files"
+              enterKeyHint="search"
             />
           </form>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-9 gap-2 px-2">
+              <Button variant="ghost" className="h-10 shrink-0 gap-2 px-2 sm:h-9">
                 <span className="inline-flex size-7 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">
                   {initials}
                 </span>

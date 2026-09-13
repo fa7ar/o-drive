@@ -1,9 +1,27 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import {
+  ArrowRight,
+  ArrowUpDown,
+  Files,
+  HardDrive,
+  Link2,
+  Plug,
+  Zap,
+} from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
-import { metricsQuery } from "@/lib/queries";
-import { formatBytes } from "@/lib/format";
+import { Badge } from "@/components/ui/badge";
+import { formatBytes, formatDateTime } from "@/lib/format";
+import {
+  activityQuery,
+  automationsQuery,
+  connectionsQuery,
+  drivesQuery,
+  metricsQuery,
+  sharesQuery,
+  transfersQuery,
+} from "@/lib/queries";
 
 export const Route = createFileRoute("/_authenticated/home")({
   head: () => ({
@@ -11,13 +29,11 @@ export const Route = createFileRoute("/_authenticated/home")({
       { title: "Dashboard — ODrive" },
       {
         name: "description",
-        content: "Overview of your ODrive workspace: storage usage, recent activity, and quick access to key features.",
+        content:
+          "Live overview of your ODrive workspace: storage, drives, transfers, shares, automations and provider health.",
       },
       { property: "og:title", content: "Dashboard — ODrive" },
-      {
-        property: "og:description",
-        content: "Workspace overview and key metrics.",
-      },
+      { property: "og:description", content: "Workspace overview and key metrics." },
     ],
   }),
   component: HomePage,
@@ -25,86 +41,172 @@ export const Route = createFileRoute("/_authenticated/home")({
 
 function HomePage() {
   const metrics = useQuery(metricsQuery);
+  const connections = useQuery(connectionsQuery);
+  const drives = useQuery(drivesQuery);
+  const transfers = useQuery(transfersQuery);
+  const shares = useQuery(sharesQuery);
+  const automations = useQuery(automationsQuery);
+  const activity = useQuery(activityQuery);
+
   const data = metrics.data;
+  const connectionList = connections.data ?? [];
+  const transferList = transfers.data ?? [];
+  const activeTransfers = transferList.filter(
+    (item) => item.status === "running" || item.status === "queued",
+  );
+  const shareList = (shares.data ?? []).map((view) => view.share);
+  const activeShares = shareList.filter((share) => share.status === "active");
+  const activeAutomations = (automations.data ?? []).filter(
+    (automation) => automation.status === "active",
+  );
+  const healthy = connectionList.filter((item) => item.status === "connected").length;
 
   const storagePercent =
     data && data.storageTotalBytes > 0
       ? Math.round((data.storageUsedBytes / data.storageTotalBytes) * 100)
-      : 0;
+      : null;
+
+  const stats = [
+    {
+      icon: HardDrive,
+      label: "Storage used",
+      value: formatBytes(data?.storageUsedBytes ?? 0),
+      hint:
+        storagePercent === null
+          ? `${connectionList.length} connection${connectionList.length === 1 ? "" : "s"}`
+          : `${storagePercent}% of ${formatBytes(data?.storageTotalBytes ?? 0)}`,
+      to: "/drives",
+    },
+    {
+      icon: Plug,
+      label: "Drives & connections",
+      value: `${(drives.data ?? []).length} / ${connectionList.length}`,
+      hint: "drives / connections",
+      to: "/connections",
+    },
+    {
+      icon: ArrowUpDown,
+      label: "Active transfers",
+      value: String(activeTransfers.length),
+      hint: `${data?.jobsFailed ?? 0} failed jobs`,
+      to: "/transfers",
+    },
+    {
+      icon: Link2,
+      label: "Active shares",
+      value: String(activeShares.length),
+      hint: `${shareList.length} total`,
+      to: "/shares",
+    },
+    {
+      icon: Zap,
+      label: "Automations",
+      value: String(activeAutomations.length),
+      hint: `${(automations.data ?? []).length} configured`,
+      to: "/automations",
+    },
+    {
+      icon: Files,
+      label: "Provider health",
+      value: `${healthy}/${connectionList.length}`,
+      hint: data?.lastSyncAt ? `Last sync ${formatDateTime(data.lastSyncAt)}` : "No sync yet",
+      to: "/connections",
+    },
+  ];
 
   return (
     <AppShell
       title="Dashboard"
-      description="Overview of your ODrive workspace, storage usage, and quick insights."
+      description="Live overview of your workspace — every number below comes from your actual drives, transfers and shares."
     >
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="panel p-4">
-          <p className="text-xs tracking-wide text-muted-foreground uppercase">Storage Used</p>
-          <p className="mt-2 text-2xl font-semibold">{formatBytes(data?.storageUsedBytes ?? 0)}</p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {storagePercent}% of {formatBytes(data?.storageTotalBytes ?? 0)}
-          </p>
-        </div>
-        <div className="panel p-4">
-          <p className="text-xs tracking-wide text-muted-foreground uppercase">Connections</p>
-          <p className="mt-2 text-2xl font-semibold">{data?.connectionsActive ?? 0}</p>
-          <p className="mt-1 text-xs text-muted-foreground">Active providers</p>
-        </div>
-        <div className="panel p-4">
-          <p className="text-xs tracking-wide text-muted-foreground uppercase">Transfers</p>
-          <p className="mt-2 text-2xl font-semibold">{data?.jobsRunning ?? 0}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{data?.jobsQueued ?? 0} queued</p>
-        </div>
-        <div className="panel p-4">
-          <p className="text-xs tracking-wide text-muted-foreground uppercase">Automations</p>
-          <p className="mt-2 text-2xl font-semibold">—</p>
-          <p className="mt-1 text-xs text-muted-foreground">Configure in Settings</p>
-        </div>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {stats.map((stat) => (
+          <Link
+            key={stat.label}
+            to={stat.to}
+            className="panel group flex items-start gap-3 p-4 transition-colors hover:border-primary/40"
+          >
+            <stat.icon className="mt-0.5 size-4 shrink-0 text-muted-foreground group-hover:text-primary" />
+            <div className="min-w-0">
+              <p className="text-xs tracking-wide text-muted-foreground uppercase">
+                {stat.label}
+              </p>
+              <p className="mt-1 text-xl font-semibold">{stat.value}</p>
+              <p className="mt-0.5 truncate text-xs text-muted-foreground">{stat.hint}</p>
+            </div>
+          </Link>
+        ))}
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
         <section className="panel p-5">
-          <h2 className="font-display text-sm font-semibold">Welcome to ODrive</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            ODrive is your unified workspace for managing storage across multiple providers. Connect drives, browse files, run transfers, and automate workflows without vendor lock-in.
-          </p>
-          <div className="mt-4 space-y-2 text-sm text-muted-foreground">
-            <p>✓ Connect unlimited storage accounts (Google Drive, OneDrive, S3, R2, and more)</p>
-            <p>✓ Browse and search files from every provider in one place</p>
-            <p>✓ Transfer files between providers seamlessly</p>
-            <p>✓ Create public share links and set expiration dates</p>
-            <p>✓ Automate repetitive tasks with rules and automations</p>
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-sm font-semibold">Recent transfers</h2>
+            <Link
+              to="/transfers"
+              className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+            >
+              View all <ArrowRight className="size-3" />
+            </Link>
           </div>
+          {transferList.length === 0 ? (
+            <p className="mt-4 text-sm text-muted-foreground">
+              No transfers yet. Move a file in the Explorer to see it here.
+            </p>
+          ) : (
+            <ul className="mt-3 divide-y divide-border">
+              {transferList.slice(0, 5).map((transfer) => (
+                <li key={transfer.id} className="flex items-center gap-3 py-2.5 text-sm">
+                  <span className="min-w-0 flex-1 truncate">{transfer.fileName}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {formatBytes(transfer.sizeBytes)}
+                  </span>
+                  <Badge
+                    variant={
+                      transfer.status === "failed"
+                        ? "destructive"
+                        : transfer.status === "completed"
+                          ? "default"
+                          : "secondary"
+                    }
+                  >
+                    {transfer.status}
+                  </Badge>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         <section className="panel p-5">
-          <h2 className="font-display text-sm font-semibold">Quick Start</h2>
-          <ul className="mt-4 space-y-3 text-sm">
-            <li className="flex items-start gap-3">
-              <span className="shrink-0 text-primary">1.</span>
-              <span className="text-muted-foreground">
-                <strong>Add a drive</strong> in the Files menu to connect your first storage account
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="shrink-0 text-primary">2.</span>
-              <span className="text-muted-foreground">
-                <strong>Explore</strong> files and browse your storage across all connected accounts
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="shrink-0 text-primary">3.</span>
-              <span className="text-muted-foreground">
-                <strong>Create transfers</strong> to move files between providers
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="shrink-0 text-primary">4.</span>
-              <span className="text-muted-foreground">
-                <strong>Set up automations</strong> to run rules on schedules or events
-              </span>
-            </li>
-          </ul>
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-sm font-semibold">Recent activity</h2>
+            <Link
+              to="/activity"
+              className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+            >
+              View all <ArrowRight className="size-3" />
+            </Link>
+          </div>
+          {(activity.data ?? []).length === 0 ? (
+            <p className="mt-4 text-sm text-muted-foreground">
+              Nothing recorded yet — connect a drive to get started.
+            </p>
+          ) : (
+            <ul className="mt-3 divide-y divide-border">
+              {(activity.data ?? []).slice(0, 5).map((entry) => (
+                <li key={entry.id} className="flex items-center gap-3 py-2.5 text-sm">
+                  <span className="min-w-0 flex-1 truncate">
+                    <span className="font-medium">{entry.action}</span>{" "}
+                    <span className="text-muted-foreground">{entry.target}</span>
+                  </span>
+                  <span className="shrink-0 text-xs text-muted-foreground">
+                    {formatDateTime(entry.createdAt)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       </div>
     </AppShell>
