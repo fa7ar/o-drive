@@ -46,6 +46,7 @@ import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings.security'
 import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as ApiV1SplatRouteImport } from './routes/api/v1/$'
+import { Route as ApiPublicHealthConfigRouteImport } from './routes/api/public/health.config'
 import { Route as ApiPublicHealthLiveRouteImport } from './routes/api/public/health.live'
 import { Route as ApiPublicHealthReadyRouteImport } from './routes/api/public/health.ready'
 import { Route as ApiPublicV1SplatRouteImport } from './routes/api/public/v1/$'
@@ -251,6 +252,11 @@ const ApiV1SplatRoute = ApiV1SplatRouteImport.update({
   path: '/api/v1/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHealthConfigRoute = ApiPublicHealthConfigRouteImport.update({
+  id: '/config',
+  path: '/config',
+  getParentRoute: () => ApiPublicHealthRoute,
+} as any)
 const ApiPublicHealthLiveRoute = ApiPublicHealthLiveRouteImport.update({
   id: '/live',
   path: '/live',
@@ -320,6 +326,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/$': typeof ApiV1SplatRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/api/public/health/config': typeof ApiPublicHealthConfigRoute
   '/api/public/health/live': typeof ApiPublicHealthLiveRoute
   '/api/public/health/ready': typeof ApiPublicHealthReadyRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
@@ -363,6 +370,7 @@ export interface FileRoutesByTo {
   '/api/v1/$': typeof ApiV1SplatRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/api/public/health/config': typeof ApiPublicHealthConfigRoute
   '/api/public/health/live': typeof ApiPublicHealthLiveRoute
   '/api/public/health/ready': typeof ApiPublicHealthReadyRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
@@ -409,6 +417,7 @@ export interface FileRoutesById {
   '/api/v1/$': typeof ApiV1SplatRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/api/public/health/config': typeof ApiPublicHealthConfigRoute
   '/api/public/health/live': typeof ApiPublicHealthLiveRoute
   '/api/public/health/ready': typeof ApiPublicHealthReadyRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
@@ -455,6 +464,7 @@ export interface FileRouteTypes {
     | '/api/v1/$'
     | '/admin/'
     | '/settings/'
+    | '/api/public/health/config'
     | '/api/public/health/live'
     | '/api/public/health/ready'
     | '/api/public/v1/$'
@@ -498,6 +508,7 @@ export interface FileRouteTypes {
     | '/api/v1/$'
     | '/admin'
     | '/settings'
+    | '/api/public/health/config'
     | '/api/public/health/live'
     | '/api/public/health/ready'
     | '/api/public/v1/$'
@@ -543,6 +554,7 @@ export interface FileRouteTypes {
     | '/api/v1/$'
     | '/_authenticated/admin/'
     | '/_authenticated/settings/'
+    | '/api/public/health/config'
     | '/api/public/health/live'
     | '/api/public/health/ready'
     | '/api/public/v1/$'
@@ -829,6 +841,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/health/config': {
+      id: '/api/public/health/config'
+      path: '/config'
+      fullPath: '/api/public/health/config'
+      preLoaderRoute: typeof ApiPublicHealthConfigRouteImport
+      parentRoute: typeof ApiPublicHealthRoute
+    }
     '/api/public/health/live': {
       id: '/api/public/health/live'
       path: '/live'
@@ -947,11 +966,13 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface ApiPublicHealthRouteChildren {
+  ApiPublicHealthConfigRoute: typeof ApiPublicHealthConfigRoute
   ApiPublicHealthLiveRoute: typeof ApiPublicHealthLiveRoute
   ApiPublicHealthReadyRoute: typeof ApiPublicHealthReadyRoute
 }
 
 const ApiPublicHealthRouteChildren: ApiPublicHealthRouteChildren = {
+  ApiPublicHealthConfigRoute: ApiPublicHealthConfigRoute,
   ApiPublicHealthLiveRoute: ApiPublicHealthLiveRoute,
   ApiPublicHealthReadyRoute: ApiPublicHealthReadyRoute,
 }

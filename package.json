@@ -9,6 +9,9 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
+    "check:config": "node scripts/check-config.mjs",
+    "deploy": "node scripts/check-config.mjs && vite build && wrangler deploy",
+    "deploy:staging": "node scripts/check-config.mjs && vite build && wrangler deploy --env staging",
     "format": "prettier --write ."
   },
   "dependencies": {
