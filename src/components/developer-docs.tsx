@@ -352,6 +352,11 @@ bunx wrangler deploy        # uses your wrangler.toml / worker entry`}
                   ],
                   ["LOVABLE_API_KEY", "server (managed)", "Email sending & webhooks (Lovable Cloud)"],
                   ["LOVABLE_CRON_SECRET", "server (secret)", "Authenticates scheduled-job callers"],
+                  [
+                    "GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET",
+                    "server (secret)",
+                    "Google Drive OAuth (only if you enable that provider)",
+                  ],
                 ].map(([name, where, purpose]) => (
                   <tr key={name}>
                     <td className="p-3 font-mono text-xs">{name}</td>
@@ -395,8 +400,9 @@ psql "$DATABASE_URL" -f supabase/migrations/<timestamp>_odrive_schema.sql`}
           <ul className="list-inside list-disc space-y-1 text-sm text-muted-foreground">
             <li>
               <strong>Google Drive</strong> — OAuth. Create a Google Cloud OAuth client, enable the
-              Drive API, and add <Code>{"{origin}/api/…/oauth/callback"}</Code> as an authorised
-              redirect URI.
+              Drive API, set <Code>GOOGLE_CLIENT_ID</Code>/<Code>GOOGLE_CLIENT_SECRET</Code> as
+              server secrets, and authorise your app's origin as the redirect URI (the app passes
+              its current origin, so no code change is needed per environment).
             </li>
             <li>
               <strong>Amazon S3 / Cloudflare R2</strong> — access key ID, secret, bucket, region
