@@ -1,0 +1,43 @@
+# ODrive — Cloudflare Workers deployment source of truth.
+#
+# NON-SECRET configuration only. Secrets are stored as Worker Secrets:
+#   wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+#   wrangler secret put ODRIVE_ENCRYPTION_KEY
+#   ...see .env.example and src/config/runtime-env.server.ts
+#
+# keep_vars = true stops a deploy from wiping runtime variables that were set
+# outside this file. Worker Secrets are always preserved across deploys.
+
+name = "odrive"
+main = "./.output/server/index.mjs"
+compatibility_date = "2025-06-01"
+compatibility_flags = ["nodejs_compat"]
+keep_vars = true
+
+[assets]
+directory = "./.output/public"
+
+[vars]
+ENVIRONMENT = "production"
+
+# Required secret names (values live in Cloudflare Secrets, never here):
+#   SUPABASE_SERVICE_ROLE_KEY, ODRIVE_ENCRYPTION_KEY
+# Optional secret names:
+#   LOVABLE_API_KEY, LOVABLE_SEND_URL, LOVABLE_CRON_SECRET,
+#   LOVABLE_CRON_SECRET_PREVIOUS, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
+#   MICROSOFT_CLIENT_ID, MICROSOFT_CLIENT_SECRET, DROPBOX_CLIENT_ID,
+#   DROPBOX_CLIENT_SECRET
+
+[env.staging]
+name = "odrive-staging"
+keep_vars = true
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+
+[env.production]
+name = "odrive"
+keep_vars = true
+
+[env.production.vars]
+ENVIRONMENT = "production"
