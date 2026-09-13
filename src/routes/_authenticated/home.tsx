@@ -55,9 +55,7 @@ function HomePage() {
   const activeTransfers = transferList.filter(
     (item) => item.status === "running" || item.status === "queued",
   );
-  const shareList = (shares.data ?? []).map((view) =>
-    "share" in view ? view.share : (view as unknown as Share),
-  );
+  const shareList = (shares.data ?? []).map((view) => view.share);
   const activeShares = shareList.filter((share) => share.status === "active");
   const activeAutomations = (automations.data ?? []).filter(
     (automation) => automation.status === "active",
