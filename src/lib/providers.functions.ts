@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+import { readSecret } from "@/config/runtime-env.server";
+
 /**
  * Thin RPC surface for the live provider adapters. Every credential stays in
  * the server-side vault; the browser only ever sees file metadata.
@@ -61,7 +63,7 @@ export const oauthAuthorizeUrl = createServerFn({ method: "POST" })
     const { oauthConfig } = await import("@/adapters/oauth");
     const config = oauthConfig(data.providerId);
     if (!config) return { url: null as string | null, reason: "unsupported" };
-    const clientId = process.env[config.clientIdEnv];
+    const clientId = readSecret(config.clientIdEnv);
     if (!clientId) return { url: null as string | null, reason: "not-configured" };
     const url = new URL(config.authorizeUrl);
     url.searchParams.set("client_id", clientId);
@@ -91,8 +93,8 @@ export const completeOAuth = createServerFn({ method: "POST" })
     const { saveBundle } = await import("./vault.server");
     const config = oauthConfig(data.providerId);
     if (!config) throw new Error("Unsupported OAuth provider");
-    const clientId = process.env[config.clientIdEnv];
-    const clientSecret = process.env[config.clientSecretEnv];
+    const clientId = readSecret(config.clientIdEnv);
+    const clientSecret = readSecret(config.clientSecretEnv);
     if (!clientId || !clientSecret) throw new Error("OAuth client is not configured");
 
     const response = await fetch(config.tokenUrl, {

@@ -2,6 +2,7 @@
  * Google Drive live implementation. Runs server-side only; access tokens are
  * read from the credential vault and refreshed transparently.
  */
+import { readSecret } from "@/config/runtime-env.server";
 import { oauthConfig } from "@/adapters/oauth";
 import type { FileMetadata } from "@/core/types";
 import { guessMimeType, joinPath, normalizePath } from "@/core/vfs";
@@ -29,8 +30,8 @@ async function accessToken(connectionId: string): Promise<string> {
 
 export async function refreshAccessToken(connectionId: string, refreshToken: string): Promise<string> {
   const config = oauthConfig("google-drive")!;
-  const clientId = process.env[config.clientIdEnv];
-  const clientSecret = process.env[config.clientSecretEnv];
+  const clientId = readSecret(config.clientIdEnv);
+  const clientSecret = readSecret(config.clientSecretEnv);
   if (!clientId || !clientSecret) throw new NotConfiguredError("Google OAuth client is not configured");
 
   const response = await fetch(config.tokenUrl, {
