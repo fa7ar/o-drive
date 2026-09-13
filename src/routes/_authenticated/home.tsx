@@ -12,7 +12,6 @@ import {
 
 import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
-import type { Share } from "@/core/types";
 import { formatBytes, formatDateTime } from "@/lib/format";
 import {
   activityQuery,
