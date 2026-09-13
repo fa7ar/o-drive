@@ -12,6 +12,7 @@ import {
 
 import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
+import type { Share } from "@/core/types";
 import { formatBytes, formatDateTime } from "@/lib/format";
 import {
   activityQuery,
@@ -97,7 +98,7 @@ function HomePage() {
       icon: Link2,
       label: "Active shares",
       value: String(activeShares.length),
-      hint: `${(shares.data ?? []).length} total`,
+      hint: `${shareList.length} total`,
       to: "/shares",
     },
     {
