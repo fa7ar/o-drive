@@ -1,7 +1,9 @@
+export type AuthEmailLinkType = "magiclink" | "signup";
+
 export type MagicLinkPayload = {
   email: string;
   token: string;
-  type: "magiclink";
+  type: AuthEmailLinkType;
 };
 
 const CURRENT_PUBLIC_ORIGIN = "https://odrive.plab.workers.dev";
@@ -36,6 +38,7 @@ export function createAppMagicLink(input: {
   callbackUrl?: string | undefined;
   appUrl?: string | undefined;
   additionalOrigins?: string | undefined;
+  type?: AuthEmailLinkType | undefined;
 }): string | null {
   if (!input.token) return null;
   const allowed = allowedOrigins(input.appUrl, input.additionalOrigins);
@@ -48,7 +51,7 @@ export function createAppMagicLink(input: {
   const fragment = new URLSearchParams({
     token: input.token,
     email: input.email,
-    type: "magiclink",
+    type: input.type ?? "magiclink",
   });
   return `${target}/auth#${fragment.toString()}`;
 }
@@ -57,6 +60,7 @@ export function readAppMagicLink(hash: string): MagicLinkPayload | null {
   const params = new URLSearchParams(hash.replace(/^#/, ""));
   const email = params.get("email")?.trim();
   const token = params.get("token")?.trim();
-  if (!email || !token || params.get("type") !== "magiclink") return null;
-  return { email, token, type: "magiclink" };
+  const type = params.get("type");
+  if (!email || !token || (type !== "magiclink" && type !== "signup")) return null;
+  return { email, token, type };
 }

@@ -35,7 +35,15 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
                   siteName: SITE_NAME,
                   siteUrl: SITE_URL,
                   recipient: data.email,
-                  confirmationUrl: data.url,
+                  confirmationUrl:
+                    createAppMagicLink({
+                      email: data.email,
+                      token: data.token,
+                      type: "signup",
+                      callbackUrl: data.callback_url,
+                      appUrl: process.env["APP_URL"],
+                      additionalOrigins: process.env["AUTH_ALLOWED_ORIGINS"],
+                    }) ?? data.url,
                 }),
             },
             invite: {

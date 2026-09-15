@@ -41,3 +41,16 @@ test("incomplete token payload fails closed", () => {
   assert.equal(readAppMagicLink("#type=magiclink&token=only-token"), null);
   assert.equal(createAppMagicLink({ email: "person@example.com", token: null }), null);
 });
+
+test("first-time signup links use the same first-party verification flow", () => {
+  const link = createAppMagicLink({
+    email: "new@example.com",
+    token: "signup-token",
+    type: "signup",
+  });
+  assert.deepEqual(readAppMagicLink(new URL(link).hash), {
+    email: "new@example.com",
+    token: "signup-token",
+    type: "signup",
+  });
+});
