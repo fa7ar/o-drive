@@ -12,6 +12,10 @@ from pushing to GitHub; a push alone is not proof of a successful deployment.
   CI can use its own scoped `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
 - Keep credentials out of Git. Do not replace an existing vault encryption key:
   existing provider credentials require the key that encrypted them.
+- `bun install` configures the repository's `.githooks/pre-commit` hook. It runs
+  `scripts/check-secrets.mjs` and blocks staged values that look like Supabase
+  secret keys, service-role key material, or JWT-style `eyJ...` tokens. The same
+  checker also runs in GitHub Actions for pushes and pull requests.
 
 ## Configure each target once
 
@@ -83,6 +87,8 @@ force-added back to Git.
 node scripts/check-config.mjs --local
 # Check browser build values only; server secrets are not needed for this check.
 node scripts/check-config.mjs --build
+# Check committed files for secret-looking values.
+bun run check:secrets
 # Validate the selected Wrangler vars without contacting Cloudflare.
 node scripts/check-config.mjs --deployment --env staging
 # Validate vars and required secret names in the selected remote Worker.
