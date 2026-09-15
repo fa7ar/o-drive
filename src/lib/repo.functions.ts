@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 
+import { createPostgresAdapter } from "@/database/postgres.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { RepositoryBundle } from "@/database/postgres-repositories.server";
 
@@ -53,18 +54,19 @@ export const repoCall = createServerFn({ method: "POST" })
   .inputValidator(validate)
   .handler(async ({ data, context }) => {
     const { resolveWorkspace, serverRepositories } = await import("@/lib/repositories.server");
+    const db = createPostgresAdapter(context.supabase);
 
     const signature = `${data.repo}.${data.method}`;
     if (BLOCKED.has(signature)) throw new Error("This operation is server-only");
 
     const email = typeof context.claims["email"] === "string" ? context.claims["email"] : "";
-    const { workspaceId, role } = await resolveWorkspace(context.userId, email);
+    const { workspaceId, role } = await resolveWorkspace(context.userId, email, db);
 
     if (ADMIN_ONLY.has(signature) && role !== "owner" && role !== "admin") {
       throw new Error("You do not have permission to perform this action");
     }
 
-    const repositories = serverRepositories({ workspaceId, userId: context.userId, email });
+    const repositories = serverRepositories({ workspaceId, userId: context.userId, email, db });
     const repository = (repositories as unknown as Record<string, Record<string, unknown>>)[
       data.repo
     ];
