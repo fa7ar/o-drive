@@ -7,10 +7,11 @@ export const getSessionUser = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { resolveWorkspace } = await import("@/lib/repositories.server");
-    const { postgresAdapter } = await import("@/database/postgres.server");
+    const { createPostgresAdapter } = await import("@/database/postgres.server");
+    const postgresAdapter = createPostgresAdapter(context.supabase);
 
     const email = typeof context.claims["email"] === "string" ? context.claims["email"] : "";
-    const { workspaceId, role } = await resolveWorkspace(context.userId, email);
+    const { workspaceId, role } = await resolveWorkspace(context.userId, email, postgresAdapter);
     const profile = await postgresAdapter.selectOne("profiles", [
       { column: "id", op: "eq", value: context.userId },
     ]);

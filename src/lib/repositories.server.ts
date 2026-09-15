@@ -24,35 +24,30 @@ export function serverRepositories(input: {
 export async function resolveWorkspace(
   userId: string,
   email: string,
+  db = postgresAdapter,
 ): Promise<{ workspaceId: string; role: string }> {
-  const profile = await postgresAdapter.selectOne("profiles", [
-    { column: "id", op: "eq", value: userId },
-  ]);
+  const profile = await db.selectOne("profiles", [{ column: "id", op: "eq", value: userId }]);
 
   let workspaceId = profile ? String(profile["workspace_id"]) : null;
 
   if (!workspaceId) {
-    const workspace = await postgresAdapter.insert("workspaces", { name: "My Workspace" });
+    const workspace = await db.insert("workspaces", { name: "My Workspace" });
     workspaceId = String(workspace["id"]);
-    await postgresAdapter.insert("profiles", {
+    await db.insert("profiles", {
       id: userId,
       workspace_id: workspaceId,
       email,
       display_name: "",
     });
-    await postgresAdapter.upsert(
-      "user_roles",
-      [{ user_id: userId, role: "owner" }],
-      "user_id,role",
-    );
-    await postgresAdapter.upsert(
+    await db.upsert("user_roles", [{ user_id: userId, role: "owner" }], "user_id,role");
+    await db.upsert(
       "workspace_settings",
       [{ workspace_id: workspaceId, data: {} }],
       "workspace_id",
     );
   }
 
-  const roles = await postgresAdapter.select("user_roles", {
+  const roles = await db.select("user_roles", {
     filters: [{ column: "user_id", op: "eq", value: userId }],
   });
   const role = roles.some((row) => row["role"] === "owner")
