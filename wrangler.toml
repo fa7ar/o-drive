@@ -20,10 +20,10 @@ directory = "./dist/client"
 
 [vars]
 ENVIRONMENT = "production"
-# Fill with public deployment values; the preflight rejects blanks.
-APP_URL = ""
-SUPABASE_URL = ""
-SUPABASE_PUBLISHABLE_KEY = ""
+# Uncomment with real public deployment values; preflight rejects missing values.
+# APP_URL = "set-the-real-public-value"
+# SUPABASE_URL = "set-the-real-public-value"
+# SUPABASE_PUBLISHABLE_KEY = "set-the-real-public-value"
 
 # Required secret names (values live in Cloudflare Secrets, never here):
 #   SUPABASE_SERVICE_ROLE_KEY, ODRIVE_ENCRYPTION_KEY
@@ -39,17 +39,17 @@ name = "odrive-staging"
 [env.staging.vars]
 ENVIRONMENT = "staging"
 # Use the staging project and URL. Named environment vars do not inherit.
-APP_URL = ""
-SUPABASE_URL = ""
-SUPABASE_PUBLISHABLE_KEY = ""
+# APP_URL = "set-the-real-public-value"
+# SUPABASE_URL = "set-the-real-public-value"
+# SUPABASE_PUBLISHABLE_KEY = "set-the-real-public-value"
 
 [env.production]
 name = "odrive"
 
 [env.production.vars]
 ENVIRONMENT = "production"
-# Fill with public deployment values; the preflight rejects blanks.
-APP_URL = ""
-SUPABASE_URL = ""
-SUPABASE_PUBLISHABLE_KEY = ""
+# Uncomment with real public deployment values; preflight rejects missing values.
+# APP_URL = "set-the-real-public-value"
+# SUPABASE_URL = "set-the-real-public-value"
+# SUPABASE_PUBLISHABLE_KEY = "set-the-real-public-value"
 

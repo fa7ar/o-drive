@@ -18,13 +18,15 @@ from pushing to GitHub; a push alone is not proof of a successful deployment.
 Fill `APP_URL`, `SUPABASE_URL`, and `SUPABASE_PUBLISHABLE_KEY` in
 `wrangler.toml` under `env.staging.vars` and `env.production.vars`.
 Use HTTPS URLs and the publishable/anon key, never the service-role key.
-The blank values intentionally block deployment until configured. Named
+The examples are comments so they cannot overwrite existing dashboard values
+with empty strings. The deployment preflight still requires explicit public
+values in the selected target to build against the correct database. Named
 environment vars do not inherit from the root `[vars]` or from each other.
 The root block is for direct Wrangler commands without `--env`; the deployment
 scripts always select a named environment explicitly.
 
 The deployment runner injects the selected target's public Supabase URL and key
-into the Vite build, so a checked-in development `.env` cannot select the wrong
+into the Vite build, so a local development `.env` cannot select the wrong
 project. If needed, set `SUPABASE_PROJECT_ID` in that target's vars too.
 `APP_URL` must be the URL you intend to serve; configure the corresponding
 Cloudflare route/custom domain and provider OAuth redirect URLs separately.
@@ -56,13 +58,25 @@ The runtime variable registry is `src/config/runtime-env.server.ts`; the checker
 imports it instead of maintaining a second required-secret list. Any R2,
 Hyperdrive or Queue bindings must be declared in Wrangler when implemented.
 `keep_vars = true` preserves dashboard variables, but it is not a substitute for
-explicit target configuration. Worker Secrets are preserved across redeploys.
+explicit target configuration. A variable explicitly set in Wrangler can still
+overwrite the dashboard value of the same name. Keep the real values aligned;
+never deploy empty placeholders. Worker Secrets are preserved across redeploys
+when deploying to the same Worker/account/environment.
 
 ## Local development versus deployment checks
 
-Copy `.env.example` to ignored `.env.local`, not the tracked `.env`, and replace
-the placeholders. Optional secrets may be left blank. Never put secrets into a
-`VITE_*` variable. The tracked `.env` contains browser-public Lovable values.
+Copy `.env.example` to ignored `.env.local` and replace the placeholders.
+Optional secrets may be left blank. Never put secrets into a `VITE_*` variable.
+`.env` and `.env.*` are ignored, except `.env.example`; `.env` is removed from
+the tracked tree. Earlier commits still contain the old browser-public values.
+
+For a direct `bun run build` in Lovable or CI, configure `VITE_SUPABASE_URL`
+and `VITE_SUPABASE_PUBLISHABLE_KEY` as build-time environment variables (plus
+`VITE_SUPABASE_PROJECT_ID` if used). Worker runtime variables alone are not
+build-time Vite inputs. The deployment runner supplies the public build values
+from the selected Wrangler target automatically. Confirm Lovable's build env is
+configured before merging the `.env` removal; generated files must not be
+force-added back to Git.
 
 ```bash
 # Check local runtime values; no Cloudflare access.
