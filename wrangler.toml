@@ -9,16 +9,21 @@
 # outside this file. Worker Secrets are always preserved across deploys.
 
 name = "odrive"
-main = "./.output/server/index.mjs"
+main = "./dist/server/index.mjs"
 compatibility_date = "2025-06-01"
 compatibility_flags = ["nodejs_compat"]
 keep_vars = true
 
 [assets]
-directory = "./.output/public"
+binding = "ASSETS"
+directory = "./dist/client"
 
 [vars]
 ENVIRONMENT = "production"
+# Uncomment with real public deployment values; preflight rejects missing values.
+# APP_URL = "set-the-real-public-value"
+# SUPABASE_URL = "set-the-real-public-value"
+# SUPABASE_PUBLISHABLE_KEY = "set-the-real-public-value"
 
 # Required secret names (values live in Cloudflare Secrets, never here):
 #   SUPABASE_SERVICE_ROLE_KEY, ODRIVE_ENCRYPTION_KEY
@@ -30,14 +35,21 @@ ENVIRONMENT = "production"
 
 [env.staging]
 name = "odrive-staging"
-keep_vars = true
 
 [env.staging.vars]
 ENVIRONMENT = "staging"
+# Use the staging project and URL. Named environment vars do not inherit.
+# APP_URL = "set-the-real-public-value"
+# SUPABASE_URL = "set-the-real-public-value"
+# SUPABASE_PUBLISHABLE_KEY = "set-the-real-public-value"
 
 [env.production]
 name = "odrive"
-keep_vars = true
 
 [env.production.vars]
 ENVIRONMENT = "production"
+# Uncomment with real public deployment values; preflight rejects missing values.
+# APP_URL = "set-the-real-public-value"
+# SUPABASE_URL = "set-the-real-public-value"
+# SUPABASE_PUBLISHABLE_KEY = "set-the-real-public-value"
+

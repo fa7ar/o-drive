@@ -9,10 +9,14 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "check:config": "node scripts/check-config.mjs",
-    "deploy": "node scripts/check-config.mjs && vite build && wrangler deploy",
-    "deploy:staging": "node scripts/check-config.mjs && vite build && wrangler deploy --env staging",
-    "format": "prettier --write ."
+    "check:config": "node scripts/check-config.mjs --local",
+    "deploy": "node scripts/deploy.mjs --env production",
+    "deploy:staging": "node scripts/deploy.mjs --env staging",
+    "format": "prettier --write .",
+    "check:build-config": "node scripts/check-config.mjs --build",
+    "check:remote-config": "node scripts/check-config.mjs --remote",
+    "test:config": "node --test scripts/check-config.test.mjs",
+    "deploy:dry-run": "node scripts/deploy.mjs --env staging --dry-run"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -75,6 +79,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@iarna/toml": "2.2.5",
     "@lovable.dev/vite-tanstack-config": "2.13.1",
     "@types/node": "^22.16.5",
     "@types/react": "^19.2.0",
@@ -90,11 +95,15 @@
     "prettier": "^3.7.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
-    "vite": "^8.1.5"
+    "vite": "^8.1.5",
+    "wrangler": "4.130.0"
   },
   "pnpm": {
     "overrides": {
       "entities": "4.5.0"
     }
+  },
+  "engines": {
+    "node": ">=22.18.0"
   }
 }

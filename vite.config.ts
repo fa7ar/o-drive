@@ -16,6 +16,12 @@ const serverEnv = loadEnv(process.env["NODE_ENV"] ?? "development", process.cwd(
 Object.assign(process.env, serverEnv);
 
 export default defineConfig({
+  // Keep local/CI output aligned with Lovable's Cloudflare build layout.
+  nitro: {
+    preset: "cloudflare-module",
+    output: { dir: "dist", serverDir: "dist/server", publicDir: "dist/client" },
+    cloudflare: { nodeCompat: true, deployConfig: false },
+  },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
