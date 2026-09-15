@@ -1,6 +1,6 @@
 <!-- ODRIVE:BEGIN -->
 > [!IMPORTANT]
-> This project is connected to [Contextlab](https://context.web.id). Avoid rewriting
+> This project is connected to [Lovable](https://lovable.dev/invite/VG98I04) using blueprint Context Engineering OS by [Contextlab](https://context.web.id). Avoid rewriting
 > published git history — force pushing, or rebasing/amending/squashing commits
 > that are already pushed — as it rewrites history on Contextlab's side and the
 > user will likely lose their project history.
