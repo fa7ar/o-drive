@@ -37,6 +37,13 @@ export const CONFIG_VARS: readonly VarSpec[] = [
     feature: "emails, share links",
   },
   {
+    name: "AUTH_ALLOWED_ORIGINS",
+    kind: "config",
+    required: false,
+    purpose: "Comma-separated additional trusted origins for first-party auth email links.",
+    feature: "auth email redirects",
+  },
+  {
     name: "SUPABASE_URL",
     kind: "config",
     required: true,

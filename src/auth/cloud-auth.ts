@@ -12,6 +12,7 @@ import { getSessionUser } from "@/lib/session.functions";
  */
 export interface AuthService {
   sendMagicLink(input: { email: string; displayName?: string }): Promise<void>;
+  verifyMagicLink(input: { email: string; token: string }): Promise<void>;
   currentUser(): Promise<User | null>;
   onChange(listener: () => void): () => void;
   signOut(): Promise<void>;
@@ -38,6 +39,11 @@ export const cloudAuthService: AuthService = {
         ...(displayName ? { data: { full_name: displayName } } : {}),
       },
     });
+    if (error) throw new Error(error.message);
+  },
+
+  async verifyMagicLink({ email, token }) {
+    const { error } = await supabase.auth.verifyOtp({ email, token, type: "magiclink" });
     if (error) throw new Error(error.message);
   },
 

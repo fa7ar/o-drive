@@ -8,6 +8,7 @@ interface AuthContextValue {
   user: User | null;
   ready: boolean;
   sendMagicLink: AuthService["sendMagicLink"];
+  verifyMagicLink: AuthService["verifyMagicLink"];
   signOut: () => Promise<void>;
 }
 
@@ -48,6 +49,7 @@ export function AuthProvider({
       user,
       ready,
       sendMagicLink: service.sendMagicLink,
+      verifyMagicLink: service.verifyMagicLink,
       signOut,
     }),
     [user, ready, service, signOut],

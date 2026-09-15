@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
+import { readAppMagicLink } from "@/auth/magic-link";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -29,16 +30,34 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
-  const { user, ready, sendMagicLink } = useAuth();
+  const { user, ready, sendMagicLink, verifyMagicLink } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [busy, setBusy] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
+  const [verifying, setVerifying] = useState(false);
 
   useEffect(() => {
     if (ready && user) navigate({ to: "/explorer", replace: true });
   }, [ready, user, navigate]);
+
+  useEffect(() => {
+    const payload = readAppMagicLink(window.location.hash);
+    if (!payload) return;
+
+    // Remove the one-time token before any navigation, error reporting, or UI work.
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+    setVerifying(true);
+    void verifyMagicLink(payload)
+      .then(() => navigate({ to: "/explorer", replace: true }))
+      .catch((error) => {
+        toast.error(
+          error instanceof Error ? error.message : "This sign-in link is invalid or expired",
+        );
+      })
+      .finally(() => setVerifying(false));
+  }, [navigate, verifyMagicLink]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -66,11 +85,16 @@ function AuthPage() {
         <OdriveLogo />
         <h1 className="mt-6 text-2xl font-semibold">Sign in to ODrive</h1>
         <p className="mt-1.5 text-sm text-muted-foreground">
-          No passwords. We email you a one-time link that signs you in and creates your workspace
-          on first use.
+          No passwords. We email you a one-time link that signs you in and creates your workspace on
+          first use.
         </p>
 
-        {sentTo ? (
+        {verifying ? (
+          <div className="mt-7 rounded-lg border border-border bg-muted/40 p-4 text-sm">
+            <p className="font-medium">Signing you in…</p>
+            <p className="mt-1 text-muted-foreground">Verifying your one-time link.</p>
+          </div>
+        ) : sentTo ? (
           <div className="mt-7 space-y-4">
             <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm">
               <p className="font-medium">Check {sentTo}</p>
