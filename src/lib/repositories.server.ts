@@ -1,4 +1,5 @@
 import { postgresAdapter } from "@/database/postgres.server";
+import type { DatabaseAdapter } from "@/database/adapter";
 import {
   createPostgresRepositories,
   type RepositoryBundle,
@@ -12,8 +13,9 @@ export function serverRepositories(input: {
   workspaceId: string;
   userId: string;
   email?: string;
+  db?: DatabaseAdapter;
 }): RepositoryBundle {
-  return createPostgresRepositories(postgresAdapter, {
+  return createPostgresRepositories(input.db ?? postgresAdapter, {
     workspaceId: input.workspaceId,
     userId: input.userId,
     email: input.email ?? "",
