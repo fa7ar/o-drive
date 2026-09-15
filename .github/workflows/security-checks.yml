@@ -1,0 +1,19 @@
+name: Security checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  secrets:
+    name: Secret leak guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check committed files for leaked secrets
+        run: node scripts/check-secrets.mjs --all
