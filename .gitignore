@@ -32,8 +32,11 @@ dist-ssr
 *.sw?
 
 # Environment / secrets
-.env
+# NOTE: .env holds only browser-public Lovable Cloud values (URL + publishable
+# key) and MUST stay tracked, or production builds ship without them and the
+# app renders a blank screen. Never add server secrets to it.
 .env.*
 !.env.example
+!.env
 .dev.vars
 .dev.vars.*
