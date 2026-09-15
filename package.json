@@ -10,13 +10,15 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "check:config": "node scripts/check-config.mjs --local",
+    "check:secrets": "node scripts/check-secrets.mjs --all",
     "deploy": "node scripts/deploy.mjs --env production",
     "deploy:staging": "node scripts/deploy.mjs --env staging",
     "format": "prettier --write .",
     "check:build-config": "node scripts/check-config.mjs --build",
     "check:remote-config": "node scripts/check-config.mjs --remote",
     "test:config": "node --test scripts/check-config.test.mjs",
-    "deploy:dry-run": "node scripts/deploy.mjs --env staging --dry-run"
+    "deploy:dry-run": "node scripts/deploy.mjs --env staging --dry-run",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
