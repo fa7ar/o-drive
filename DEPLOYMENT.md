@@ -130,6 +130,11 @@ Compare `bunx wrangler secret list --env staging` names between deployments.
 Configure email and scheduled automation delivery separately if those features
 are enabled; optional-secret presence is not an end-to-end feature test.
 
+##How to get ODRIVE_ENCRYPTION_KEY:
+
+openssl rand -base64 32 or use Node node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+and wrangler secret put ODRIVE_ENCRYPTION_KEY save as secret on tab Settings your Cloudflare Workers
+
 ## Database portability: current boundary
 
 `src/database/postgres.server.ts` implements `DatabaseAdapter` using the Supabase
