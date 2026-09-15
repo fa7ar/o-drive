@@ -50,7 +50,6 @@ function AuthPage() {
     window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
     setVerifying(true);
     void verifyMagicLink(payload)
-      .then(() => navigate({ to: "/explorer", replace: true }))
       .catch((error) => {
         toast.error(
           error instanceof Error ? error.message : "This sign-in link is invalid or expired",

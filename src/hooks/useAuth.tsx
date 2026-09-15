@@ -39,6 +39,18 @@ export function AuthProvider({
     return service.onChange(() => void refresh());
   }, [service, refresh]);
 
+  const verifyMagicLink = useCallback(
+    async (input: Parameters<AuthService["verifyMagicLink"]>[0]) => {
+      await service.verifyMagicLink(input);
+      const verifiedUser = await service.currentUser();
+      if (!verifiedUser)
+        throw new Error("Sign-in succeeded, but the workspace session could not be loaded");
+      setUser(verifiedUser);
+      setReady(true);
+    },
+    [service],
+  );
+
   const signOut = useCallback(async () => {
     await service.signOut();
     setUser(null);
@@ -49,10 +61,10 @@ export function AuthProvider({
       user,
       ready,
       sendMagicLink: service.sendMagicLink,
-      verifyMagicLink: service.verifyMagicLink,
+      verifyMagicLink,
       signOut,
     }),
-    [user, ready, service, signOut],
+    [user, ready, service, verifyMagicLink, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
