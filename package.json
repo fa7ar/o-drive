@@ -18,7 +18,7 @@
     "check:remote-config": "node scripts/check-config.mjs --remote",
     "test:config": "node --test scripts/check-config.test.mjs",
     "deploy:dry-run": "node scripts/deploy.mjs --env staging --dry-run",
-    "prepare": "git config core.hooksPath .githooks || true"
+    "prepare": "chmod +x .githooks/pre-commit 2>/dev/null || true; git config core.hooksPath .githooks || true"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
