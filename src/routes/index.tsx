@@ -1,15 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Check, ChevronUp } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { ArrowRight, Check } from "lucide-react";
 
 import { DESCRIPTORS } from "@/adapters";
 import { OdriveLogo } from "@/components/odrive-logo";
 import { ProviderIcon } from "@/components/provider-icon";
+import { PublicFooter } from "@/components/public-footer";
 import { ReadinessBadge } from "@/components/readiness-badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { contentUrl } from "@/core/content";
 import { footerContentQuery } from "@/lib/queries";
 
 const TITLE = "ODrive — one workspace for every storage account";
@@ -36,78 +35,15 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-function LegalMenu() {
-  const footerContent = useQuery(footerContentQuery);
-  const legalLinks = (footerContent.data ?? []).filter((item) => item.type === "legal");
-  const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const onPointerDown = (event: PointerEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("pointerdown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("pointerdown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [open]);
-
-  return (
-    <div ref={rootRef} className="relative">
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls="legal-menu"
-        onClick={() => setOpen((value) => !value)}
-        className="inline-flex min-h-11 items-center gap-1 text-sm text-muted-foreground hover:text-foreground sm:min-h-0"
-      >
-        Legal
-        <ChevronUp
-          className={`size-3.5 transition-transform ${open ? "" : "rotate-180"}`}
-          aria-hidden
-        />
-      </button>
-      {open ? (
-        <nav
-          id="legal-menu"
-          aria-label="Legal"
-          className="absolute bottom-full left-1/2 mb-2 w-44 -translate-x-1/2 rounded-lg border border-border bg-card p-1 shadow-lg sm:left-auto sm:right-0 sm:translate-x-0"
-        >
-          {legalLinks.map((item) => (
-            <a
-              key={item.id}
-              href={contentUrl(item)}
-              onClick={() => setOpen(false)}
-              className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
-            >
-              {item.navLabel || item.title}
-            </a>
-          ))}
-        </nav>
-      ) : null}
-    </div>
-  );
-}
-
 function Home() {
   const { user } = useAuth();
   const footerContent = useQuery(footerContentQuery);
-  const footerLinks = (footerContent.data ?? []).filter((item) => item.type !== "legal");
 
   return (
     <div className="min-h-screen bg-background">
       <header className="mx-auto flex h-16 max-w-3xl items-center justify-between px-6">
         <OdriveLogo />
         <div className="flex items-center gap-1">
-          <Button asChild variant="ghost" size="sm">
-            <Link to={user ? "/explorer" : "/auth"}>{user ? "Open workspace" : "Sign in"}</Link>
-          </Button>
           <Button asChild size="sm">
             <Link to={user ? "/explorer" : "/auth"}>
               {user ? "Continue" : "Get started"}
@@ -191,32 +127,7 @@ function Home() {
         </section>
       </main>
 
-      <footer className="border-t border-border">
-        <div className="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-10 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <OdriveLogo />
-            <span className="text-sm text-muted-foreground">
-              by
-              <a
-                href="https://clab.my.id"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ml-1 text-primary hover:underline"
-              >
-                Codelab
-              </a>
-            </span>
-          </div>
-          <nav className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            {footerLinks.map((item) => (
-              <a key={item.id} href={contentUrl(item)} className="hover:text-foreground">
-                {item.navLabel || item.title}
-              </a>
-            ))}
-            <LegalMenu />
-          </nav>
-        </div>
-      </footer>
+      <PublicFooter links={footerContent.data ?? []} />
     </div>
   );
 }
