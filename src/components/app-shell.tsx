@@ -9,6 +9,8 @@ import {
   History,
   Link2,
   LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
   Plug,
   Search,
   Settings as SettingsIcon,
@@ -114,6 +116,7 @@ export function AppShell({
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const [query, setQuery] = useState("");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const displayName = user?.displayName || "ODrive User";
   const initials = (user?.displayName ?? "od").slice(0, 2).toUpperCase();
@@ -181,6 +184,9 @@ export function AppShell({
               <DropdownMenuItem asChild>
                 <Link to="/settings">Settings</Link>
               </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/admin">Admin</Link>
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={async () => {
                   await signOut();
@@ -196,24 +202,54 @@ export function AppShell({
       </header>
 
       <div className="flex">
-        <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-52 shrink-0 border-r border-border bg-sidebar px-3 py-5 lg:block">
-          <p className="px-3 font-mono text-[11px] tracking-wide text-muted-foreground uppercase">
-            {activeSection.label}
-          </p>
+        <aside
+          className={cn(
+            "sticky top-14 hidden h-[calc(100vh-3.5rem)] shrink-0 border-r border-border bg-sidebar px-3 py-5 transition-[width] lg:block",
+            sidebarCollapsed ? "w-20" : "w-52",
+          )}
+        >
+          <div className="flex items-center justify-between gap-2 px-2">
+            {!sidebarCollapsed ? (
+              <p className="font-mono text-[11px] tracking-wide text-muted-foreground uppercase">
+                {activeSection.label}
+              </p>
+            ) : null}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="size-8"
+              onClick={() => setSidebarCollapsed((value) => !value)}
+              aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {sidebarCollapsed ? (
+                <PanelLeftOpen className="size-4" />
+              ) : (
+                <PanelLeftClose className="size-4" />
+              )}
+            </Button>
+          </div>
           <nav className="mt-2 space-y-1">
             {activeSection.children.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
-                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                title={sidebarCollapsed ? item.label : undefined}
+                className={cn(
+                  "flex items-center rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                  sidebarCollapsed ? "justify-center gap-0" : "gap-2.5",
+                )}
                 activeProps={{
                   className:
-                    "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium bg-sidebar-accent text-sidebar-accent-foreground",
+                    cn(
+                      "flex items-center rounded-lg px-3 py-2 text-sm font-medium bg-sidebar-accent text-sidebar-accent-foreground",
+                      sidebarCollapsed ? "justify-center gap-0" : "gap-2.5",
+                    ),
                 }}
                 activeOptions={{ exact: item.to === "/settings" || item.to === "/activity" }}
               >
                 <item.icon className="size-4" strokeWidth={1.8} />
-                {item.label}
+                {!sidebarCollapsed ? item.label : <span className="sr-only">{item.label}</span>}
               </Link>
             ))}
           </nav>
