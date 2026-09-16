@@ -11,7 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const TITLE = "ODrive — one workspace for every storage account";
 const DESCRIPTION =
-  "Connect unlimited storage accounts across providers and manage every file from a single, calm workspace. Google Drive, Cloudflare R2 and Amazon S3 are production ready today.";
+  "Connect unlimited storage accounts across providers and manage every file from a single, calm workspace. Google Drive, Cloudflare R2 and Amazon S3 are production ready today, with OneDrive and Telegram available as beta live adapters.";
 
 const POINTS = [
   "Connect as many accounts as you like, across providers",
