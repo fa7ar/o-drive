@@ -80,14 +80,14 @@ function LegalMenu() {
           className="absolute bottom-full left-1/2 mb-2 w-44 -translate-x-1/2 rounded-lg border border-border bg-card p-1 shadow-lg sm:left-auto sm:right-0 sm:translate-x-0"
         >
           {legalLinks.map((item) => (
-            <Link
+            <a
               key={item.id}
-              to={contentUrl(item)}
+              href={contentUrl(item)}
               onClick={() => setOpen(false)}
               className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
             >
               {item.navLabel || item.title}
-            </Link>
+            </a>
           ))}
         </nav>
       ) : null}
@@ -209,9 +209,9 @@ function Home() {
           </div>
           <nav className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
             {footerLinks.map((item) => (
-              <Link key={item.id} to={contentUrl(item)} className="hover:text-foreground">
+              <a key={item.id} href={contentUrl(item)} className="hover:text-foreground">
                 {item.navLabel || item.title}
-              </Link>
+              </a>
             ))}
             <LegalMenu />
           </nav>
