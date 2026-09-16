@@ -18,6 +18,21 @@ import {
   driveUpload,
 } from "./google-drive.server";
 import {
+  oneDriveCopy,
+  oneDriveCreateFolder,
+  oneDriveDelete,
+  oneDriveDownload,
+  oneDriveHealth,
+  oneDriveList,
+  oneDriveMetadata,
+  oneDriveMove,
+  oneDriveQuota,
+  oneDriveRename,
+  oneDriveSearch,
+  oneDriveUpload,
+  oneDriveUser,
+} from "./onedrive.server";
+import {
   s3CopyKey,
   s3CreateFolder,
   s3Delete,
@@ -29,6 +44,15 @@ import {
   s3StreamChunk,
   s3Upload,
 } from "./s3-ops.server";
+import {
+  telegramDownload,
+  telegramHealth,
+  telegramList,
+  telegramQuota,
+  telegramSearch,
+  telegramUpload,
+  telegramUser,
+} from "./telegram.server";
 
 interface Call {
   connectionId: string;
@@ -147,6 +171,79 @@ export async function dispatch(call: Call): Promise<unknown> {
         return { status: (await s3Health(connectionId, providerId)) ? "healthy" : "degraded" };
       case "refresh":
         return { ok: true };
+      default:
+        throw new Error(`Unsupported operation "${op}"`);
+    }
+  }
+
+  if (providerId === "onedrive") {
+    switch (op) {
+      case "list":
+        return oneDriveList(connectionId, str(args, "path", "/"));
+      case "search":
+        return oneDriveSearch(connectionId, str(args, "query"));
+      case "createFolder":
+        return oneDriveCreateFolder(connectionId, str(args, "path", "/"), str(args, "name"));
+      case "upload":
+        return oneDriveUpload(connectionId, str(args, "path", "/"), {
+          name: str(args, "name"),
+          type: str(args, "type"),
+          bytes: new Uint8Array(0),
+        });
+      case "download":
+        return oneDriveDownload(connectionId, str(args, "fileId"));
+      case "delete":
+        return oneDriveDelete(connectionId, str(args, "fileId"));
+      case "rename":
+        return oneDriveRename(connectionId, str(args, "fileId"), str(args, "name"));
+      case "move":
+        return oneDriveMove(connectionId, str(args, "fileId"), str(args, "path", "/"));
+      case "copy":
+        return oneDriveCopy(connectionId, str(args, "fileId"), str(args, "path", "/"));
+      case "metadata":
+        return oneDriveMetadata(connectionId, str(args, "fileId"));
+      case "quota":
+        return oneDriveQuota(connectionId);
+      case "user":
+        return oneDriveUser(connectionId);
+      case "health":
+        return { status: (await oneDriveHealth(connectionId)) ? "healthy" : "degraded" };
+      case "refresh":
+        return { ok: true };
+      default:
+        throw new Error(`Unsupported operation "${op}"`);
+    }
+  }
+
+  if (providerId === "telegram") {
+    switch (op) {
+      case "list":
+        return telegramList(connectionId, str(args, "path", "/"));
+      case "search":
+        return telegramSearch(connectionId, str(args, "query"));
+      case "upload":
+        return telegramUpload(connectionId, str(args, "path", "/"), {
+          name: str(args, "name"),
+          type: str(args, "type"),
+          bytes: new Uint8Array(0),
+        });
+      case "download":
+        return telegramDownload(connectionId, str(args, "fileId"));
+      case "quota":
+        return telegramQuota();
+      case "user":
+        return telegramUser(connectionId);
+      case "health":
+        return { status: (await telegramHealth(connectionId)) ? "healthy" : "degraded" };
+      case "refresh":
+        return { ok: true };
+      case "createFolder":
+      case "delete":
+      case "rename":
+      case "move":
+      case "copy":
+      case "metadata":
+        throw new Error(`Telegram does not support operation "${op}" yet`);
       default:
         throw new Error(`Unsupported operation "${op}"`);
     }
