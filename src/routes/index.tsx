@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Check, ChevronUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -8,6 +9,8 @@ import { ProviderIcon } from "@/components/provider-icon";
 import { ReadinessBadge } from "@/components/readiness-badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { contentUrl } from "@/core/content";
+import { footerContentQuery } from "@/lib/queries";
 
 const TITLE = "ODrive — one workspace for every storage account";
 const DESCRIPTION =
@@ -33,14 +36,9 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const LEGAL_LINKS = [
-  { to: "/legal/privacy", label: "Privacy" },
-  { to: "/legal/terms", label: "Terms" },
-  { to: "/legal/acceptable-use", label: "Acceptable use" },
-  { to: "/legal/data-deletion", label: "Data deletion" },
-] as const;
-
 function LegalMenu() {
+  const footerContent = useQuery(footerContentQuery);
+  const legalLinks = (footerContent.data ?? []).filter((item) => item.type === "legal");
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -81,14 +79,14 @@ function LegalMenu() {
           aria-label="Legal"
           className="absolute bottom-full left-1/2 mb-2 w-44 -translate-x-1/2 rounded-lg border border-border bg-card p-1 shadow-lg sm:left-auto sm:right-0 sm:translate-x-0"
         >
-          {LEGAL_LINKS.map((item) => (
+          {legalLinks.map((item) => (
             <Link
-              key={item.to}
-              to={item.to}
+              key={item.id}
+              to={contentUrl(item)}
               onClick={() => setOpen(false)}
               className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
             >
-              {item.label}
+              {item.navLabel || item.title}
             </Link>
           ))}
         </nav>
@@ -99,6 +97,8 @@ function LegalMenu() {
 
 function Home() {
   const { user } = useAuth();
+  const footerContent = useQuery(footerContentQuery);
+  const footerLinks = (footerContent.data ?? []).filter((item) => item.type !== "legal");
 
   return (
     <div className="min-h-screen bg-background">
@@ -207,7 +207,14 @@ function Home() {
               </a>
             </span>
           </div>
-          <LegalMenu />
+          <nav className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            {footerLinks.map((item) => (
+              <Link key={item.id} to={contentUrl(item)} className="hover:text-foreground">
+                {item.navLabel || item.title}
+              </Link>
+            ))}
+            <LegalMenu />
+          </nav>
         </div>
       </footer>
     </div>
