@@ -24,15 +24,18 @@ import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/h
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedSharesRouteImport } from './routes/_authenticated/shares'
 import { Route as AuthenticatedTransfersRouteImport } from './routes/_authenticated/transfers'
+import { Route as LegalSlugRouteImport } from './routes/legal/$slug'
 import { Route as LegalAcceptableUseRouteImport } from './routes/legal/acceptable-use'
 import { Route as LegalDataDeletionRouteImport } from './routes/legal/data-deletion'
 import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
 import { Route as LegalTermsRouteImport } from './routes/legal/terms'
+import { Route as PSlugRouteImport } from './routes/p/$slug'
 import { Route as STokenRouteImport } from './routes/s.$token'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAutomationsRouteImport } from './routes/_authenticated/admin.automations'
 import { Route as AuthenticatedAdminConfigurationsRouteImport } from './routes/_authenticated/admin.configurations'
 import { Route as AuthenticatedAdminConnectionsRouteImport } from './routes/_authenticated/admin.connections'
+import { Route as AuthenticatedAdminContentRouteImport } from './routes/_authenticated/admin.content'
 import { Route as AuthenticatedAdminCredentialsRouteImport } from './routes/_authenticated/admin.credentials'
 import { Route as AuthenticatedAdminDrivesRouteImport } from './routes/_authenticated/admin.drives'
 import { Route as AuthenticatedAdminFlagsRouteImport } from './routes/_authenticated/admin.flags'
@@ -46,6 +49,9 @@ import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings.security'
 import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as ApiV1SplatRouteImport } from './routes/api/v1/$'
+import { Route as CBlogSlugRouteImport } from './routes/c/blog/$slug'
+import { Route as CChangelogSlugRouteImport } from './routes/c/changelog/$slug'
+import { Route as CDocsSlugRouteImport } from './routes/c/docs/$slug'
 import { Route as ApiPublicHealthConfigRouteImport } from './routes/api/public/health.config'
 import { Route as ApiPublicHealthLiveRouteImport } from './routes/api/public/health.live'
 import { Route as ApiPublicHealthReadyRouteImport } from './routes/api/public/health.ready'
@@ -130,6 +136,11 @@ const AuthenticatedTransfersRoute = AuthenticatedTransfersRouteImport.update({
   path: '/transfers',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const LegalSlugRoute = LegalSlugRouteImport.update({
+  id: '/legal/$slug',
+  path: '/legal/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LegalAcceptableUseRoute = LegalAcceptableUseRouteImport.update({
   id: '/legal/acceptable-use',
   path: '/legal/acceptable-use',
@@ -148,6 +159,11 @@ const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
 const LegalTermsRoute = LegalTermsRouteImport.update({
   id: '/legal/terms',
   path: '/legal/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PSlugRoute = PSlugRouteImport.update({
+  id: '/p/$slug',
+  path: '/p/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const STokenRoute = STokenRouteImport.update({
@@ -176,6 +192,12 @@ const AuthenticatedAdminConnectionsRoute =
   AuthenticatedAdminConnectionsRouteImport.update({
     id: '/connections',
     path: '/connections',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminContentRoute =
+  AuthenticatedAdminContentRouteImport.update({
+    id: '/content',
+    path: '/content',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminCredentialsRoute =
@@ -252,6 +274,21 @@ const ApiV1SplatRoute = ApiV1SplatRouteImport.update({
   path: '/api/v1/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CBlogSlugRoute = CBlogSlugRouteImport.update({
+  id: '/c/blog/$slug',
+  path: '/c/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CChangelogSlugRoute = CChangelogSlugRouteImport.update({
+  id: '/c/changelog/$slug',
+  path: '/c/changelog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CDocsSlugRoute = CDocsSlugRouteImport.update({
+  id: '/c/docs/$slug',
+  path: '/c/docs/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHealthConfigRoute = ApiPublicHealthConfigRouteImport.update({
   id: '/config',
   path: '/config',
@@ -304,14 +341,17 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/legal/$slug': typeof LegalSlugRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
   '/legal/data-deletion': typeof LegalDataDeletionRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
+  '/p/$slug': typeof PSlugRoute
   '/s/$token': typeof STokenRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
   '/admin/connections': typeof AuthenticatedAdminConnectionsRoute
+  '/admin/content': typeof AuthenticatedAdminContentRoute
   '/admin/credentials': typeof AuthenticatedAdminCredentialsRoute
   '/admin/drives': typeof AuthenticatedAdminDrivesRoute
   '/admin/flags': typeof AuthenticatedAdminFlagsRoute
@@ -324,6 +364,9 @@ export interface FileRoutesByFullPath {
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/api/public/health': typeof ApiPublicHealthRouteWithChildren
   '/api/v1/$': typeof ApiV1SplatRoute
+  '/c/blog/$slug': typeof CBlogSlugRoute
+  '/c/changelog/$slug': typeof CChangelogSlugRoute
+  '/c/docs/$slug': typeof CDocsSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/api/public/health/config': typeof ApiPublicHealthConfigRoute
@@ -348,14 +391,17 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/legal/$slug': typeof LegalSlugRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
   '/legal/data-deletion': typeof LegalDataDeletionRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
+  '/p/$slug': typeof PSlugRoute
   '/s/$token': typeof STokenRoute
   '/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
   '/admin/connections': typeof AuthenticatedAdminConnectionsRoute
+  '/admin/content': typeof AuthenticatedAdminContentRoute
   '/admin/credentials': typeof AuthenticatedAdminCredentialsRoute
   '/admin/drives': typeof AuthenticatedAdminDrivesRoute
   '/admin/flags': typeof AuthenticatedAdminFlagsRoute
@@ -368,6 +414,9 @@ export interface FileRoutesByTo {
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/api/public/health': typeof ApiPublicHealthRouteWithChildren
   '/api/v1/$': typeof ApiV1SplatRoute
+  '/c/blog/$slug': typeof CBlogSlugRoute
+  '/c/changelog/$slug': typeof CChangelogSlugRoute
+  '/c/docs/$slug': typeof CDocsSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/api/public/health/config': typeof ApiPublicHealthConfigRoute
@@ -395,14 +444,17 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/shares': typeof AuthenticatedSharesRoute
   '/_authenticated/transfers': typeof AuthenticatedTransfersRoute
+  '/legal/$slug': typeof LegalSlugRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
   '/legal/data-deletion': typeof LegalDataDeletionRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
+  '/p/$slug': typeof PSlugRoute
   '/s/$token': typeof STokenRoute
   '/_authenticated/admin/automations': typeof AuthenticatedAdminAutomationsRoute
   '/_authenticated/admin/configurations': typeof AuthenticatedAdminConfigurationsRoute
   '/_authenticated/admin/connections': typeof AuthenticatedAdminConnectionsRoute
+  '/_authenticated/admin/content': typeof AuthenticatedAdminContentRoute
   '/_authenticated/admin/credentials': typeof AuthenticatedAdminCredentialsRoute
   '/_authenticated/admin/drives': typeof AuthenticatedAdminDrivesRoute
   '/_authenticated/admin/flags': typeof AuthenticatedAdminFlagsRoute
@@ -415,6 +467,9 @@ export interface FileRoutesById {
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/api/public/health': typeof ApiPublicHealthRouteWithChildren
   '/api/v1/$': typeof ApiV1SplatRoute
+  '/c/blog/$slug': typeof CBlogSlugRoute
+  '/c/changelog/$slug': typeof CChangelogSlugRoute
+  '/c/docs/$slug': typeof CDocsSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/api/public/health/config': typeof ApiPublicHealthConfigRoute
@@ -442,14 +497,17 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/shares'
     | '/transfers'
+    | '/legal/$slug'
     | '/legal/acceptable-use'
     | '/legal/data-deletion'
     | '/legal/privacy'
     | '/legal/terms'
+    | '/p/$slug'
     | '/s/$token'
     | '/admin/automations'
     | '/admin/configurations'
     | '/admin/connections'
+    | '/admin/content'
     | '/admin/credentials'
     | '/admin/drives'
     | '/admin/flags'
@@ -462,6 +520,9 @@ export interface FileRouteTypes {
     | '/settings/security'
     | '/api/public/health'
     | '/api/v1/$'
+    | '/c/blog/$slug'
+    | '/c/changelog/$slug'
+    | '/c/docs/$slug'
     | '/admin/'
     | '/settings/'
     | '/api/public/health/config'
@@ -486,14 +547,17 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/shares'
     | '/transfers'
+    | '/legal/$slug'
     | '/legal/acceptable-use'
     | '/legal/data-deletion'
     | '/legal/privacy'
     | '/legal/terms'
+    | '/p/$slug'
     | '/s/$token'
     | '/admin/automations'
     | '/admin/configurations'
     | '/admin/connections'
+    | '/admin/content'
     | '/admin/credentials'
     | '/admin/drives'
     | '/admin/flags'
@@ -506,6 +570,9 @@ export interface FileRouteTypes {
     | '/settings/security'
     | '/api/public/health'
     | '/api/v1/$'
+    | '/c/blog/$slug'
+    | '/c/changelog/$slug'
+    | '/c/docs/$slug'
     | '/admin'
     | '/settings'
     | '/api/public/health/config'
@@ -532,14 +599,17 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/shares'
     | '/_authenticated/transfers'
+    | '/legal/$slug'
     | '/legal/acceptable-use'
     | '/legal/data-deletion'
     | '/legal/privacy'
     | '/legal/terms'
+    | '/p/$slug'
     | '/s/$token'
     | '/_authenticated/admin/automations'
     | '/_authenticated/admin/configurations'
     | '/_authenticated/admin/connections'
+    | '/_authenticated/admin/content'
     | '/_authenticated/admin/credentials'
     | '/_authenticated/admin/drives'
     | '/_authenticated/admin/flags'
@@ -552,6 +622,9 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/security'
     | '/api/public/health'
     | '/api/v1/$'
+    | '/c/blog/$slug'
+    | '/c/changelog/$slug'
+    | '/c/docs/$slug'
     | '/_authenticated/admin/'
     | '/_authenticated/settings/'
     | '/api/public/health/config'
@@ -567,13 +640,18 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  LegalSlugRoute: typeof LegalSlugRoute
   LegalAcceptableUseRoute: typeof LegalAcceptableUseRoute
   LegalDataDeletionRoute: typeof LegalDataDeletionRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalTermsRoute: typeof LegalTermsRoute
+  PSlugRoute: typeof PSlugRoute
   STokenRoute: typeof STokenRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRouteWithChildren
   ApiV1SplatRoute: typeof ApiV1SplatRoute
+  CBlogSlugRoute: typeof CBlogSlugRoute
+  CChangelogSlugRoute: typeof CChangelogSlugRoute
+  CDocsSlugRoute: typeof CDocsSlugRoute
   ApiPublicV1SplatRoute: typeof ApiPublicV1SplatRoute
   ApiPublicV1OpenapiDotjsonRoute: typeof ApiPublicV1OpenapiDotjsonRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -687,6 +765,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTransfersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/legal/$slug': {
+      id: '/legal/$slug'
+      path: '/legal/$slug'
+      fullPath: '/legal/$slug'
+      preLoaderRoute: typeof LegalSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/legal/acceptable-use': {
       id: '/legal/acceptable-use'
       path: '/legal/acceptable-use'
@@ -713,6 +798,13 @@ declare module '@tanstack/react-router' {
       path: '/legal/terms'
       fullPath: '/legal/terms'
       preLoaderRoute: typeof LegalTermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p/$slug': {
+      id: '/p/$slug'
+      path: '/p/$slug'
+      fullPath: '/p/$slug'
+      preLoaderRoute: typeof PSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/s/$token': {
@@ -748,6 +840,13 @@ declare module '@tanstack/react-router' {
       path: '/connections'
       fullPath: '/admin/connections'
       preLoaderRoute: typeof AuthenticatedAdminConnectionsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/content': {
+      id: '/_authenticated/admin/content'
+      path: '/content'
+      fullPath: '/admin/content'
+      preLoaderRoute: typeof AuthenticatedAdminContentRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/credentials': {
@@ -841,6 +940,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/c/blog/$slug': {
+      id: '/c/blog/$slug'
+      path: '/c/blog/$slug'
+      fullPath: '/c/blog/$slug'
+      preLoaderRoute: typeof CBlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/c/changelog/$slug': {
+      id: '/c/changelog/$slug'
+      path: '/c/changelog/$slug'
+      fullPath: '/c/changelog/$slug'
+      preLoaderRoute: typeof CChangelogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/c/docs/$slug': {
+      id: '/c/docs/$slug'
+      path: '/c/docs/$slug'
+      fullPath: '/c/docs/$slug'
+      preLoaderRoute: typeof CDocsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/health/config': {
       id: '/api/public/health/config'
       path: '/config'
@@ -897,6 +1017,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAutomationsRoute: typeof AuthenticatedAdminAutomationsRoute
   AuthenticatedAdminConfigurationsRoute: typeof AuthenticatedAdminConfigurationsRoute
   AuthenticatedAdminConnectionsRoute: typeof AuthenticatedAdminConnectionsRoute
+  AuthenticatedAdminContentRoute: typeof AuthenticatedAdminContentRoute
   AuthenticatedAdminCredentialsRoute: typeof AuthenticatedAdminCredentialsRoute
   AuthenticatedAdminDrivesRoute: typeof AuthenticatedAdminDrivesRoute
   AuthenticatedAdminFlagsRoute: typeof AuthenticatedAdminFlagsRoute
@@ -912,6 +1033,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAutomationsRoute: AuthenticatedAdminAutomationsRoute,
   AuthenticatedAdminConfigurationsRoute: AuthenticatedAdminConfigurationsRoute,
   AuthenticatedAdminConnectionsRoute: AuthenticatedAdminConnectionsRoute,
+  AuthenticatedAdminContentRoute: AuthenticatedAdminContentRoute,
   AuthenticatedAdminCredentialsRoute: AuthenticatedAdminCredentialsRoute,
   AuthenticatedAdminDrivesRoute: AuthenticatedAdminDrivesRoute,
   AuthenticatedAdminFlagsRoute: AuthenticatedAdminFlagsRoute,
@@ -985,13 +1107,18 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  LegalSlugRoute: LegalSlugRoute,
   LegalAcceptableUseRoute: LegalAcceptableUseRoute,
   LegalDataDeletionRoute: LegalDataDeletionRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,
   LegalTermsRoute: LegalTermsRoute,
+  PSlugRoute: PSlugRoute,
   STokenRoute: STokenRoute,
   ApiPublicHealthRoute: ApiPublicHealthRouteWithChildren,
   ApiV1SplatRoute: ApiV1SplatRoute,
+  CBlogSlugRoute: CBlogSlugRoute,
+  CChangelogSlugRoute: CChangelogSlugRoute,
+  CDocsSlugRoute: CDocsSlugRoute,
   ApiPublicV1SplatRoute: ApiPublicV1SplatRoute,
   ApiPublicV1OpenapiDotjsonRoute: ApiPublicV1OpenapiDotjsonRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
