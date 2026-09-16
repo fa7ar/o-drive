@@ -1,56 +1,32 @@
 import { createFileRoute } from "@tanstack/react-router";
-
-import { LegalPage } from "@/components/legal-page";
+import { PublicContentPage } from "@/components/content-page";
+import type { ContentEntry } from "@/core/content";
+import { contentMeta, getPublishedContentByRoute, listNavigationContent } from "@/core/content";
 
 export const Route = createFileRoute("/legal/acceptable-use")({
-  head: () => ({
-    meta: [
-      { title: "Acceptable Use Policy — ODrive" },
-      {
-        name: "description",
-        content:
-          "What you may and may not do with ODrive drives, transfers, and public share links.",
-      },
-      { property: "og:title", content: "Acceptable Use Policy — ODrive" },
-      {
-        property: "og:description",
-        content: "Rules for drives, transfers, automations, and public share links on ODrive.",
-      },
+  loader: async () => {
+    const entry = await getPublishedContentByRoute("legal", "acceptable-use");
+    const footerLinks = await listNavigationContent("footer");
+    return { entry, footerLinks };
+  },
+  head: ({ loaderData }) => {
+    const entry = loaderData?.entry as ContentEntry | null | undefined;
+    const meta = entry ? contentMeta(entry) : { title: "Legal - ODrive", description: "ODrive legal document", ogTitle: "Legal", ogDescription: "ODrive legal document", robots: "noindex,nofollow" };
+    return { meta: [
+      { title: meta.title },
+      { name: "description", content: meta.description },
+      { name: "robots", content: meta.robots },
+      { property: "og:title", content: meta.ogTitle },
+      { property: "og:description", content: meta.ogDescription },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-    ],
-  }),
-  component: AcceptableUseRoute,
+    ] };
+  },
+  component: LegalContentRoute,
 });
 
-function AcceptableUseRoute() {
-  return (
-    <LegalPage title="Acceptable Use Policy" updated="2026-01-01">
-      <h2>Principles</h2>
-      <p>
-        ODrive moves data between storage you already own. You are responsible for everything that
-        passes through your workspace, including files exposed via public share links.
-      </p>
-      <h2>Not permitted</h2>
-      <ul>
-        <li>Connecting accounts you are not authorised to access.</li>
-        <li>Storing or distributing unlawful content, malware, or phishing material.</li>
-        <li>Sharing content that infringes someone else&apos;s rights.</li>
-        <li>Using automations to circumvent a provider&apos;s rate limits or quotas.</li>
-        <li>Probing, scanning, or overloading ODrive infrastructure.</li>
-      </ul>
-      <h2>Automations and transfers</h2>
-      <p>
-        Rules run on your behalf. Keep loop protection in place, avoid mirroring the same path in
-        both directions, and monitor failures in Jobs and Logs.
-      </p>
-      <h2>Enforcement</h2>
-      <p>
-        We may disable a share link, pause an automation, or suspend a workspace that creates legal
-        or security risk. Where practical we notify you first.
-      </p>
-      <h2>Reporting</h2>
-      <p>Report abuse to abuse@odrive.app.</p>
-    </LegalPage>
-  );
+function LegalContentRoute() {
+  const { entry, footerLinks } = Route.useLoaderData();
+  if (!entry) return <div className="mx-auto max-w-3xl px-6 py-20"><h1 className="text-2xl font-semibold">Legal content not found</h1></div>;
+  return <PublicContentPage entry={entry} footerLinks={footerLinks} />;
 }
