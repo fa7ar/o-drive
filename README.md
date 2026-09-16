@@ -53,16 +53,17 @@ The system handles providers, connections, credentials, adapters, transfers, syn
 
 Connect different storage providers through one interface.
 
-Planned / supported provider architecture includes:
+Current provider availability:
 
-* Google Drive
-* OneDrive
-* Telegram
-* Cloudflare R2
-* Amazon S3
-* Additional providers through adapters
+| Provider | Status | Notes |
+| --- | --- | --- |
+| Google Drive | Production | OAuth, file operations, health, and credential rotation are wired live. |
+| Cloudflare R2 | Production | S3-compatible upload, download, streaming, and health are wired live. |
+| Amazon S3 | Production | Upload, download, streaming, metadata, and health are wired live. |
+| OneDrive | Beta | Microsoft Graph adapter is live for OAuth-backed file operations and health. |
+| Telegram | Beta | Bot API adapter is live for document upload, recent document listing, download, and health. |
 
-Provider availability depends on implementation status.
+Additional providers can be added through adapters.
 
 ---
 
@@ -426,7 +427,7 @@ ODrive is designed around a modern web stack and serverless-compatible infrastru
 Primary direction:
 
 * TypeScript
-* Next.js
+* TanStack Start
 * Cloudflare Workers
 * PostgreSQL-compatible database
 * Adapter-based architecture
