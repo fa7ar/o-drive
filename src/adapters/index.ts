@@ -3,6 +3,7 @@ import { registerProvider } from "@/core/registry";
 import { createMockAdapter } from "./mock-adapter";
 import { createGoogleDriveAdapter } from "./google-drive-adapter";
 import { createS3Adapter } from "./s3-adapter";
+import { createLiveAdapter } from "./live-adapter";
 
 /**
  * Simulated vendor-side storage for the mock adapters. Live adapters ignore it
@@ -68,8 +69,9 @@ export const DESCRIPTORS: ProviderDescriptor[] = [
     icon: "Cloud",
     accent: "provider-onedrive",
     authKind: "oauth",
-    capability: "mock",
-    readiness: "coming-soon",
+    capability: "live",
+    readiness: "beta",
+    verifiedOperations: ["OAuth", "File listing", "Upload", "Download", "Health"],
     scopes: ["Files.ReadWrite.All", "offline_access"],
     fields: [
       { key: "name", label: "Connection name", placeholder: "Microsoft 365" },
@@ -83,8 +85,9 @@ export const DESCRIPTORS: ProviderDescriptor[] = [
     icon: "Send",
     accent: "provider-telegram",
     authKind: "bot-token",
-    capability: "mock",
-    readiness: "coming-soon",
+    capability: "live",
+    readiness: "beta",
+    verifiedOperations: ["Bot API", "File listing", "Upload", "Download", "Health"],
     fields: [
       { key: "name", label: "Connection name", placeholder: "Archive bot" },
       { key: "chat", label: "Chat ID", placeholder: "-1001234567890" },
@@ -108,6 +111,10 @@ export function registerAdapters(): void {
     }
     if (descriptor.id === "r2" || descriptor.id === "s3") {
       registerProvider(createS3Adapter(descriptor, { fallback: () => createMockAdapter(descriptor, { files }) }));
+      continue;
+    }
+    if (descriptor.id === "onedrive" || descriptor.id === "telegram") {
+      registerProvider(createLiveAdapter(descriptor, { fallback: () => createMockAdapter(descriptor, { files }) }));
       continue;
     }
     registerProvider(createMockAdapter(descriptor, { files }));
