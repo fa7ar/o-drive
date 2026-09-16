@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AdminNav } from "@/components/admin-nav";
 import { AppShell } from "@/components/app-shell";
 import { ProviderIcon } from "@/components/provider-icon";
+import { ReadinessBadge } from "@/components/readiness-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -75,6 +76,7 @@ function AdminProviders() {
                   <Badge variant="outline" className="capitalize">
                     {descriptor.capability}
                   </Badge>
+                  <ReadinessBadge readiness={descriptor.readiness} />
                   <Badge
                     variant="outline"
                     className={
@@ -94,7 +96,7 @@ function AdminProviders() {
                   {state?.checkedAt ? formatDateTime(state.checkedAt) : "never"}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-1.5">
-                  {FEATURES.map((feature) => (
+                  {(descriptor.verifiedOperations?.length ? descriptor.verifiedOperations : FEATURES).map((feature) => (
                     <span
                       key={feature}
                       className="rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground"
