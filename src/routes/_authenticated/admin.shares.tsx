@@ -64,7 +64,7 @@ function AdminSharesPage() {
         ))}
       </section>
 
-      <section className="panel">
+      <section className="panel mt-4">
         <header className="flex items-center gap-2 border-b border-border px-4 py-3">
           <Link2 className="size-4 text-primary" />
           <h2 className="text-sm font-semibold">All share links</h2>
@@ -99,7 +99,7 @@ function AdminSharesPage() {
         </div>
       </section>
 
-      <section className="panel">
+      <section className="panel mt-4">
         <header className="border-b border-border px-4 py-3">
           <h2 className="text-sm font-semibold">Access log</h2>
         </header>
