@@ -139,7 +139,7 @@ are enabled; optional-secret presence is not an end-to-end feature test.
 ## How to get ODRIVE_ENCRYPTION_KEY:
 
 `openssl rand -base64 32` or use Node `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`
-and `wrangler secret put ODRIVE_ENCRYPTION_KEY` save as secret on tab Settings your Cloudflare Workers
+and `wrangler secret put ODRIVE_ENCRYPTION_KEY` save as secret on tab Settings your Cloudflare Workers. access /admin to configuration administrator.
 
 ## Database portability: current boundary
 
