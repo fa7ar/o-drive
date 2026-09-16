@@ -60,6 +60,7 @@ function AdminContentPage() {
   const queryClient = useQueryClient();
   const content = useQuery(contentQuery);
   const [type, setType] = useState<ContentType | "all">("all");
+  const [mode, setMode] = useState<"markdown" | "preview">("markdown");
   const filtered = useMemo(() => (content.data ?? []).filter((entry) => type === "all" || entry.type === type), [content.data, type]);
   const [draft, setDraft] = useState<ContentEntry | null>(null);
   const current = draft ?? filtered[0] ?? blank();
@@ -81,9 +82,21 @@ function AdminContentPage() {
       <AdminNav />
       <div className="grid gap-4 lg:grid-cols-[18rem_minmax(0,1fr)]">
         <aside className="panel p-3">
-          <div className="flex flex-wrap gap-1">
-            <Button size="sm" variant={type === "all" ? "default" : "secondary"} onClick={() => setType("all")}>All</Button>
-            {TYPES.map((item) => <Button key={item.value} size="sm" variant={type === item.value ? "default" : "secondary"} onClick={() => setType(item.value)}>{item.label}</Button>)}
+          <div>
+            <Label htmlFor="content-filter">Filter</Label>
+            <select
+              id="content-filter"
+              className="mt-2 h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+              value={type}
+              onChange={(event) => setType(event.target.value as ContentType | "all")}
+            >
+              <option value="all">All content</option>
+              {TYPES.map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
           </div>
           <Button className="mt-3 w-full" size="sm" onClick={() => setDraft(blank())}>New content</Button>
           <div className="mt-3 divide-y divide-border">
@@ -105,12 +118,39 @@ function AdminContentPage() {
               <div><Label>Status</Label><select className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm" value={current.status} onChange={(event) => update({ status: event.target.value as ContentEntry["status"], publishedAt: event.target.value === "published" ? current.publishedAt ?? new Date().toISOString() : null })}><option value="draft">Draft</option><option value="published">Published</option></select></div>
             </div>
             <div className="mt-3"><Label>Excerpt</Label><Input value={current.excerpt} onChange={(event) => update({ excerpt: event.target.value })} /></div>
-            <div className="mt-4 flex flex-wrap gap-1">
-              {["h2","h3","bold","italic","link","image","youtube","ul","ol","quote","code","block","hr"].map((item) => <Button key={item} type="button" size="sm" variant="secondary" onClick={() => update({ markdown: applyFormat(current.markdown, item) })}>{item}</Button>)}
-            </div>
-            <div className="mt-3 grid gap-4 xl:grid-cols-2">
-              <div><Label>Markdown</Label><textarea className="mt-2 min-h-[32rem] w-full rounded-md border border-input bg-background p-3 font-mono text-sm" value={current.markdown} onChange={(event) => update({ markdown: event.target.value })} /></div>
-              <div><Label>Preview</Label><div className="mt-2 min-h-[32rem] rounded-md border border-border bg-surface p-4"><MarkdownRenderer markdown={current.markdown} /></div></div>
+            <div className="mt-4 rounded-lg border border-border bg-surface">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border p-2">
+                <div className="flex rounded-md border border-border bg-background p-1">
+                  <button
+                    type="button"
+                    className={`rounded px-3 py-1 text-sm ${mode === "markdown" ? "bg-card text-foreground shadow-xs" : "text-muted-foreground"}`}
+                    onClick={() => setMode("markdown")}
+                  >
+                    Markdown
+                  </button>
+                  <button
+                    type="button"
+                    className={`rounded px-3 py-1 text-sm ${mode === "preview" ? "bg-card text-foreground shadow-xs" : "text-muted-foreground"}`}
+                    onClick={() => setMode("preview")}
+                  >
+                    Preview
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {["h2","h3","bold","italic","link","image","youtube","ul","ol","quote","code","block","hr"].map((item) => <Button key={item} type="button" size="sm" variant="secondary" onClick={() => update({ markdown: applyFormat(current.markdown, item) })}>{item}</Button>)}
+                </div>
+              </div>
+              {mode === "markdown" ? (
+                <textarea
+                  className="min-h-[34rem] w-full resize-y border-0 bg-background p-4 font-mono text-sm outline-none"
+                  value={current.markdown}
+                  onChange={(event) => update({ markdown: event.target.value })}
+                />
+              ) : (
+                <div className="min-h-[34rem] bg-background p-4">
+                  <MarkdownRenderer markdown={current.markdown} />
+                </div>
+              )}
             </div>
             <div className="mt-4 flex items-center justify-between gap-3">
               <p className="truncate font-mono text-xs text-muted-foreground">{current.status === "published" ? contentUrl(current) : "Draft content is not publicly accessible"}</p>
