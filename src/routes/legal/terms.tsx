@@ -1,59 +1,32 @@
 import { createFileRoute } from "@tanstack/react-router";
-
-import { LegalPage } from "@/components/legal-page";
+import { PublicContentPage } from "@/components/content-page";
+import type { ContentEntry } from "@/core/content";
+import { contentMeta, getPublishedContentByRoute, listNavigationContent } from "@/core/content";
 
 export const Route = createFileRoute("/legal/terms")({
-  head: () => ({
-    meta: [
-      { title: "Terms of Service — ODrive" },
-      {
-        name: "description",
-        content:
-          "The agreement covering ODrive workspaces: your responsibilities, provider limits, availability, and account termination.",
-      },
-      { property: "og:title", content: "Terms of Service — ODrive" },
-      {
-        property: "og:description",
-        content: "Workspace terms: responsibilities, provider limits, availability, termination.",
-      },
+  loader: async () => {
+    const entry = await getPublishedContentByRoute("legal", "terms");
+    const footerLinks = await listNavigationContent("footer");
+    return { entry, footerLinks };
+  },
+  head: ({ loaderData }) => {
+    const entry = loaderData?.entry as ContentEntry | null | undefined;
+    const meta = entry ? contentMeta(entry) : { title: "Legal - ODrive", description: "ODrive legal document", ogTitle: "Legal", ogDescription: "ODrive legal document", robots: "noindex,nofollow" };
+    return { meta: [
+      { title: meta.title },
+      { name: "description", content: meta.description },
+      { name: "robots", content: meta.robots },
+      { property: "og:title", content: meta.ogTitle },
+      { property: "og:description", content: meta.ogDescription },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-    ],
-  }),
-  component: TermsRoute,
+    ] };
+  },
+  component: LegalContentRoute,
 });
 
-function TermsRoute() {
-  return (
-    <LegalPage title="Terms of Service" updated="2026-01-01">
-      <h2>The service</h2>
-      <p>
-        ODrive provides a unified control plane over storage accounts you own or are authorised to
-        use. You keep ownership of your data at all times; ODrive stores no file contents.
-      </p>
-      <h2>Your responsibilities</h2>
-      <ul>
-        <li>Only connect accounts you are authorised to access.</li>
-        <li>Keep your sign-in email secure — access is granted by magic link.</li>
-        <li>Comply with each connected provider&apos;s own terms and rate limits.</li>
-        <li>Do not use ODrive to distribute unlawful content via public share links.</li>
-      </ul>
-      <h2>Availability</h2>
-      <p>
-        We target high availability but ODrive depends on third-party providers. Transfers and
-        automations retry with backoff; failures are surfaced in Jobs and Logs. Beta providers are
-        marked in the UI and are excluded from availability commitments.
-      </p>
-      <h2>Termination</h2>
-      <p>
-        You may delete your workspace at any time. We may suspend accounts that abuse the service,
-        create security risk, or violate the acceptable use policy.
-      </p>
-      <h2>Liability</h2>
-      <p>
-        ODrive is provided &quot;as is&quot;. To the extent permitted by law, we are not liable for
-        indirect or consequential loss, including data loss originating at a connected provider.
-      </p>
-    </LegalPage>
-  );
+function LegalContentRoute() {
+  const { entry, footerLinks } = Route.useLoaderData();
+  if (!entry) return <div className="mx-auto max-w-3xl px-6 py-20"><h1 className="text-2xl font-semibold">Legal content not found</h1></div>;
+  return <PublicContentPage entry={entry} footerLinks={footerLinks} />;
 }
