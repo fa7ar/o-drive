@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import type { ContentEntry } from "@/core/content";
-import { contentUrl } from "@/core/content";
 import { FloatingToc, MarkdownRenderer, useMarkdownHeadings } from "@/components/markdown-renderer";
 import { OdriveLogo } from "@/components/odrive-logo";
+import { PublicFooter } from "@/components/public-footer";
 
 export function PublicContentPage({ entry, footerLinks = [] }: { entry: ContentEntry; footerLinks?: ContentEntry[] }) {
   const headings = useMarkdownHeadings(entry.markdown);
@@ -19,7 +19,7 @@ export function PublicContentPage({ entry, footerLinks = [] }: { entry: ContentE
           <div className="mt-8"><MarkdownRenderer markdown={entry.markdown} /></div>
         </article>
       </main>
-      <footer className="border-t border-border"><div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-4 px-6 py-8"><div className="flex items-center gap-3"><OdriveLogo /><span className="text-sm text-muted-foreground">by<a href="https://www.linkedin.com/in/fajartri" target="_blank" rel="noopener noreferrer" className="ml-1 text-primary hover:underline">Fajar Tri</a></span></div><nav className="flex flex-wrap gap-6 text-sm text-muted-foreground">{footerLinks.map((item) => <a key={item.id} href={contentUrl(item)} className="hover:text-foreground">{item.navLabel || item.title}</a>)}</nav></div></footer>
+      <PublicFooter links={footerLinks} />
     </div>
   );
 }
