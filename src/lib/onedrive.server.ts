@@ -3,7 +3,7 @@
  * Tokens are server-side only and loaded from the encrypted provider vault.
  */
 import type { FileMetadata } from "@/core/types";
-import { guessMimeType, joinPath, normalizePath } from "@/core/vfs";
+import { guessMimeType, normalizePath } from "@/core/vfs";
 import { NotConfiguredError, readBundle } from "./vault.server";
 
 const API = "https://graph.microsoft.com/v1.0";
@@ -173,8 +173,6 @@ export async function oneDriveHealth(connectionId: string): Promise<boolean> {
 }
 
 export async function oneDriveMove(connectionId: string, fileId: string, path: string): Promise<FileMetadata> {
-  const folder = await oneDriveCreateFolder(connectionId, path, ".odrive-target-check");
-  await oneDriveDelete(connectionId, folder.providerFileId ?? folder.id.split(":").pop() ?? folder.id);
   const response = await graphFetch(connectionId, `/me/drive/items/${encodeURIComponent(fileId)}`, {
     method: "PATCH",
     headers: { "content-type": "application/json" },
