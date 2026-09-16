@@ -509,7 +509,7 @@ Current architectural areas include:
 * [x] Automation architecture
 * [x] Admin architecture
 * [x] Cloudflare Workers compatibility
-* [ ] Production hardening
+* [x] Production hardening
 * [ ] Full provider E2E validation
 * [ ] Public launch
 
@@ -577,10 +577,10 @@ License information will be added before the public release.
 
 ODrive is created by **[Fajar Tri](https://www.linkedin.com/in/fajartri)** built with **[Lovable](https://lovable.dev/invite/VG98I04)** and small task using ChatGPT.
 
-A T-shaped professional with deep expertise in SEO since 2011, complemented by broad knowledge across digital marketing, vibe coding, PHP native programmer (2008-2011) and related disciplines.
+About me: A T-Shaped professional with deep expertise in SEO since 2011, complemented by broad knowledge across digital marketing, vibe coding, PHP native programmer (2008-2011) and related disciplines.
 
-**Need custom?**
-Contact me at [Codelab](https://clab.my.id)
+**Need a help/custom?**
+contact me at [Codelab](https://clab.my.id)
 
 ---
 
