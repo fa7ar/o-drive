@@ -40,9 +40,10 @@ const GROUPS = [
   },
   {
     label: "System",
-    to: "/admin/configurations",
-    paths: ["/admin/configurations", "/admin/flags", "/admin/logs"],
+    to: "/admin/content",
+    paths: ["/admin/content", "/admin/configurations", "/admin/flags", "/admin/logs"],
     children: [
+      { to: "/admin/content", label: "Content" },
       { to: "/admin/configurations", label: "Configurations" },
       { to: "/admin/flags", label: "Feature flags" },
       { to: "/admin/logs", label: "Logs" },
