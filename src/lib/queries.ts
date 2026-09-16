@@ -1,5 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 
+import { listContent, listNavigationContent } from "@/core/content";
+
 import { listApiKeys } from "@/core/api-keys";
 import { listDeliveries, listWebhooks } from "@/core/webhooks";
 import { listApiRequestLogs } from "@/core/api-usage";
@@ -29,6 +31,21 @@ import { systemMetrics } from "@/core/health";
 import { jobLog, listJobs } from "@/core/jobs";
 import { listLogs, type LogFilter } from "@/core/logs";
 import { listSyncHistory, listSyncJobs } from "@/core/sync-engine";
+
+export const contentQuery = queryOptions({
+  queryKey: ["content"],
+  queryFn: () => listContent(),
+});
+
+export const headerContentQuery = queryOptions({
+  queryKey: ["content", "nav", "header"],
+  queryFn: () => listNavigationContent("header"),
+});
+
+export const footerContentQuery = queryOptions({
+  queryKey: ["content", "nav", "footer"],
+  queryFn: () => listNavigationContent("footer"),
+});
 
 export const connectionsQuery = queryOptions({
   queryKey: ["connections"],
