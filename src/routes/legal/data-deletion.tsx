@@ -1,58 +1,32 @@
 import { createFileRoute } from "@tanstack/react-router";
-
-import { LegalPage } from "@/components/legal-page";
+import { PublicContentPage } from "@/components/content-page";
+import type { ContentEntry } from "@/core/content";
+import { contentMeta, getPublishedContentByRoute, listNavigationContent } from "@/core/content";
 
 export const Route = createFileRoute("/legal/data-deletion")({
-  head: () => ({
-    meta: [
-      { title: "Data Deletion — ODrive" },
-      {
-        name: "description",
-        content:
-          "How to disconnect drives, revoke credentials, and permanently delete your ODrive workspace data.",
-      },
-      { property: "og:title", content: "Data Deletion — ODrive" },
-      {
-        property: "og:description",
-        content: "Disconnect drives, revoke credentials, and delete your workspace data.",
-      },
+  loader: async () => {
+    const entry = await getPublishedContentByRoute("legal", "data-deletion");
+    const footerLinks = await listNavigationContent("footer");
+    return { entry, footerLinks };
+  },
+  head: ({ loaderData }) => {
+    const entry = loaderData?.entry as ContentEntry | null | undefined;
+    const meta = entry ? contentMeta(entry) : { title: "Legal - ODrive", description: "ODrive legal document", ogTitle: "Legal", ogDescription: "ODrive legal document", robots: "noindex,nofollow" };
+    return { meta: [
+      { title: meta.title },
+      { name: "description", content: meta.description },
+      { name: "robots", content: meta.robots },
+      { property: "og:title", content: meta.ogTitle },
+      { property: "og:description", content: meta.ogDescription },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-    ],
-  }),
-  component: DataDeletionRoute,
+    ] };
+  },
+  component: LegalContentRoute,
 });
 
-function DataDeletionRoute() {
-  return (
-    <LegalPage title="Data Deletion" updated="2026-01-01">
-      <h2>Delete a single drive</h2>
-      <p>
-        Open <strong>Drives</strong>, choose the drive, and select disconnect. The encrypted
-        credential is destroyed immediately and its indexed metadata is removed. Files at the
-        provider are untouched.
-      </p>
-      <h2>Delete a share link</h2>
-      <p>
-        Open <strong>Shares</strong> and revoke the link. The token stops resolving right away;
-        access logs are retained for 90 days for audit purposes.
-      </p>
-      <h2>Delete your whole workspace</h2>
-      <ul>
-        <li>Go to Settings and choose delete workspace, or</li>
-        <li>Email deletion@odrive.app from your account address.</li>
-      </ul>
-      <p>
-        Deletion removes credentials, drive configuration, file metadata, shares, automations, and
-        job history. It cannot be undone.
-      </p>
-      <h2>Timelines</h2>
-      <p>
-        Credentials and metadata are deleted immediately. Backups and operational logs age out
-        within 30 days.
-      </p>
-      <h2>Contact</h2>
-      <p>Questions: privacy@odrive.app.</p>
-    </LegalPage>
-  );
+function LegalContentRoute() {
+  const { entry, footerLinks } = Route.useLoaderData();
+  if (!entry) return <div className="mx-auto max-w-3xl px-6 py-20"><h1 className="text-2xl font-semibold">Legal content not found</h1></div>;
+  return <PublicContentPage entry={entry} footerLinks={footerLinks} />;
 }
