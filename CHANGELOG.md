@@ -14,6 +14,8 @@ All notable changes to ODrive are documented here.
 - Added collapsible member-area sidebar and an Admin shortcut in the user menu.
 - Added the Production Verification Center at `/admin/verification` with infrastructure, provider and core feature readiness groups.
 - Added a reusable ReadinessService that feeds Admin Verification, provider badges, the admin dashboard and the readiness health endpoint.
+- Added the Universal Action Layer with a central ActionService, stable action IDs, permission checks, provider capability checks, idempotency support and standard action results.
+- Added an Action Registry view inside Admin Verification so operators can inspect action IDs, execution mode, required permissions and required capabilities.
 
 ### Changed
 
@@ -26,6 +28,7 @@ All notable changes to ODrive are documented here.
 - Simplified the content editor format toolbar into grouped dropdown actions for paragraph, format, media and other inserts.
 - Moved Blog, Changelogs and Docs into the footer Content dropdown instead of showing Docs and Changelogs as standalone footer links.
 - Moved provider public status calculation behind unified readiness checks instead of relying only on static descriptors.
+- Routed core file, folder, upload, transfer and Public API operations through the shared ActionService instead of direct per-consumer implementations.
 
 ### Fixed
 
@@ -35,6 +38,7 @@ All notable changes to ODrive are documented here.
 - Fixed plural Changelogs URLs so `/c/changelogs` and `/c/changelogs/:slug` resolve directly.
 - Fixed public blog, docs and changelog single routes so slug pages render single content instead of the archive view.
 - Updated `/api/public/health/ready` to report deployment readiness and blockers from the unified readiness service without exposing secret values.
+- Standardized unsupported provider operations such as Telegram move/copy/delete/rename/create-folder through `CAPABILITY_UNSUPPORTED` action responses.
 
 ## 0.4.0 - 2026-09-16
 

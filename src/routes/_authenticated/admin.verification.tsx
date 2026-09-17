@@ -7,6 +7,7 @@ import { AdminNav } from "@/components/admin-nav";
 import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { listActions } from "@/core/actions";
 import { runVerification, type ReadinessItem, type ReadinessState, type VerificationTarget } from "@/core/readiness";
 import { formatDateTime } from "@/lib/format";
 import { readinessQuery } from "@/lib/queries";
@@ -93,6 +94,7 @@ function AdminVerification() {
     onError: (error: Error) => toast.error(error.message),
   });
   const data = readiness.data;
+  const actions = listActions();
 
   const runItem = (item: ReadinessItem) => {
     if (item.group === "Infrastructure") run.mutate({ target: "infrastructure" });
@@ -148,6 +150,38 @@ function AdminVerification() {
               <p className="font-mono text-xs text-muted-foreground">{entry.durationMs}ms</p>
             </div>
           )) : <p className="text-sm text-muted-foreground">No verification run recorded in this runtime yet.</p>}
+        </div>
+      </section>
+
+      <section className="panel mt-4 p-5">
+        <h2 className="font-display text-sm font-semibold">Action Registry</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Stable operations exposed through the Universal Action Layer.
+        </p>
+        <div className="mt-3 overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="text-xs text-muted-foreground">
+              <tr className="border-b border-border">
+                <th className="py-2 pr-4 font-medium">Action</th>
+                <th className="py-2 pr-4 font-medium">Mode</th>
+                <th className="py-2 pr-4 font-medium">Permissions</th>
+                <th className="py-2 pr-4 font-medium">Capabilities</th>
+              </tr>
+            </thead>
+            <tbody>
+              {actions.map((action) => (
+                <tr key={action.id} className="border-b border-border/60">
+                  <td className="py-2 pr-4">
+                    <p className="font-mono text-xs">{action.id}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{action.description}</p>
+                  </td>
+                  <td className="py-2 pr-4"><Badge variant="outline">{action.mode}</Badge></td>
+                  <td className="py-2 pr-4 font-mono text-xs text-muted-foreground">{action.permissions.join(", ")}</td>
+                  <td className="py-2 pr-4 font-mono text-xs text-muted-foreground">{action.capabilities.join(", ")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </section>
     </AppShell>

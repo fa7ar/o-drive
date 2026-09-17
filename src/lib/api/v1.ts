@@ -1,19 +1,15 @@
 import { authenticateApiKey, type ApiPrincipal } from "@/core/api-keys";
+import { executeAction, type ActionErrorCode, type ActionId } from "@/core/actions";
 import { useContainer } from "@/core/container";
 import { listDrives } from "@/core/drives";
 import { assertWithinLimit } from "@/core/rate-limit";
 import {
   browse,
-  copyFile,
-  createFolder,
-  deleteFile,
   getFile,
   listConnections,
-  moveFile,
-  queueTransfer,
-  registerUpload,
   searchEverything,
 } from "@/core/services";
+import type { FileMetadata } from "@/core/types";
 import { listShares } from "@/core/shares";
 import { createWebhook, listWebhooks, WEBHOOK_EVENTS } from "@/core/webhooks";
 import type { WebhookEventType } from "@/core/types";
@@ -70,6 +66,18 @@ const fileDto = (file: {
   connection_id: file.connectionId,
 });
 
+const API_ERROR_MAP: Record<ActionErrorCode, string> = {
+  UNAUTHORIZED: "UNAUTHORIZED",
+  FORBIDDEN: "FORBIDDEN",
+  INVALID_INPUT: "VALIDATION_ERROR",
+  NOT_FOUND: "NOT_FOUND",
+  CONFLICT: "CONFLICT",
+  CAPABILITY_UNSUPPORTED: "CAPABILITY_UNSUPPORTED",
+  RATE_LIMITED: "RATE_LIMITED",
+  PROVIDER_ERROR: "PROVIDER_ERROR",
+  ACTION_FAILED: "ACTION_FAILED",
+};
+
 /* -------------------------------- helpers -------------------------------- */
 
 /** Resolves the connection ids a drive maps to, enforcing workspace isolation. */
@@ -82,6 +90,31 @@ async function connectionForDrive(principal: ApiPrincipal, driveId: string): Pro
 
 async function allConnectionIds(): Promise<string[]> {
   return (await listConnections()).map((connection) => connection.id);
+}
+
+async function runApiAction<T>(
+  actionId: ActionId,
+  input: Record<string, unknown>,
+  principal: ApiPrincipal,
+  requestId: string,
+  request: Request,
+): Promise<{ data?: T; job_id?: string }> {
+  const result = await executeAction<T>(actionId, input, {
+    workspaceId: principal.workspaceId,
+    requestId,
+    idempotencyKey: request.headers.get("idempotency-key"),
+    source: "api",
+    actor: {
+      id: principal.keyId,
+      type: "api",
+      label: `api:${principal.keyId}`,
+      permissions: principal.scopes,
+    },
+  });
+  if (!result.success) {
+    throw new ApiError(API_ERROR_MAP[result.error!.code] ?? "ACTION_FAILED", result.error!.message);
+  }
+  return { data: result.data, job_id: result.job_id };
 }
 
 /* -------------------------------- router --------------------------------- */
@@ -196,26 +229,32 @@ async function route(
       if (method === "POST") {
         requireScope(principal, "file:write");
         const body = await readJson(request);
-        const created = await registerUpload({
-          connectionId,
-          path: typeof body["path"] === "string" ? body["path"] : "/",
-          name: requireString(body, "name"),
-          sizeBytes: Number(body["size_bytes"] ?? 0),
-          ...(typeof body["mime_type"] === "string" ? { mimeType: body["mime_type"] } : {}),
-        });
-        return ok(fileDto(created), requestId);
+        const result = await runApiAction<FileMetadata>(
+          "file.upload",
+          {
+            connectionId,
+            path: typeof body["path"] === "string" ? body["path"] : "/",
+            name: requireString(body, "name"),
+            sizeBytes: Number(body["size_bytes"] ?? 0),
+            ...(typeof body["mime_type"] === "string" ? { mimeType: body["mime_type"] } : {}),
+          },
+          principal,
+          requestId,
+          request,
+        );
+        return ok({ file: fileDto(result.data!), job_id: result.job_id }, requestId);
       }
     }
     if (id && action === "folders" && method === "POST") {
       requireScope(principal, "drive:write");
       const connectionId = await connectionForDrive(principal, id);
       const body = await readJson(request);
-      const created = await createFolder(
+      const result = await runApiAction("file.create_folder", {
         connectionId,
-        typeof body["path"] === "string" ? body["path"] : "/",
-        requireString(body, "name"),
-      );
-      return ok(fileDto(created), requestId);
+        path: typeof body["path"] === "string" ? body["path"] : "/",
+        name: requireString(body, "name"),
+      }, principal, requestId, request);
+      return ok(fileDto(result.data as FileMetadata), requestId);
     }
   }
 
@@ -240,35 +279,29 @@ async function route(
     }
     if (!action && method === "DELETE") {
       requireScope(principal, "file:write");
-      await deleteFile(id);
-      return ok({ id, deleted: true }, requestId);
+      const result = await runApiAction("file.delete", { fileId: id }, principal, requestId, request);
+      return ok(result.data, requestId);
     }
     if (action === "move" && method === "POST") {
       requireScope(principal, "file:write");
       const body = await readJson(request);
-      return ok(fileDto(await moveFile(id, requireString(body, "path"))), requestId);
+      const result = await runApiAction("file.move", { fileId: id, path: requireString(body, "path") }, principal, requestId, request);
+      return ok(fileDto(result.data as FileMetadata), requestId);
     }
     if (action === "copy" && method === "POST") {
       requireScope(principal, "file:write");
       const body = await readJson(request);
-      const created = await copyFile(id, {
+      const result = await runApiAction("file.copy", {
+        fileId: id,
         ...(typeof body["path"] === "string" ? { path: body["path"] } : {}),
         ...(typeof body["name"] === "string" ? { name: body["name"] } : {}),
-      });
-      return ok(fileDto(created), requestId);
+      }, principal, requestId, request);
+      return ok(fileDto(result.data as FileMetadata), requestId);
     }
     if (action === "download" && method === "GET") {
       requireScope(principal, "file:read");
-      const expiresAt = new Date(Date.now() + 300_000).toISOString();
-      return ok(
-        {
-          id: file.id,
-          name: file.name,
-          url: `/api/v1/files/${file.id}/content?exp=${Date.parse(expiresAt)}`,
-          expires_at: expiresAt,
-        },
-        requestId,
-      );
+      const result = await runApiAction("file.download", { fileId: file.id }, principal, requestId, request);
+      return ok(result.data, requestId);
     }
   }
 
@@ -298,13 +331,13 @@ async function route(
     if (id && action === "complete" && method === "POST") {
       const body = await readJson(request);
       const connectionId = await connectionForDrive(principal, requireString(body, "drive_id"));
-      const created = await registerUpload({
+      const result = await runApiAction("file.upload", {
         connectionId,
         path: typeof body["path"] === "string" ? body["path"] : "/",
         name: requireString(body, "name"),
         sizeBytes: Number(body["size_bytes"] ?? 0),
-      });
-      return ok({ upload_id: id, file: fileDto(created) }, requestId);
+      }, principal, requestId, request);
+      return ok({ upload_id: id, file: fileDto(result.data as FileMetadata), job_id: result.job_id }, requestId);
     }
   }
 
@@ -313,12 +346,13 @@ async function route(
     requireScope(principal, "transfer:write");
     const body = await readJson(request);
     const connectionId = await connectionForDrive(principal, requireString(body, "drive_id"));
-    const job = await queueTransfer({
+    const result = await runApiAction("transfer.create", {
       connectionId,
       fileName: requireString(body, "name"),
       direction: body["direction"] === "download" ? "download" : "upload",
       sizeBytes: Number(body["size_bytes"] ?? 0),
-    });
+    }, principal, requestId, request);
+    const job = result.data as { id: string; status: string; progress: number };
     return ok({ id: job.id, status: job.status, progress: job.progress }, requestId);
   }
 
@@ -333,6 +367,16 @@ async function route(
         : { id: transfer!.id, kind: `transfer.${transfer!.direction}`, status: transfer!.status, progress: transfer!.progress },
       requestId,
     );
+  }
+  if (resource === "jobs" && id && action === "cancel" && method === "POST") {
+    requireScope(principal, "transfer:write");
+    const result = await runApiAction("transfer.cancel", { jobId: id }, principal, requestId, request);
+    return ok(result.data, requestId);
+  }
+  if (resource === "jobs" && id && action === "retry" && method === "POST") {
+    requireScope(principal, "transfer:write");
+    const result = await runApiAction("transfer.retry", { jobId: id }, principal, requestId, request);
+    return ok(result.data, requestId);
   }
 
   /* -------------------------------- search ------------------------------- */

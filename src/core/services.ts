@@ -1,4 +1,5 @@
 import { useContainer } from "@/core/container";
+import { defaultActionContext, executeAction } from "@/core/actions";
 import { getProvider } from "@/core/registry";
 import { StorageManager } from "@/core/storage-manager";
 import { folderPath } from "@/core/vfs";
@@ -103,11 +104,9 @@ export async function listAllFiles(connectionIds: string[]): Promise<FileMetadat
 }
 
 export async function createFolder(connectionId: string, path: string, name: string) {
-  const provider = await StorageManager.forConnection(connectionId);
-  const created = await provider.createFolder(connectionId, path, name);
-  await useContainer().files.upsertMany(connectionId, [created]);
-  await useContainer().activity.record({ actor: "you", action: "folder.created", target: name });
-  return created;
+  const result = await executeAction<FileMetadata>("file.create_folder", { connectionId, path, name }, defaultActionContext({ actor: { id: "you", type: "user", label: "you", permissions: ["drive:write"] }, source: "web" }));
+  if (!result.success) throw new Error(result.error?.message ?? "Folder action failed");
+  return result.data!;
 }
 
 export async function searchEverything(term: string, connectionIds: string[]) {
@@ -150,10 +149,13 @@ export async function queueTransfer(input: {
   direction: TransferJob["direction"];
   sizeBytes: number;
 }): Promise<TransferJob> {
-  const { transfers, activity } = useContainer();
-  const job = await transfers.create({ ...input, status: "queued", progress: 0 });
-  await activity.record({ actor: "you", action: `transfer.${input.direction}`, target: input.fileName });
-  return job;
+  const result = await executeAction<TransferJob>(
+    "transfer.create",
+    input,
+    defaultActionContext({ actor: { id: "you", type: "user", label: "you", permissions: ["transfer:write"] }, source: "web" }),
+  );
+  if (!result.success) throw new Error(result.error?.message ?? "Transfer action failed");
+  return result.data!;
 }
 
 export async function updateTransfer(
@@ -195,9 +197,9 @@ export async function getFile(fileId: string): Promise<FileMetadata | null> {
 
 /** Moves a file to another virtual folder inside the same connection. */
 export async function moveFile(fileId: string, path: string): Promise<FileMetadata> {
-  const updated = await useContainer().files.update(fileId, { path });
-  await useContainer().activity.record({ actor: "api", action: "file.moved", target: updated.name });
-  return updated;
+  const result = await executeAction<FileMetadata>("file.move", { fileId, path }, defaultActionContext({ actor: { id: "you", type: "user", label: "you", permissions: ["file:write"] }, source: "web" }));
+  if (!result.success) throw new Error(result.error?.message ?? "Move action failed");
+  return result.data!;
 }
 
 /** Copies a file's metadata into a target path (same or another connection). */
@@ -205,26 +207,14 @@ export async function copyFile(
   fileId: string,
   input: { path?: string; connectionId?: string; name?: string },
 ): Promise<FileMetadata> {
-  const { files, activity } = useContainer();
-  const source = await files.get(fileId);
-  if (!source) throw new Error("File not found");
-  const { id: _ignored, ...rest } = source;
-  const created = await files.create({
-    ...rest,
-    connectionId: input.connectionId ?? source.connectionId,
-    path: input.path ?? source.path,
-    name: input.name ?? source.name,
-    modifiedAt: new Date().toISOString(),
-  });
-  await activity.record({ actor: "api", action: "file.copied", target: created.name });
-  return created;
+  const result = await executeAction<FileMetadata>("file.copy", { fileId, ...input }, defaultActionContext({ actor: { id: "you", type: "user", label: "you", permissions: ["file:write"] }, source: "web" }));
+  if (!result.success) throw new Error(result.error?.message ?? "Copy action failed");
+  return result.data!;
 }
 
 export async function deleteFile(fileId: string): Promise<void> {
-  const { files, activity } = useContainer();
-  const target = await files.get(fileId);
-  await files.remove(fileId);
-  if (target) await activity.record({ actor: "api", action: "file.deleted", target: target.name });
+  const result = await executeAction("file.delete", { fileId }, defaultActionContext({ actor: { id: "you", type: "user", label: "you", permissions: ["file:write"] }, source: "web" }));
+  if (!result.success) throw new Error(result.error?.message ?? "Delete action failed");
 }
 
 /** Registers an uploaded object in the index and queues the transfer job. */
@@ -235,25 +225,9 @@ export async function registerUpload(input: {
   sizeBytes: number;
   mimeType?: string;
 }): Promise<FileMetadata> {
-  const { files } = useContainer();
-  const created = await files.create({
-    connectionId: input.connectionId,
-    name: input.name,
-    path: input.path,
-    kind: "file",
-    mimeType: input.mimeType ?? "application/octet-stream",
-    sizeBytes: input.sizeBytes,
-    modifiedAt: new Date().toISOString(),
-    favorite: false,
-    trashed: false,
-  });
-  await queueTransfer({
-    connectionId: input.connectionId,
-    fileName: input.name,
-    direction: "upload",
-    sizeBytes: input.sizeBytes,
-  });
-  return created;
+  const result = await executeAction<FileMetadata>("file.upload", input, defaultActionContext({ actor: { id: "you", type: "user", label: "you", permissions: ["file:write"] }, source: "web" }));
+  if (!result.success) throw new Error(result.error?.message ?? "Upload action failed");
+  return result.data!;
 }
 
 /* ------------------------- ODrive file metadata --------------------------- */
