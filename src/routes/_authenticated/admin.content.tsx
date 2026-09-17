@@ -6,6 +6,7 @@ import { AdminNav } from "@/components/admin-nav";
 import { AppShell } from "@/components/app-shell";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -41,8 +42,10 @@ const blank = (): ContentEntry => ({
 function applyFormat(markdown: string, format: string) {
   if (format === "h2") return markdown + "\n\n## Heading\n";
   if (format === "h3") return markdown + "\n\n### Subheading\n";
+  if (format === "paragraph") return markdown + "\n\nParagraph text.";
   if (format === "bold") return markdown + "\n\n**bold text**";
   if (format === "italic") return markdown + "\n\n_italic text_";
+  if (format === "strike") return markdown + "\n\n~~strikethrough text~~";
   if (format === "link") return markdown + "\n\n[Link label](https://example.com)";
   if (format === "image") return markdown + "\n\nhttps://example.com/image.jpg";
   if (format === "youtube") return markdown + "\n\nhttps://www.youtube.com/watch?v=VIDEO_ID";
@@ -54,6 +57,13 @@ function applyFormat(markdown: string, format: string) {
   if (format === "hr") return markdown + "\n\n---";
   return markdown;
 }
+
+const FORMAT_GROUPS = [
+  { label: "P", title: "Paragraph", items: [{ value: "h2", label: "H2" }, { value: "h3", label: "H3" }, { value: "paragraph", label: "Paragraph" }] },
+  { label: "format", title: "Format", items: [{ value: "block", label: "Block" }, { value: "code", label: "Code" }, { value: "quote", label: "Quote" }, { value: "ul", label: "UL" }, { value: "ol", label: "OL" }, { value: "bold", label: "Bold" }, { value: "italic", label: "Italic" }, { value: "strike", label: "Strike" }] },
+  { label: "media", title: "Media", items: [{ value: "image", label: "Image" }, { value: "youtube", label: "YouTube" }] },
+  { label: "others", title: "Others", items: [{ value: "link", label: "Link" }, { value: "block", label: "Block" }, { value: "hr", label: "HR" }] },
+];
 
 function AdminContentPage() {
   const queryClient = useQueryClient();
@@ -139,16 +149,30 @@ function AdminContentPage() {
                 </div>
                 <span className="shrink-0 text-xs text-muted-foreground">|</span>
                 <div className="flex shrink-0 items-center gap-1 whitespace-nowrap text-xs">
-                  {["h2","h3","bold","italic","link","image","youtube","ul","ol","quote","code","block","hr"].map((item, index) => (
-                    <span key={item} className="inline-flex items-center gap-1">
+                  {FORMAT_GROUPS.map((group, index) => (
+                    <span key={group.label} className="inline-flex items-center gap-1">
                       {index > 0 ? <span className="text-muted-foreground">|</span> : null}
-                      <button
-                        type="button"
-                        className="rounded px-1.5 py-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-                        onClick={() => update({ markdown: applyFormat(current.markdown, item) })}
-                      >
-                        {item}
-                      </button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            title={group.title}
+                            className="rounded px-1.5 py-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                          >
+                            {group.label}
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start">
+                          {group.items.map((item) => (
+                            <DropdownMenuItem
+                              key={`${group.label}-${item.value}`}
+                              onSelect={() => update({ markdown: applyFormat(current.markdown, item.value) })}
+                            >
+                              {item.label}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </span>
                   ))}
                 </div>

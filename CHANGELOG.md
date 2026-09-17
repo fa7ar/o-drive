@@ -21,6 +21,7 @@ All notable changes to ODrive are documented here.
 - Removed duplicate Sign in/Open workspace button from the homepage topnav.
 - Refined the content editor layout into a single Markdown/Preview switch with a compact inline formatting toolbar.
 - Compact content editor mode tabs to `ME` and `Pre` with hover tooltips while keeping format actions on the same line.
+- Simplified the content editor format toolbar into grouped dropdown actions for paragraph, format, media and other inserts.
 - Moved Blog, Changelogs and Docs into the footer Content dropdown instead of showing Docs and Changelogs as standalone footer links.
 
 ### Fixed
@@ -29,6 +30,7 @@ All notable changes to ODrive are documented here.
 - Fixed inconsistent public footer branding on content and legal pages.
 - Fixed public content hydration on blog, docs and changelog pages by rendering deterministic published dates.
 - Fixed plural Changelogs URLs so `/c/changelogs` and `/c/changelogs/:slug` resolve directly.
+- Fixed public blog, docs and changelog single routes so slug pages render single content instead of the archive view.
 
 ## 0.4.0 - 2026-09-16
 

@@ -53,9 +53,13 @@ import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings.security'
 import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as ApiV1SplatRouteImport } from './routes/api/v1/$'
+import { Route as CBlogIndexRouteImport } from './routes/c/blog/index'
 import { Route as CBlogSlugRouteImport } from './routes/c/blog/$slug'
+import { Route as CChangelogIndexRouteImport } from './routes/c/changelog/index'
 import { Route as CChangelogSlugRouteImport } from './routes/c/changelog/$slug'
+import { Route as CChangelogsIndexRouteImport } from './routes/c/changelogs/index'
 import { Route as CChangelogsSlugRouteImport } from './routes/c/changelogs/$slug'
+import { Route as CDocsIndexRouteImport } from './routes/c/docs/index'
 import { Route as CDocsSlugRouteImport } from './routes/c/docs/$slug'
 import { Route as ApiPublicHealthConfigRouteImport } from './routes/api/public/health.config'
 import { Route as ApiPublicHealthLiveRouteImport } from './routes/api/public/health.live'
@@ -299,20 +303,40 @@ const ApiV1SplatRoute = ApiV1SplatRouteImport.update({
   path: '/api/v1/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CBlogIndexRoute = CBlogIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CBlogRoute,
+} as any)
 const CBlogSlugRoute = CBlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => CBlogRoute,
+} as any)
+const CChangelogIndexRoute = CChangelogIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CChangelogRoute,
 } as any)
 const CChangelogSlugRoute = CChangelogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => CChangelogRoute,
 } as any)
+const CChangelogsIndexRoute = CChangelogsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CChangelogsRoute,
+} as any)
 const CChangelogsSlugRoute = CChangelogsSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => CChangelogsRoute,
+} as any)
+const CDocsIndexRoute = CDocsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CDocsRoute,
 } as any)
 const CDocsSlugRoute = CDocsSlugRouteImport.update({
   id: '/$slug',
@@ -404,6 +428,10 @@ export interface FileRoutesByFullPath {
   '/c/docs/$slug': typeof CDocsSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/c/blog/': typeof CBlogIndexRoute
+  '/c/changelog/': typeof CChangelogIndexRoute
+  '/c/changelogs/': typeof CChangelogsIndexRoute
+  '/c/docs/': typeof CDocsIndexRoute
   '/api/public/health/config': typeof ApiPublicHealthConfigRoute
   '/api/public/health/live': typeof ApiPublicHealthLiveRoute
   '/api/public/health/ready': typeof ApiPublicHealthReadyRoute
@@ -426,10 +454,6 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
-  '/c/blog': typeof CBlogRouteWithChildren
-  '/c/changelog': typeof CChangelogRouteWithChildren
-  '/c/changelogs': typeof CChangelogsRouteWithChildren
-  '/c/docs': typeof CDocsRouteWithChildren
   '/legal/$slug': typeof LegalSlugRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
   '/legal/data-deletion': typeof LegalDataDeletionRoute
@@ -459,6 +483,10 @@ export interface FileRoutesByTo {
   '/c/docs/$slug': typeof CDocsSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/c/blog': typeof CBlogIndexRoute
+  '/c/changelog': typeof CChangelogIndexRoute
+  '/c/changelogs': typeof CChangelogsIndexRoute
+  '/c/docs': typeof CDocsIndexRoute
   '/api/public/health/config': typeof ApiPublicHealthConfigRoute
   '/api/public/health/live': typeof ApiPublicHealthLiveRoute
   '/api/public/health/ready': typeof ApiPublicHealthReadyRoute
@@ -517,6 +545,10 @@ export interface FileRoutesById {
   '/c/docs/$slug': typeof CDocsSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/c/blog/': typeof CBlogIndexRoute
+  '/c/changelog/': typeof CChangelogIndexRoute
+  '/c/changelogs/': typeof CChangelogsIndexRoute
+  '/c/docs/': typeof CDocsIndexRoute
   '/api/public/health/config': typeof ApiPublicHealthConfigRoute
   '/api/public/health/live': typeof ApiPublicHealthLiveRoute
   '/api/public/health/ready': typeof ApiPublicHealthReadyRoute
@@ -575,6 +607,10 @@ export interface FileRouteTypes {
     | '/c/docs/$slug'
     | '/admin/'
     | '/settings/'
+    | '/c/blog/'
+    | '/c/changelog/'
+    | '/c/changelogs/'
+    | '/c/docs/'
     | '/api/public/health/config'
     | '/api/public/health/live'
     | '/api/public/health/ready'
@@ -597,10 +633,6 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/shares'
     | '/transfers'
-    | '/c/blog'
-    | '/c/changelog'
-    | '/c/changelogs'
-    | '/c/docs'
     | '/legal/$slug'
     | '/legal/acceptable-use'
     | '/legal/data-deletion'
@@ -630,6 +662,10 @@ export interface FileRouteTypes {
     | '/c/docs/$slug'
     | '/admin'
     | '/settings'
+    | '/c/blog'
+    | '/c/changelog'
+    | '/c/changelogs'
+    | '/c/docs'
     | '/api/public/health/config'
     | '/api/public/health/live'
     | '/api/public/health/ready'
@@ -687,6 +723,10 @@ export interface FileRouteTypes {
     | '/c/docs/$slug'
     | '/_authenticated/admin/'
     | '/_authenticated/settings/'
+    | '/c/blog/'
+    | '/c/changelog/'
+    | '/c/changelogs/'
+    | '/c/docs/'
     | '/api/public/health/config'
     | '/api/public/health/live'
     | '/api/public/health/ready'
@@ -1029,12 +1069,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/c/blog/': {
+      id: '/c/blog/'
+      path: '/'
+      fullPath: '/c/blog/'
+      preLoaderRoute: typeof CBlogIndexRouteImport
+      parentRoute: typeof CBlogRoute
+    }
     '/c/blog/$slug': {
       id: '/c/blog/$slug'
       path: '/$slug'
       fullPath: '/c/blog/$slug'
       preLoaderRoute: typeof CBlogSlugRouteImport
       parentRoute: typeof CBlogRoute
+    }
+    '/c/changelog/': {
+      id: '/c/changelog/'
+      path: '/'
+      fullPath: '/c/changelog/'
+      preLoaderRoute: typeof CChangelogIndexRouteImport
+      parentRoute: typeof CChangelogRoute
     }
     '/c/changelog/$slug': {
       id: '/c/changelog/$slug'
@@ -1043,12 +1097,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CChangelogSlugRouteImport
       parentRoute: typeof CChangelogRoute
     }
+    '/c/changelogs/': {
+      id: '/c/changelogs/'
+      path: '/'
+      fullPath: '/c/changelogs/'
+      preLoaderRoute: typeof CChangelogsIndexRouteImport
+      parentRoute: typeof CChangelogsRoute
+    }
     '/c/changelogs/$slug': {
       id: '/c/changelogs/$slug'
       path: '/$slug'
       fullPath: '/c/changelogs/$slug'
       preLoaderRoute: typeof CChangelogsSlugRouteImport
       parentRoute: typeof CChangelogsRoute
+    }
+    '/c/docs/': {
+      id: '/c/docs/'
+      path: '/'
+      fullPath: '/c/docs/'
+      preLoaderRoute: typeof CDocsIndexRouteImport
+      parentRoute: typeof CDocsRoute
     }
     '/c/docs/$slug': {
       id: '/c/docs/$slug'
@@ -1185,20 +1253,24 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface CBlogRouteChildren {
   CBlogSlugRoute: typeof CBlogSlugRoute
+  CBlogIndexRoute: typeof CBlogIndexRoute
 }
 
 const CBlogRouteChildren: CBlogRouteChildren = {
   CBlogSlugRoute: CBlogSlugRoute,
+  CBlogIndexRoute: CBlogIndexRoute,
 }
 
 const CBlogRouteWithChildren = CBlogRoute._addFileChildren(CBlogRouteChildren)
 
 interface CChangelogRouteChildren {
   CChangelogSlugRoute: typeof CChangelogSlugRoute
+  CChangelogIndexRoute: typeof CChangelogIndexRoute
 }
 
 const CChangelogRouteChildren: CChangelogRouteChildren = {
   CChangelogSlugRoute: CChangelogSlugRoute,
+  CChangelogIndexRoute: CChangelogIndexRoute,
 }
 
 const CChangelogRouteWithChildren = CChangelogRoute._addFileChildren(
@@ -1207,10 +1279,12 @@ const CChangelogRouteWithChildren = CChangelogRoute._addFileChildren(
 
 interface CChangelogsRouteChildren {
   CChangelogsSlugRoute: typeof CChangelogsSlugRoute
+  CChangelogsIndexRoute: typeof CChangelogsIndexRoute
 }
 
 const CChangelogsRouteChildren: CChangelogsRouteChildren = {
   CChangelogsSlugRoute: CChangelogsSlugRoute,
+  CChangelogsIndexRoute: CChangelogsIndexRoute,
 }
 
 const CChangelogsRouteWithChildren = CChangelogsRoute._addFileChildren(
@@ -1219,10 +1293,12 @@ const CChangelogsRouteWithChildren = CChangelogsRoute._addFileChildren(
 
 interface CDocsRouteChildren {
   CDocsSlugRoute: typeof CDocsSlugRoute
+  CDocsIndexRoute: typeof CDocsIndexRoute
 }
 
 const CDocsRouteChildren: CDocsRouteChildren = {
   CDocsSlugRoute: CDocsSlugRoute,
+  CDocsIndexRoute: CDocsIndexRoute,
 }
 
 const CDocsRouteWithChildren = CDocsRoute._addFileChildren(CDocsRouteChildren)
