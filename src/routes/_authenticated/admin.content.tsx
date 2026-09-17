@@ -118,25 +118,27 @@ function AdminContentPage() {
             </div>
             <div className="mt-3"><Label>Excerpt</Label><Input value={current.excerpt} onChange={(event) => update({ excerpt: event.target.value })} /></div>
             <div className="mt-4 rounded-lg border border-border bg-surface">
-              <div className="flex flex-wrap items-center gap-2 border-b border-border px-3 py-2">
-                <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2 overflow-x-auto border-b border-border px-3 py-2">
+                <div className="flex shrink-0 items-center gap-1">
                   <button
                     type="button"
+                    title="makrdown editor"
                     className={`rounded px-2 py-0.5 text-xs ${mode === "markdown" ? "bg-card text-foreground shadow-xs" : "text-muted-foreground"}`}
                     onClick={() => setMode("markdown")}
                   >
-                    Markdown
+                    ME
                   </button>
                   <button
                     type="button"
+                    title="Preview Display"
                     className={`rounded px-2 py-0.5 text-xs ${mode === "preview" ? "bg-card text-foreground shadow-xs" : "text-muted-foreground"}`}
                     onClick={() => setMode("preview")}
                   >
-                    Preview
+                    Pre
                   </button>
                 </div>
-                <span className="text-xs text-muted-foreground">|</span>
-                <div className="flex flex-wrap items-center gap-1 text-xs">
+                <span className="shrink-0 text-xs text-muted-foreground">|</span>
+                <div className="flex shrink-0 items-center gap-1 whitespace-nowrap text-xs">
                   {["h2","h3","bold","italic","link","image","youtube","ul","ol","quote","code","block","hr"].map((item, index) => (
                     <span key={item} className="inline-flex items-center gap-1">
                       {index > 0 ? <span className="text-muted-foreground">|</span> : null}

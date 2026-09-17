@@ -4,6 +4,8 @@ import { FloatingToc, MarkdownRenderer, useMarkdownHeadings } from "@/components
 import { OdriveLogo } from "@/components/odrive-logo";
 import { PublicFooter } from "@/components/public-footer";
 
+const displayDate = (value: string) => value.slice(0, 10);
+
 export function PublicContentPage({ entry, footerLinks = [] }: { entry: ContentEntry; footerLinks?: ContentEntry[] }) {
   const headings = useMarkdownHeadings(entry.markdown);
   return (
@@ -14,7 +16,7 @@ export function PublicContentPage({ entry, footerLinks = [] }: { entry: ContentE
         <article className="min-w-0">
           <p className="font-mono text-xs uppercase tracking-wide text-muted-foreground">{entry.type}</p>
           <h1 className="mt-2 text-3xl font-semibold">{entry.title}</h1>
-          {entry.publishedAt ? <p className="mt-2 font-mono text-xs text-muted-foreground">last updated {new Date(entry.publishedAt).toLocaleDateString()}</p> : null}
+          {entry.publishedAt ? <p className="mt-2 font-mono text-xs text-muted-foreground">last updated {displayDate(entry.publishedAt)}</p> : null}
           {entry.excerpt ? <p className="mt-5 text-sm leading-relaxed text-muted-foreground">{entry.excerpt}</p> : null}
           <div className="mt-8"><MarkdownRenderer markdown={entry.markdown} /></div>
         </article>

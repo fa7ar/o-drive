@@ -8,7 +8,7 @@ All notable changes to ODrive are documented here.
 
 - Added unified content management for pages, blog, docs, changelog and legal content.
 - Added the `/admin/content` Markdown editor with SEO, OpenGraph, navigation visibility and preview controls.
-- Added dynamic public content routes for `/p/:slug`, `/c/blog/:slug`, `/c/docs/:slug`, `/c/changelog/:slug` and `/legal/:slug`.
+- Added dynamic public content routes for `/p/:slug`, `/c/blog/:slug`, `/c/docs/:slug`, `/c/changelogs/:slug` and `/legal/:slug`.
 - Added archive pages for Blog, Docs and Changelogs.
 - Added reusable public footer navigation with grouped Content and Legal menus.
 - Added collapsible member-area sidebar and an Admin shortcut in the user menu.
@@ -20,12 +20,15 @@ All notable changes to ODrive are documented here.
 - Updated the homepage footer to use content-driven navigation.
 - Removed duplicate Sign in/Open workspace button from the homepage topnav.
 - Refined the content editor layout into a single Markdown/Preview switch with a compact inline formatting toolbar.
+- Compact content editor mode tabs to `ME` and `Pre` with hover tooltips while keeping format actions on the same line.
 - Moved Blog, Changelogs and Docs into the footer Content dropdown instead of showing Docs and Changelogs as standalone footer links.
 
 ### Fixed
 
 - Fixed spacing between KPI cards and content sections on Security > Shares.
 - Fixed inconsistent public footer branding on content and legal pages.
+- Fixed public content hydration on blog, docs and changelog pages by rendering deterministic published dates.
+- Fixed plural Changelogs URLs so `/c/changelogs` and `/c/changelogs/:slug` resolve directly.
 
 ## 0.4.0 - 2026-09-16
 

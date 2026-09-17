@@ -11,7 +11,7 @@ export function PublicFooter({ links }: { links: ContentEntry[] }) {
   const rootRef = useRef<HTMLElement>(null);
   const contentLinks = [
     { href: "/c/blog", label: "Blog" },
-    { href: "/c/changelog", label: "Changelogs" },
+    { href: "/c/changelogs", label: "Changelogs" },
     { href: "/c/docs", label: "Docs" },
   ];
 

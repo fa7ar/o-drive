@@ -17,6 +17,8 @@ const descriptionByType: Record<"blog" | "docs" | "changelog", string> = {
   changelog: "Release notes and product changes.",
 };
 
+const displayDate = (value: string) => value.slice(0, 10);
+
 export function PublicContentArchivePage({
   type,
   entries,
@@ -56,7 +58,7 @@ export function PublicContentArchivePage({
                   <h2 className="text-base font-semibold">{entry.title}</h2>
                   {entry.publishedAt ? (
                     <span className="font-mono text-xs text-muted-foreground">
-                      {new Date(entry.publishedAt).toLocaleDateString()}
+                      {displayDate(entry.publishedAt)}
                     </span>
                   ) : null}
                 </div>

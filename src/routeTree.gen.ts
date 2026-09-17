@@ -26,6 +26,7 @@ import { Route as AuthenticatedSharesRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedTransfersRouteImport } from './routes/_authenticated/transfers'
 import { Route as CBlogRouteImport } from './routes/c/blog'
 import { Route as CChangelogRouteImport } from './routes/c/changelog'
+import { Route as CChangelogsRouteImport } from './routes/c/changelogs'
 import { Route as CDocsRouteImport } from './routes/c/docs'
 import { Route as LegalSlugRouteImport } from './routes/legal/$slug'
 import { Route as LegalAcceptableUseRouteImport } from './routes/legal/acceptable-use'
@@ -54,6 +55,7 @@ import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as ApiV1SplatRouteImport } from './routes/api/v1/$'
 import { Route as CBlogSlugRouteImport } from './routes/c/blog/$slug'
 import { Route as CChangelogSlugRouteImport } from './routes/c/changelog/$slug'
+import { Route as CChangelogsSlugRouteImport } from './routes/c/changelogs/$slug'
 import { Route as CDocsSlugRouteImport } from './routes/c/docs/$slug'
 import { Route as ApiPublicHealthConfigRouteImport } from './routes/api/public/health.config'
 import { Route as ApiPublicHealthLiveRouteImport } from './routes/api/public/health.live'
@@ -147,6 +149,11 @@ const CBlogRoute = CBlogRouteImport.update({
 const CChangelogRoute = CChangelogRouteImport.update({
   id: '/c/changelog',
   path: '/c/changelog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CChangelogsRoute = CChangelogsRouteImport.update({
+  id: '/c/changelogs',
+  path: '/c/changelogs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CDocsRoute = CDocsRouteImport.update({
@@ -302,6 +309,11 @@ const CChangelogSlugRoute = CChangelogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => CChangelogRoute,
 } as any)
+const CChangelogsSlugRoute = CChangelogsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => CChangelogsRoute,
+} as any)
 const CDocsSlugRoute = CDocsSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -361,6 +373,7 @@ export interface FileRoutesByFullPath {
   '/transfers': typeof AuthenticatedTransfersRoute
   '/c/blog': typeof CBlogRouteWithChildren
   '/c/changelog': typeof CChangelogRouteWithChildren
+  '/c/changelogs': typeof CChangelogsRouteWithChildren
   '/c/docs': typeof CDocsRouteWithChildren
   '/legal/$slug': typeof LegalSlugRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
@@ -387,6 +400,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/$': typeof ApiV1SplatRoute
   '/c/blog/$slug': typeof CBlogSlugRoute
   '/c/changelog/$slug': typeof CChangelogSlugRoute
+  '/c/changelogs/$slug': typeof CChangelogsSlugRoute
   '/c/docs/$slug': typeof CDocsSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
@@ -414,6 +428,7 @@ export interface FileRoutesByTo {
   '/transfers': typeof AuthenticatedTransfersRoute
   '/c/blog': typeof CBlogRouteWithChildren
   '/c/changelog': typeof CChangelogRouteWithChildren
+  '/c/changelogs': typeof CChangelogsRouteWithChildren
   '/c/docs': typeof CDocsRouteWithChildren
   '/legal/$slug': typeof LegalSlugRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
@@ -440,6 +455,7 @@ export interface FileRoutesByTo {
   '/api/v1/$': typeof ApiV1SplatRoute
   '/c/blog/$slug': typeof CBlogSlugRoute
   '/c/changelog/$slug': typeof CChangelogSlugRoute
+  '/c/changelogs/$slug': typeof CChangelogsSlugRoute
   '/c/docs/$slug': typeof CDocsSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
@@ -470,6 +486,7 @@ export interface FileRoutesById {
   '/_authenticated/transfers': typeof AuthenticatedTransfersRoute
   '/c/blog': typeof CBlogRouteWithChildren
   '/c/changelog': typeof CChangelogRouteWithChildren
+  '/c/changelogs': typeof CChangelogsRouteWithChildren
   '/c/docs': typeof CDocsRouteWithChildren
   '/legal/$slug': typeof LegalSlugRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
@@ -496,6 +513,7 @@ export interface FileRoutesById {
   '/api/v1/$': typeof ApiV1SplatRoute
   '/c/blog/$slug': typeof CBlogSlugRoute
   '/c/changelog/$slug': typeof CChangelogSlugRoute
+  '/c/changelogs/$slug': typeof CChangelogsSlugRoute
   '/c/docs/$slug': typeof CDocsSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
@@ -526,6 +544,7 @@ export interface FileRouteTypes {
     | '/transfers'
     | '/c/blog'
     | '/c/changelog'
+    | '/c/changelogs'
     | '/c/docs'
     | '/legal/$slug'
     | '/legal/acceptable-use'
@@ -552,6 +571,7 @@ export interface FileRouteTypes {
     | '/api/v1/$'
     | '/c/blog/$slug'
     | '/c/changelog/$slug'
+    | '/c/changelogs/$slug'
     | '/c/docs/$slug'
     | '/admin/'
     | '/settings/'
@@ -579,6 +599,7 @@ export interface FileRouteTypes {
     | '/transfers'
     | '/c/blog'
     | '/c/changelog'
+    | '/c/changelogs'
     | '/c/docs'
     | '/legal/$slug'
     | '/legal/acceptable-use'
@@ -605,6 +626,7 @@ export interface FileRouteTypes {
     | '/api/v1/$'
     | '/c/blog/$slug'
     | '/c/changelog/$slug'
+    | '/c/changelogs/$slug'
     | '/c/docs/$slug'
     | '/admin'
     | '/settings'
@@ -634,6 +656,7 @@ export interface FileRouteTypes {
     | '/_authenticated/transfers'
     | '/c/blog'
     | '/c/changelog'
+    | '/c/changelogs'
     | '/c/docs'
     | '/legal/$slug'
     | '/legal/acceptable-use'
@@ -660,6 +683,7 @@ export interface FileRouteTypes {
     | '/api/v1/$'
     | '/c/blog/$slug'
     | '/c/changelog/$slug'
+    | '/c/changelogs/$slug'
     | '/c/docs/$slug'
     | '/_authenticated/admin/'
     | '/_authenticated/settings/'
@@ -678,6 +702,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CBlogRoute: typeof CBlogRouteWithChildren
   CChangelogRoute: typeof CChangelogRouteWithChildren
+  CChangelogsRoute: typeof CChangelogsRouteWithChildren
   CDocsRoute: typeof CDocsRouteWithChildren
   LegalSlugRoute: typeof LegalSlugRoute
   LegalAcceptableUseRoute: typeof LegalAcceptableUseRoute
@@ -813,6 +838,13 @@ declare module '@tanstack/react-router' {
       path: '/c/changelog'
       fullPath: '/c/changelog'
       preLoaderRoute: typeof CChangelogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/c/changelogs': {
+      id: '/c/changelogs'
+      path: '/c/changelogs'
+      fullPath: '/c/changelogs'
+      preLoaderRoute: typeof CChangelogsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/c/docs': {
@@ -1011,6 +1043,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CChangelogSlugRouteImport
       parentRoute: typeof CChangelogRoute
     }
+    '/c/changelogs/$slug': {
+      id: '/c/changelogs/$slug'
+      path: '/$slug'
+      fullPath: '/c/changelogs/$slug'
+      preLoaderRoute: typeof CChangelogsSlugRouteImport
+      parentRoute: typeof CChangelogsRoute
+    }
     '/c/docs/$slug': {
       id: '/c/docs/$slug'
       path: '/$slug'
@@ -1166,6 +1205,18 @@ const CChangelogRouteWithChildren = CChangelogRoute._addFileChildren(
   CChangelogRouteChildren,
 )
 
+interface CChangelogsRouteChildren {
+  CChangelogsSlugRoute: typeof CChangelogsSlugRoute
+}
+
+const CChangelogsRouteChildren: CChangelogsRouteChildren = {
+  CChangelogsSlugRoute: CChangelogsSlugRoute,
+}
+
+const CChangelogsRouteWithChildren = CChangelogsRoute._addFileChildren(
+  CChangelogsRouteChildren,
+)
+
 interface CDocsRouteChildren {
   CDocsSlugRoute: typeof CDocsSlugRoute
 }
@@ -1198,6 +1249,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CBlogRoute: CBlogRouteWithChildren,
   CChangelogRoute: CChangelogRouteWithChildren,
+  CChangelogsRoute: CChangelogsRouteWithChildren,
   CDocsRoute: CDocsRouteWithChildren,
   LegalSlugRoute: LegalSlugRoute,
   LegalAcceptableUseRoute: LegalAcceptableUseRoute,

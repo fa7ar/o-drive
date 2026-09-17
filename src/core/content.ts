@@ -52,7 +52,7 @@ function item(id: string, type: ContentType, slug: string, title: string, excerp
 
 const entries = new Map(seeds.map((entry) => [entry.id, entry]));
 
-export const routeBase = (type: ContentType) => type === "blog" ? "/c/blog" : type === "docs" ? "/c/docs" : type === "changelog" ? "/c/changelog" : type === "legal" ? "/legal" : "/p";
+export const routeBase = (type: ContentType) => type === "blog" ? "/c/blog" : type === "docs" ? "/c/docs" : type === "changelog" ? "/c/changelogs" : type === "legal" ? "/legal" : "/p";
 export const contentUrl = (entry: Pick<ContentEntry, "type" | "slug">) => routeBase(entry.type) + "/" + entry.slug;
 export const contentArchiveUrl = (type: Extract<ContentType, "blog" | "docs" | "changelog">) => routeBase(type);
 
