@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { AdminNav } from "@/components/admin-nav";
 import { AppShell } from "@/components/app-shell";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -103,7 +102,7 @@ function AdminContentPage() {
             {filtered.map((entry) => (
               <button key={entry.id} type="button" className="block w-full px-2 py-3 text-left hover:bg-muted/50" onClick={() => setDraft(entry)}>
                 <span className="block truncate text-sm font-medium">{entry.title}</span>
-                <span className="mt-1 flex items-center gap-2 text-xs text-muted-foreground"><Badge variant="outline" className="capitalize">{entry.type}</Badge>{entry.status}</span>
+                <span className="mt-1 block text-xs text-muted-foreground">{entry.type} | {entry.status}</span>
               </button>
             ))}
           </div>
@@ -119,25 +118,37 @@ function AdminContentPage() {
             </div>
             <div className="mt-3"><Label>Excerpt</Label><Input value={current.excerpt} onChange={(event) => update({ excerpt: event.target.value })} /></div>
             <div className="mt-4 rounded-lg border border-border bg-surface">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border p-2">
-                <div className="flex rounded-md border border-border bg-background p-1">
+              <div className="flex flex-wrap items-center gap-2 border-b border-border px-3 py-2">
+                <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    className={`rounded px-3 py-1 text-sm ${mode === "markdown" ? "bg-card text-foreground shadow-xs" : "text-muted-foreground"}`}
+                    className={`rounded px-2 py-0.5 text-xs ${mode === "markdown" ? "bg-card text-foreground shadow-xs" : "text-muted-foreground"}`}
                     onClick={() => setMode("markdown")}
                   >
                     Markdown
                   </button>
                   <button
                     type="button"
-                    className={`rounded px-3 py-1 text-sm ${mode === "preview" ? "bg-card text-foreground shadow-xs" : "text-muted-foreground"}`}
+                    className={`rounded px-2 py-0.5 text-xs ${mode === "preview" ? "bg-card text-foreground shadow-xs" : "text-muted-foreground"}`}
                     onClick={() => setMode("preview")}
                   >
                     Preview
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-1">
-                  {["h2","h3","bold","italic","link","image","youtube","ul","ol","quote","code","block","hr"].map((item) => <Button key={item} type="button" size="sm" variant="secondary" onClick={() => update({ markdown: applyFormat(current.markdown, item) })}>{item}</Button>)}
+                <span className="text-xs text-muted-foreground">|</span>
+                <div className="flex flex-wrap items-center gap-1 text-xs">
+                  {["h2","h3","bold","italic","link","image","youtube","ul","ol","quote","code","block","hr"].map((item, index) => (
+                    <span key={item} className="inline-flex items-center gap-1">
+                      {index > 0 ? <span className="text-muted-foreground">|</span> : null}
+                      <button
+                        type="button"
+                        className="rounded px-1.5 py-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                        onClick={() => update({ markdown: applyFormat(current.markdown, item) })}
+                      >
+                        {item}
+                      </button>
+                    </span>
+                  ))}
                 </div>
               </div>
               {mode === "markdown" ? (
