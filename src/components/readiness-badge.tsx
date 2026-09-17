@@ -2,16 +2,20 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { ProviderReadiness } from "@/core/types";
 
-const LABELS: Record<ProviderReadiness, string> = {
+export type PublicProviderReadiness = ProviderReadiness | "disabled";
+
+const LABELS: Record<PublicProviderReadiness, string> = {
   production: "Production",
   beta: "Beta",
   "coming-soon": "Coming soon",
+  disabled: "Disabled",
 };
 
-const STYLES: Record<ProviderReadiness, string> = {
+const STYLES: Record<PublicProviderReadiness, string> = {
   production: "border-success/40 bg-success/10 text-success",
   beta: "border-warning/40 text-warning-foreground bg-warning/10",
   "coming-soon": "border-border text-muted-foreground",
+  disabled: "border-border bg-muted text-muted-foreground",
 };
 
 /** Communicates provider maturity everywhere a provider is offered. */
@@ -19,7 +23,7 @@ export function ReadinessBadge({
   readiness,
   className,
 }: {
-  readiness: ProviderReadiness;
+  readiness: PublicProviderReadiness;
   className?: string;
 }) {
   return (

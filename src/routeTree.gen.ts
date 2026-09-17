@@ -48,6 +48,7 @@ import { Route as AuthenticatedAdminLogsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminQueuesRouteImport } from './routes/_authenticated/admin.queues'
 import { Route as AuthenticatedAdminSharesRouteImport } from './routes/_authenticated/admin.shares'
+import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
 import { Route as AuthenticatedFilesFileIdRouteImport } from './routes/_authenticated/files.$fileId'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings.index'
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings.security'
@@ -275,6 +276,12 @@ const AuthenticatedAdminSharesRoute =
     path: '/shares',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminVerificationRoute =
+  AuthenticatedAdminVerificationRouteImport.update({
+    id: '/verification',
+    path: '/verification',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedFilesFileIdRoute =
   AuthenticatedFilesFileIdRouteImport.update({
     id: '/files/$fileId',
@@ -418,6 +425,7 @@ export interface FileRoutesByFullPath {
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin/shares': typeof AuthenticatedAdminSharesRoute
+  '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/files/$fileId': typeof AuthenticatedFilesFileIdRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/api/public/health': typeof ApiPublicHealthRouteWithChildren
@@ -473,6 +481,7 @@ export interface FileRoutesByTo {
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin/shares': typeof AuthenticatedAdminSharesRoute
+  '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/files/$fileId': typeof AuthenticatedFilesFileIdRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/api/public/health': typeof ApiPublicHealthRouteWithChildren
@@ -535,6 +544,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/_authenticated/admin/shares': typeof AuthenticatedAdminSharesRoute
+  '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/_authenticated/files/$fileId': typeof AuthenticatedFilesFileIdRoute
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/api/public/health': typeof ApiPublicHealthRouteWithChildren
@@ -597,6 +607,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/queues'
     | '/admin/shares'
+    | '/admin/verification'
     | '/files/$fileId'
     | '/settings/security'
     | '/api/public/health'
@@ -652,6 +663,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/queues'
     | '/admin/shares'
+    | '/admin/verification'
     | '/files/$fileId'
     | '/settings/security'
     | '/api/public/health'
@@ -713,6 +725,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/providers'
     | '/_authenticated/admin/queues'
     | '/_authenticated/admin/shares'
+    | '/_authenticated/admin/verification'
     | '/_authenticated/files/$fileId'
     | '/_authenticated/settings/security'
     | '/api/public/health'
@@ -1034,6 +1047,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSharesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/verification': {
+      id: '/_authenticated/admin/verification'
+      path: '/verification'
+      fullPath: '/admin/verification'
+      preLoaderRoute: typeof AuthenticatedAdminVerificationRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/files/$fileId': {
       id: '/_authenticated/files/$fileId'
       path: '/files/$fileId'
@@ -1190,6 +1210,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
   AuthenticatedAdminQueuesRoute: typeof AuthenticatedAdminQueuesRoute
   AuthenticatedAdminSharesRoute: typeof AuthenticatedAdminSharesRoute
+  AuthenticatedAdminVerificationRoute: typeof AuthenticatedAdminVerificationRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
@@ -1206,6 +1227,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
   AuthenticatedAdminQueuesRoute: AuthenticatedAdminQueuesRoute,
   AuthenticatedAdminSharesRoute: AuthenticatedAdminSharesRoute,
+  AuthenticatedAdminVerificationRoute: AuthenticatedAdminVerificationRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 

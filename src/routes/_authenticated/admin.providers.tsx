@@ -13,7 +13,7 @@ import { DESCRIPTORS } from "@/adapters";
 import { offlineLevel } from "@/core/health";
 import { runHealthChecks, setProviderEnabled } from "@/core/services";
 import { formatDateTime } from "@/lib/format";
-import { providerStatesQuery } from "@/lib/queries";
+import { providerStatesQuery, readinessQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/_authenticated/admin/providers")({
   head: () => ({
@@ -36,6 +36,7 @@ const FEATURES = ["list", "upload", "download", "copy/move", "folders", "quota",
 
 function AdminProviders() {
   const states = useQuery(providerStatesQuery);
+  const readiness = useQuery(readinessQuery);
   const queryClient = useQueryClient();
 
   const toggle = useMutation({
@@ -66,6 +67,7 @@ function AdminProviders() {
       <div className="space-y-3">
         {DESCRIPTORS.map((descriptor) => {
           const state = states.data?.find((entry) => entry.providerId === descriptor.id);
+          const providerReadiness = readiness.data?.groups.providers.find((entry) => entry.id === descriptor.id);
           const level = offlineLevel(state?.checkedAt ?? null, state?.health ?? "unknown");
           return (
             <section key={descriptor.id} className="panel flex flex-wrap items-start gap-4 p-5">
@@ -76,7 +78,7 @@ function AdminProviders() {
                   <Badge variant="outline" className="capitalize">
                     {descriptor.capability}
                   </Badge>
-                  <ReadinessBadge readiness={descriptor.readiness} />
+                  <ReadinessBadge readiness={providerReadiness?.publicStatus ?? descriptor.readiness} />
                   <Badge
                     variant="outline"
                     className={
@@ -96,7 +98,7 @@ function AdminProviders() {
                   {state?.checkedAt ? formatDateTime(state.checkedAt) : "never"}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-1.5">
-                  {(descriptor.verifiedOperations?.length ? descriptor.verifiedOperations : FEATURES).map((feature) => (
+                  {(providerReadiness?.capabilities?.length ? providerReadiness.capabilities.map((item) => `${item.name}: ${item.state}`) : descriptor.verifiedOperations?.length ? descriptor.verifiedOperations : FEATURES).map((feature) => (
                     <span
                       key={feature}
                       className="rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground"

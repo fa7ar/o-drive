@@ -12,6 +12,7 @@ import {
   jobsQuery,
   metricsQuery,
   providerStatesQuery,
+  readinessQuery,
   systemLogsQuery,
 } from "@/lib/queries";
 
@@ -46,6 +47,7 @@ function AdminDashboard() {
   const metrics = useQuery(metricsQuery);
   const jobs = useQuery(jobsQuery);
   const providers = useQuery(providerStatesQuery);
+  const readiness = useQuery(readinessQuery);
   const connections = useQuery(connectionsQuery);
   const activity = useQuery(activityQuery);
   const logs = useQuery(systemLogsQuery({ limit: 6 }));
@@ -70,6 +72,11 @@ function AdminDashboard() {
           label="Providers healthy"
           value={`${data?.providersHealthy ?? 0}/${data?.providersTotal ?? 0}`}
           hint={`${data?.connectionsActive ?? 0} active connections`}
+        />
+        <Metric
+          label="Deployment"
+          value={readiness.data?.deployment ?? "checking"}
+          hint={readiness.data?.reason ?? "Unified readiness service"}
         />
         <Metric
           label="Storage used"

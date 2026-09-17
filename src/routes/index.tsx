@@ -9,7 +9,7 @@ import { PublicFooter } from "@/components/public-footer";
 import { ReadinessBadge } from "@/components/readiness-badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { footerContentQuery } from "@/lib/queries";
+import { footerContentQuery, readinessQuery } from "@/lib/queries";
 
 const TITLE = "ODrive — one workspace for every storage account";
 const DESCRIPTION =
@@ -38,6 +38,10 @@ export const Route = createFileRoute("/")({
 function Home() {
   const { user } = useAuth();
   const footerContent = useQuery(footerContentQuery);
+  const readiness = useQuery(readinessQuery);
+  const providerReadiness = new Map(
+    (readiness.data?.groups.providers ?? []).map((item) => [item.id, item.publicStatus ?? "coming-soon"]),
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -106,7 +110,7 @@ function Home() {
                   <p className="truncate text-sm font-medium">{provider.name}</p>
                   <p className="truncate text-xs text-muted-foreground">{provider.tagline}</p>
                 </div>
-                <ReadinessBadge readiness={provider.readiness} />
+                <ReadinessBadge readiness={providerReadiness.get(provider.id) ?? provider.readiness} />
               </li>
             ))}
           </ul>

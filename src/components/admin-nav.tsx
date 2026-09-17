@@ -4,10 +4,11 @@ const GROUPS = [
   {
     label: "Overview",
     to: "/admin",
-    paths: ["/admin", "/admin/health"],
+    paths: ["/admin", "/admin/health", "/admin/verification"],
     children: [
       { to: "/admin", label: "Dashboard" },
       { to: "/admin/health", label: "System health" },
+      { to: "/admin/verification", label: "Verification" },
     ],
   },
   {
