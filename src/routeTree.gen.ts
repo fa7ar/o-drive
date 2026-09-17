@@ -24,6 +24,9 @@ import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/h
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedSharesRouteImport } from './routes/_authenticated/shares'
 import { Route as AuthenticatedTransfersRouteImport } from './routes/_authenticated/transfers'
+import { Route as CBlogRouteImport } from './routes/c/blog'
+import { Route as CChangelogRouteImport } from './routes/c/changelog'
+import { Route as CDocsRouteImport } from './routes/c/docs'
 import { Route as LegalSlugRouteImport } from './routes/legal/$slug'
 import { Route as LegalAcceptableUseRouteImport } from './routes/legal/acceptable-use'
 import { Route as LegalDataDeletionRouteImport } from './routes/legal/data-deletion'
@@ -135,6 +138,21 @@ const AuthenticatedTransfersRoute = AuthenticatedTransfersRouteImport.update({
   id: '/transfers',
   path: '/transfers',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const CBlogRoute = CBlogRouteImport.update({
+  id: '/c/blog',
+  path: '/c/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CChangelogRoute = CChangelogRouteImport.update({
+  id: '/c/changelog',
+  path: '/c/changelog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CDocsRoute = CDocsRouteImport.update({
+  id: '/c/docs',
+  path: '/c/docs',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LegalSlugRoute = LegalSlugRouteImport.update({
   id: '/legal/$slug',
@@ -275,19 +293,19 @@ const ApiV1SplatRoute = ApiV1SplatRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const CBlogSlugRoute = CBlogSlugRouteImport.update({
-  id: '/c/blog/$slug',
-  path: '/c/blog/$slug',
-  getParentRoute: () => rootRouteImport,
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => CBlogRoute,
 } as any)
 const CChangelogSlugRoute = CChangelogSlugRouteImport.update({
-  id: '/c/changelog/$slug',
-  path: '/c/changelog/$slug',
-  getParentRoute: () => rootRouteImport,
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => CChangelogRoute,
 } as any)
 const CDocsSlugRoute = CDocsSlugRouteImport.update({
-  id: '/c/docs/$slug',
-  path: '/c/docs/$slug',
-  getParentRoute: () => rootRouteImport,
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => CDocsRoute,
 } as any)
 const ApiPublicHealthConfigRoute = ApiPublicHealthConfigRouteImport.update({
   id: '/config',
@@ -341,6 +359,9 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/c/blog': typeof CBlogRouteWithChildren
+  '/c/changelog': typeof CChangelogRouteWithChildren
+  '/c/docs': typeof CDocsRouteWithChildren
   '/legal/$slug': typeof LegalSlugRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
   '/legal/data-deletion': typeof LegalDataDeletionRoute
@@ -391,6 +412,9 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/c/blog': typeof CBlogRouteWithChildren
+  '/c/changelog': typeof CChangelogRouteWithChildren
+  '/c/docs': typeof CDocsRouteWithChildren
   '/legal/$slug': typeof LegalSlugRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
   '/legal/data-deletion': typeof LegalDataDeletionRoute
@@ -444,6 +468,9 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/shares': typeof AuthenticatedSharesRoute
   '/_authenticated/transfers': typeof AuthenticatedTransfersRoute
+  '/c/blog': typeof CBlogRouteWithChildren
+  '/c/changelog': typeof CChangelogRouteWithChildren
+  '/c/docs': typeof CDocsRouteWithChildren
   '/legal/$slug': typeof LegalSlugRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
   '/legal/data-deletion': typeof LegalDataDeletionRoute
@@ -497,6 +524,9 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/shares'
     | '/transfers'
+    | '/c/blog'
+    | '/c/changelog'
+    | '/c/docs'
     | '/legal/$slug'
     | '/legal/acceptable-use'
     | '/legal/data-deletion'
@@ -547,6 +577,9 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/shares'
     | '/transfers'
+    | '/c/blog'
+    | '/c/changelog'
+    | '/c/docs'
     | '/legal/$slug'
     | '/legal/acceptable-use'
     | '/legal/data-deletion'
@@ -599,6 +632,9 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/shares'
     | '/_authenticated/transfers'
+    | '/c/blog'
+    | '/c/changelog'
+    | '/c/docs'
     | '/legal/$slug'
     | '/legal/acceptable-use'
     | '/legal/data-deletion'
@@ -640,6 +676,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CBlogRoute: typeof CBlogRouteWithChildren
+  CChangelogRoute: typeof CChangelogRouteWithChildren
+  CDocsRoute: typeof CDocsRouteWithChildren
   LegalSlugRoute: typeof LegalSlugRoute
   LegalAcceptableUseRoute: typeof LegalAcceptableUseRoute
   LegalDataDeletionRoute: typeof LegalDataDeletionRoute
@@ -649,9 +688,6 @@ export interface RootRouteChildren {
   STokenRoute: typeof STokenRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRouteWithChildren
   ApiV1SplatRoute: typeof ApiV1SplatRoute
-  CBlogSlugRoute: typeof CBlogSlugRoute
-  CChangelogSlugRoute: typeof CChangelogSlugRoute
-  CDocsSlugRoute: typeof CDocsSlugRoute
   ApiPublicV1SplatRoute: typeof ApiPublicV1SplatRoute
   ApiPublicV1OpenapiDotjsonRoute: typeof ApiPublicV1OpenapiDotjsonRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -764,6 +800,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/transfers'
       preLoaderRoute: typeof AuthenticatedTransfersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/c/blog': {
+      id: '/c/blog'
+      path: '/c/blog'
+      fullPath: '/c/blog'
+      preLoaderRoute: typeof CBlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/c/changelog': {
+      id: '/c/changelog'
+      path: '/c/changelog'
+      fullPath: '/c/changelog'
+      preLoaderRoute: typeof CChangelogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/c/docs': {
+      id: '/c/docs'
+      path: '/c/docs'
+      fullPath: '/c/docs'
+      preLoaderRoute: typeof CDocsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/legal/$slug': {
       id: '/legal/$slug'
@@ -942,24 +999,24 @@ declare module '@tanstack/react-router' {
     }
     '/c/blog/$slug': {
       id: '/c/blog/$slug'
-      path: '/c/blog/$slug'
+      path: '/$slug'
       fullPath: '/c/blog/$slug'
       preLoaderRoute: typeof CBlogSlugRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof CBlogRoute
     }
     '/c/changelog/$slug': {
       id: '/c/changelog/$slug'
-      path: '/c/changelog/$slug'
+      path: '/$slug'
       fullPath: '/c/changelog/$slug'
       preLoaderRoute: typeof CChangelogSlugRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof CChangelogRoute
     }
     '/c/docs/$slug': {
       id: '/c/docs/$slug'
-      path: '/c/docs/$slug'
+      path: '/$slug'
       fullPath: '/c/docs/$slug'
       preLoaderRoute: typeof CDocsSlugRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof CDocsRoute
     }
     '/api/public/health/config': {
       id: '/api/public/health/config'
@@ -1087,6 +1144,38 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface CBlogRouteChildren {
+  CBlogSlugRoute: typeof CBlogSlugRoute
+}
+
+const CBlogRouteChildren: CBlogRouteChildren = {
+  CBlogSlugRoute: CBlogSlugRoute,
+}
+
+const CBlogRouteWithChildren = CBlogRoute._addFileChildren(CBlogRouteChildren)
+
+interface CChangelogRouteChildren {
+  CChangelogSlugRoute: typeof CChangelogSlugRoute
+}
+
+const CChangelogRouteChildren: CChangelogRouteChildren = {
+  CChangelogSlugRoute: CChangelogSlugRoute,
+}
+
+const CChangelogRouteWithChildren = CChangelogRoute._addFileChildren(
+  CChangelogRouteChildren,
+)
+
+interface CDocsRouteChildren {
+  CDocsSlugRoute: typeof CDocsSlugRoute
+}
+
+const CDocsRouteChildren: CDocsRouteChildren = {
+  CDocsSlugRoute: CDocsSlugRoute,
+}
+
+const CDocsRouteWithChildren = CDocsRoute._addFileChildren(CDocsRouteChildren)
+
 interface ApiPublicHealthRouteChildren {
   ApiPublicHealthConfigRoute: typeof ApiPublicHealthConfigRoute
   ApiPublicHealthLiveRoute: typeof ApiPublicHealthLiveRoute
@@ -1107,6 +1196,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  CBlogRoute: CBlogRouteWithChildren,
+  CChangelogRoute: CChangelogRouteWithChildren,
+  CDocsRoute: CDocsRouteWithChildren,
   LegalSlugRoute: LegalSlugRoute,
   LegalAcceptableUseRoute: LegalAcceptableUseRoute,
   LegalDataDeletionRoute: LegalDataDeletionRoute,
@@ -1116,9 +1208,6 @@ const rootRouteChildren: RootRouteChildren = {
   STokenRoute: STokenRoute,
   ApiPublicHealthRoute: ApiPublicHealthRouteWithChildren,
   ApiV1SplatRoute: ApiV1SplatRoute,
-  CBlogSlugRoute: CBlogSlugRoute,
-  CChangelogSlugRoute: CChangelogSlugRoute,
-  CDocsSlugRoute: CDocsSlugRoute,
   ApiPublicV1SplatRoute: ApiPublicV1SplatRoute,
   ApiPublicV1OpenapiDotjsonRoute: ApiPublicV1OpenapiDotjsonRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
