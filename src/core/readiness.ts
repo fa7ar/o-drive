@@ -1,5 +1,6 @@
 import { DESCRIPTORS } from "@/adapters";
 import { configStatus } from "@/config/runtime-env.server";
+import { listBackupSync } from "@/core/backup-sync";
 import { systemMetrics } from "@/core/health";
 import { listModules, MODULE_REGISTRY_TABLES } from "@/core/modules";
 import { listProviderStates, runHealthChecks } from "@/core/services";
@@ -244,6 +245,7 @@ export async function readinessReport(): Promise<ReadinessReport> {
   const missingSecrets = config.variables.filter((item) => item.kind === "secret" && item.required && !item.present);
   const missingRequired = config.variables.filter((item) => item.required && !item.present);
   const modules = listModules();
+  const backupSync = await listBackupSync();
 
   const infrastructure: ReadinessItem[] = [
     {
@@ -332,6 +334,15 @@ export async function readinessReport(): Promise<ReadinessReport> {
     ["module-registry", "Module Registry", MODULE_REGISTRY_TABLES.length === 7 ? "Healthy" : "Degraded", `${MODULE_REGISTRY_TABLES.length} registry tables are modeled for module state.`],
     ["module-package-storage", "Package Storage", "Healthy", "Package records use storage abstraction metadata and avoid local filesystem assumptions."],
     ["module-entitlements", "Entitlement Service", modules.installed.some((module) => !module.entitlement.entitled && module.manifest.edition !== "free") ? "Testing" : "Healthy", "Installation and entitlement are tracked separately per workspace."],
+    ["backup-engine", "Backup Engine", "Healthy", "Backup/sync policies orchestrate work through Automation, ActionService and TransferEngine."],
+    ["sync-policy", "Sync Policy", "Healthy", "Conflict policy, retention, include/exclude and schedule metadata are registered."],
+    ["routing-engine", "Routing Engine", "Healthy", `${backupSync.routingStrategies.length} routing strategies are registered.`],
+    ["storage-pools", "Storage Pools", "Healthy", `${backupSync.pools.length} storage pool(s) configured in this runtime.`],
+    ["round-robin-persistence", "Round Robin Persistence", "Healthy", "Routing cursor and nonce are stored with the pool state instead of process-local increments."],
+    ["weighted-routing", "Weighted Routing", "Healthy", "Weighted round robin builds deterministic routing slots from pool member weights."],
+    ["health-aware-routing", "Health-aware Routing", "Healthy", "Routing skips disabled, expired, down or unsupported destinations."],
+    ["routing-failover", "Routing Failover", "Testing", "Failover policy is modeled; live retry/failover verification requires multiple healthy connected destinations."],
+    ["cross-provider-transfer", "Cross-provider Transfer", "Testing", "Cross-provider routing queues transfers through ActionService; full E2E depends on live provider accounts."],
   ].map(([id, name, state, reason]) => ({
     id,
     name,

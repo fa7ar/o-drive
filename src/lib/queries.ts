@@ -3,6 +3,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { listContent, listNavigationContent } from "@/core/content";
 
 import { listApiKeys } from "@/core/api-keys";
+import { listBackupSync } from "@/core/backup-sync";
 import { listDeliveries, listWebhooks } from "@/core/webhooks";
 import { listApiRequestLogs } from "@/core/api-usage";
 
@@ -62,6 +63,12 @@ export const drivesQuery = queryOptions({
 export const transfersQuery = queryOptions({
   queryKey: ["transfers"],
   queryFn: () => listTransfers(),
+});
+
+export const backupSyncQuery = queryOptions({
+  queryKey: ["backup-sync"],
+  queryFn: () => listBackupSync(),
+  refetchInterval: 5000,
 });
 
 export const activityQuery = queryOptions({

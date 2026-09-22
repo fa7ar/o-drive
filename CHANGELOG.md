@@ -2,6 +2,28 @@
 
 All notable changes to ODrive are documented here.
 
+## 0.4.2 - 2026-09-22
+
+### Added
+
+- Added Backup & Sync Policies with source, destination, mode, schedule, retention, conflict handling, pause/resume and manual run state.
+- Added Storage Pools as routing abstractions above existing connections instead of new storage providers.
+- Added routing strategies for Round Robin, Weighted Round Robin, Priority/Failover, Least Used and Most Available Space.
+- Added smart routing checks for provider health, connection status, declared capability and destination availability.
+- Added `/backup-sync` with Policies, Runs and Storage Pools views.
+- Added Backup & Sync readiness checks for scheduler, backup engine, sync policy, routing engine, storage pools, round robin persistence, weighted routing, health-aware routing, failover and cross-provider transfer.
+
+### Changed
+
+- Registered backup/sync operations in the Universal Action Registry and routed policy runs through `transfer.create`.
+- Updated the member area Activity navigation to include Backup & Sync next to Transfers and Automations.
+
+### Reliability
+
+- Persisted routing cursor and nonce with the storage pool state so round robin does not rely on Worker memory.
+- Kept routing idempotent by using deterministic ActionService idempotency keys for policy runs.
+- Failures now record run history and mark affected policies as error instead of silently retrying forever.
+
 ## 0.4.1 - 2026-09-17
 
 ### Added

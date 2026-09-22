@@ -16,6 +16,8 @@ export type ActionId =
   | "transfer.create"
   | "transfer.cancel"
   | "transfer.retry"
+  | "backup.policy.run"
+  | "backup.pool.route"
   | "share.create"
   | "share.update"
   | "share.revoke"
@@ -100,6 +102,8 @@ export const ACTION_REGISTRY: ActionDefinition[] = [
   def("transfer.create", "Create a transfer job.", ["transfer:write"], ["transfer"], "async"),
   def("transfer.cancel", "Cancel a queued or running transfer job.", ["transfer:write"], ["transfer"], "sync"),
   def("transfer.retry", "Retry a failed transfer job.", ["transfer:write"], ["transfer"], "async"),
+  def("backup.policy.run", "Run a backup or sync policy through routing and transfers.", ["automation:write", "transfer:write"], ["transfer"], "async"),
+  def("backup.pool.route", "Resolve a storage pool destination using smart routing.", ["drive:read"], ["upload"], "sync"),
   def("share.create", "Create a public share link.", ["share:write"], ["share"], "sync"),
   def("share.update", "Update a share link.", ["share:write"], ["share"], "sync"),
   def("share.revoke", "Revoke a share link.", ["share:write"], ["share"], "sync"),

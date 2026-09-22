@@ -1,6 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   ArrowLeftRight,
+  Archive,
   Clock,
   Code2,
   Files,
@@ -70,6 +71,7 @@ const SECTIONS: Array<{
     to: "/transfers",
     children: [
       { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },
+      { to: "/backup-sync", label: "Backup & Sync", icon: Archive },
       { to: "/shares", label: "Shares", icon: Link2 },
       { to: "/automations", label: "Automations", icon: Zap },
       { to: "/activity", label: "Activity", icon: History },
@@ -92,6 +94,7 @@ function sectionForPath(pathname: string): SectionKey {
   if (pathname.startsWith("/home")) return "home";
   if (
     pathname.startsWith("/transfers") ||
+    pathname.startsWith("/backup-sync") ||
     pathname.startsWith("/shares") ||
     pathname.startsWith("/automations") ||
     pathname.startsWith("/activity")

@@ -108,6 +108,7 @@ export const MODULE_PERMISSION_CATALOG: ModulePermission[] = [
   { id: "files.write", label: "Create, rename, move, copy and delete files", actionIds: ["file.upload", "file.rename", "file.move", "file.copy", "file.delete", "file.create_folder"] },
   { id: "transfers.create", label: "Create transfers", actionIds: ["transfer.create"] },
   { id: "transfers.manage", label: "Cancel or retry transfers", actionIds: ["transfer.cancel", "transfer.retry"] },
+  { id: "backup.run", label: "Run backup and sync policies", actionIds: ["backup.policy.run", "backup.pool.route"] },
   { id: "shares.create", label: "Create and manage share links", actionIds: ["share.create", "share.update", "share.revoke"] },
   { id: "automations.run", label: "Run automations", actionIds: ["automation.run"] },
   { id: "activity.read", label: "Read activity metadata", actionIds: [] },
@@ -376,6 +377,7 @@ function actionPermissionFor(modulePermissionId: string) {
   if (modulePermissionId === "files.read") return ["file:read"];
   if (modulePermissionId === "files.write") return ["file:write", "drive:write"];
   if (modulePermissionId === "transfers.create" || modulePermissionId === "transfers.manage") return ["transfer:write"];
+  if (modulePermissionId === "backup.run") return ["automation:write", "transfer:write", "drive:read"];
   if (modulePermissionId === "shares.create") return ["share:write"];
   if (modulePermissionId === "automations.run") return ["automation:write"];
   return [];
