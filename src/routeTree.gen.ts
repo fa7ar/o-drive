@@ -45,6 +45,7 @@ import { Route as AuthenticatedAdminDrivesRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminFlagsRouteImport } from './routes/_authenticated/admin.flags'
 import { Route as AuthenticatedAdminHealthRouteImport } from './routes/_authenticated/admin.health'
 import { Route as AuthenticatedAdminLogsRouteImport } from './routes/_authenticated/admin.logs'
+import { Route as AuthenticatedAdminModulesRouteImport } from './routes/_authenticated/admin.modules'
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminQueuesRouteImport } from './routes/_authenticated/admin.queues'
 import { Route as AuthenticatedAdminSharesRouteImport } from './routes/_authenticated/admin.shares'
@@ -258,6 +259,12 @@ const AuthenticatedAdminLogsRoute = AuthenticatedAdminLogsRouteImport.update({
   path: '/logs',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminModulesRoute =
+  AuthenticatedAdminModulesRouteImport.update({
+    id: '/modules',
+    path: '/modules',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminProvidersRoute =
   AuthenticatedAdminProvidersRouteImport.update({
     id: '/providers',
@@ -422,6 +429,7 @@ export interface FileRoutesByFullPath {
   '/admin/flags': typeof AuthenticatedAdminFlagsRoute
   '/admin/health': typeof AuthenticatedAdminHealthRoute
   '/admin/logs': typeof AuthenticatedAdminLogsRoute
+  '/admin/modules': typeof AuthenticatedAdminModulesRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin/shares': typeof AuthenticatedAdminSharesRoute
@@ -478,6 +486,7 @@ export interface FileRoutesByTo {
   '/admin/flags': typeof AuthenticatedAdminFlagsRoute
   '/admin/health': typeof AuthenticatedAdminHealthRoute
   '/admin/logs': typeof AuthenticatedAdminLogsRoute
+  '/admin/modules': typeof AuthenticatedAdminModulesRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/admin/shares': typeof AuthenticatedAdminSharesRoute
@@ -541,6 +550,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/flags': typeof AuthenticatedAdminFlagsRoute
   '/_authenticated/admin/health': typeof AuthenticatedAdminHealthRoute
   '/_authenticated/admin/logs': typeof AuthenticatedAdminLogsRoute
+  '/_authenticated/admin/modules': typeof AuthenticatedAdminModulesRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/admin/queues': typeof AuthenticatedAdminQueuesRoute
   '/_authenticated/admin/shares': typeof AuthenticatedAdminSharesRoute
@@ -604,6 +614,7 @@ export interface FileRouteTypes {
     | '/admin/flags'
     | '/admin/health'
     | '/admin/logs'
+    | '/admin/modules'
     | '/admin/providers'
     | '/admin/queues'
     | '/admin/shares'
@@ -660,6 +671,7 @@ export interface FileRouteTypes {
     | '/admin/flags'
     | '/admin/health'
     | '/admin/logs'
+    | '/admin/modules'
     | '/admin/providers'
     | '/admin/queues'
     | '/admin/shares'
@@ -722,6 +734,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/flags'
     | '/_authenticated/admin/health'
     | '/_authenticated/admin/logs'
+    | '/_authenticated/admin/modules'
     | '/_authenticated/admin/providers'
     | '/_authenticated/admin/queues'
     | '/_authenticated/admin/shares'
@@ -1026,6 +1039,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminLogsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/modules': {
+      id: '/_authenticated/admin/modules'
+      path: '/modules'
+      fullPath: '/admin/modules'
+      preLoaderRoute: typeof AuthenticatedAdminModulesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/providers': {
       id: '/_authenticated/admin/providers'
       path: '/providers'
@@ -1207,6 +1227,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminFlagsRoute: typeof AuthenticatedAdminFlagsRoute
   AuthenticatedAdminHealthRoute: typeof AuthenticatedAdminHealthRoute
   AuthenticatedAdminLogsRoute: typeof AuthenticatedAdminLogsRoute
+  AuthenticatedAdminModulesRoute: typeof AuthenticatedAdminModulesRoute
   AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
   AuthenticatedAdminQueuesRoute: typeof AuthenticatedAdminQueuesRoute
   AuthenticatedAdminSharesRoute: typeof AuthenticatedAdminSharesRoute
@@ -1224,6 +1245,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminFlagsRoute: AuthenticatedAdminFlagsRoute,
   AuthenticatedAdminHealthRoute: AuthenticatedAdminHealthRoute,
   AuthenticatedAdminLogsRoute: AuthenticatedAdminLogsRoute,
+  AuthenticatedAdminModulesRoute: AuthenticatedAdminModulesRoute,
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
   AuthenticatedAdminQueuesRoute: AuthenticatedAdminQueuesRoute,
   AuthenticatedAdminSharesRoute: AuthenticatedAdminSharesRoute,

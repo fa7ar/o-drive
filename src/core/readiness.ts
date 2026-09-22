@@ -1,6 +1,7 @@
 import { DESCRIPTORS } from "@/adapters";
 import { configStatus } from "@/config/runtime-env.server";
 import { systemMetrics } from "@/core/health";
+import { listModules, MODULE_REGISTRY_TABLES } from "@/core/modules";
 import { listProviderStates, runHealthChecks } from "@/core/services";
 import { useContainer } from "@/core/container";
 import type { ProviderDescriptor, ProviderReadiness, ProviderState } from "@/core/types";
@@ -242,6 +243,7 @@ export async function readinessReport(): Promise<ReadinessReport> {
   const stateById = new Map(providerStates.map((state) => [state.providerId, state]));
   const missingSecrets = config.variables.filter((item) => item.kind === "secret" && item.required && !item.present);
   const missingRequired = config.variables.filter((item) => item.required && !item.present);
+  const modules = listModules();
 
   const infrastructure: ReadinessItem[] = [
     {
@@ -326,6 +328,10 @@ export async function readinessReport(): Promise<ReadinessReport> {
     ["public-api", "Public API", "Healthy", "Public v1 API router is registered."],
     ["webhooks", "Webhooks", "Testing", "Webhook registry exists; delivery verification requires live endpoints."],
     ["content", "Content Management", "Healthy", "Unified content editor and public routes are registered."],
+    ["module-runtime", "Module Runtime", modules.runtime.healthy ? "Healthy" : "Blocked", "Modules invoke ODrive through the Universal Action Layer and cannot execute arbitrary package code."],
+    ["module-registry", "Module Registry", MODULE_REGISTRY_TABLES.length === 7 ? "Healthy" : "Degraded", `${MODULE_REGISTRY_TABLES.length} registry tables are modeled for module state.`],
+    ["module-package-storage", "Package Storage", "Healthy", "Package records use storage abstraction metadata and avoid local filesystem assumptions."],
+    ["module-entitlements", "Entitlement Service", modules.installed.some((module) => !module.entitlement.entitled && module.manifest.edition !== "free") ? "Testing" : "Healthy", "Installation and entitlement are tracked separately per workspace."],
   ].map(([id, name, state, reason]) => ({
     id,
     name,

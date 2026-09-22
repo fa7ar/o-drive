@@ -16,6 +16,9 @@ All notable changes to ODrive are documented here.
 - Added a reusable ReadinessService that feeds Admin Verification, provider badges, the admin dashboard and the readiness health endpoint.
 - Added the Universal Action Layer with a central ActionService, stable action IDs, permission checks, provider capability checks, idempotency support and standard action results.
 - Added an Action Registry view inside Admin Verification so operators can inspect action IDs, execution mode, required permissions and required capabilities.
+- Added the secure Module Runtime foundation with manifest validation, ZIP package safety checks, lifecycle operations, permission grants, entitlements and ActionService-only execution.
+- Added `/admin/modules` with Installed, Available and Upload Module views plus an Advanced Backup example package for install, enable, permission, ActionService, disable and uninstall verification.
+- Added module readiness checks for Module Runtime, Module Registry, Package Storage and Entitlement Service in the Production Verification Center.
 
 ### Changed
 
@@ -29,6 +32,7 @@ All notable changes to ODrive are documented here.
 - Moved Blog, Changelogs and Docs into the footer Content dropdown instead of showing Docs and Changelogs as standalone footer links.
 - Moved provider public status calculation behind unified readiness checks instead of relying only on static descriptors.
 - Routed core file, folder, upload, transfer and Public API operations through the shared ActionService instead of direct per-consumer implementations.
+- Kept extension points declarative so modules can register navigation, dashboard widgets, settings panels, file actions, context menus and automation actions without mutating Core UI directly.
 
 ### Fixed
 

@@ -30,6 +30,7 @@ import { listCredentials } from "@/core/credentials";
 import { systemMetrics } from "@/core/health";
 import { jobLog, listJobs } from "@/core/jobs";
 import { listLogs, type LogFilter } from "@/core/logs";
+import { listModules } from "@/core/modules";
 import { readinessReport } from "@/core/readiness";
 import { listSyncHistory, listSyncJobs } from "@/core/sync-engine";
 
@@ -151,6 +152,11 @@ export const readinessQuery = queryOptions({
   queryKey: ["readiness"],
   queryFn: () => readinessReport(),
   refetchInterval: 8000,
+});
+
+export const modulesQuery = queryOptions({
+  queryKey: ["modules"],
+  queryFn: () => listModules(),
 });
 
 export const sharesQuery = queryOptions({
