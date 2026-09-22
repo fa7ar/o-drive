@@ -42,6 +42,7 @@ function BackupSyncPage() {
   const backupSync = useQuery(backupSyncQuery);
   const connections = useQuery(connectionsQuery);
   const [tab, setTab] = useState("policies");
+  const [showPolicyCreator, setShowPolicyCreator] = useState(false);
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ["backup-sync"] });
@@ -71,7 +72,18 @@ function BackupSyncPage() {
     <AppShell
       title="Backup & Sync"
       description="Policies, storage pools and routing decisions across connected providers."
-      actions={<Button size="sm" onClick={() => setTab("policies")}><Plus className="size-4" /> New policy</Button>}
+      actions={
+        <Button
+          size="sm"
+          onClick={() => {
+            setTab("policies");
+            setShowPolicyCreator(true);
+            requestAnimationFrame(() => document.getElementById("new-backup-policy")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+          }}
+        >
+          <Plus className="size-4" /> New policy
+        </Button>
+      }
     >
       <div className="grid gap-3 md:grid-cols-4">
         <Metric label="Policies" value={String(snapshot?.policies.length ?? 0)} />
@@ -87,7 +99,7 @@ function BackupSyncPage() {
           <TabsTrigger value="pools">Storage Pools</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="policies" className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <TabsContent value="policies" className={showPolicyCreator ? "grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]" : "space-y-4"}>
           <section className="panel">
             <header className="border-b border-border px-4 py-3">
               <h2 className="font-display text-sm font-semibold">Backup & sync policies</h2>
@@ -129,7 +141,26 @@ function BackupSyncPage() {
               <p className="px-4 py-8 text-center text-sm text-muted-foreground">No backup or sync policy yet.</p>
             )}
           </section>
-          <PolicyCreator pools={snapshot?.pools ?? []} connections={connected} invalidate={invalidate} />
+          {showPolicyCreator ? (
+            <PolicyCreator
+              pools={snapshot?.pools ?? []}
+              connections={connected}
+              invalidate={invalidate}
+              onClose={() => setShowPolicyCreator(false)}
+            />
+          ) : (
+            <section className="panel border-dashed p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="font-display text-sm font-semibold">Create a new policy</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">Choose a source, backup or sync mode, destination, schedule and retention.</p>
+                </div>
+                <Button size="sm" onClick={() => setShowPolicyCreator(true)}>
+                  <Plus className="size-4" /> New policy
+                </Button>
+              </div>
+            </section>
+          )}
         </TabsContent>
 
         <TabsContent value="runs">
@@ -226,7 +257,7 @@ function destinationName(pools: Pool[], connections: Conn[], destination: { kind
     : connectionName(connections, destination.id);
 }
 
-function PolicyCreator({ pools, connections, invalidate }: { pools: Pool[]; connections: Conn[]; invalidate: () => void }) {
+function PolicyCreator({ pools, connections, invalidate, onClose }: { pools: Pool[]; connections: Conn[]; invalidate: () => void; onClose: () => void }) {
   const [name, setName] = useState("Daily work backup");
   const [source, setSource] = useState("");
   const [destinationKind, setDestinationKind] = useState<DestinationKind>("pool");
@@ -247,14 +278,18 @@ function PolicyCreator({ pools, connections, invalidate }: { pools: Pool[]; conn
     }),
     onSuccess: () => {
       invalidate();
+      onClose();
       toast.success("Backup/sync policy created");
     },
     onError: (error: Error) => toast.error(error.message),
   });
 
   return (
-    <section className="panel p-5">
-      <h2 className="font-display text-sm font-semibold">Create policy</h2>
+    <section id="new-backup-policy" className="panel p-5">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="font-display text-sm font-semibold">Create policy</h2>
+        <Button size="sm" variant="ghost" onClick={onClose}>Cancel</Button>
+      </div>
       <div className="mt-4 space-y-3">
         <Field label="Name"><Input value={name} onChange={(event) => setName(event.target.value)} /></Field>
         <Field label="Source"><Picker value={source} onValueChange={setSource} placeholder="Source connection" items={connections} /></Field>
