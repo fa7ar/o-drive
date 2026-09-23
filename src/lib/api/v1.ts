@@ -15,6 +15,7 @@ import { createWebhook, listWebhooks, WEBHOOK_EVENTS } from "@/core/webhooks";
 import type { WebhookEventType } from "@/core/types";
 import {
   ApiError,
+  type ApiErrorCode,
   fail,
   newRequestId,
   ok,
@@ -112,9 +113,12 @@ async function runApiAction<T>(
     },
   });
   if (!result.success) {
-    throw new ApiError(API_ERROR_MAP[result.error!.code] ?? "ACTION_FAILED", result.error!.message);
+    throw new ApiError((API_ERROR_MAP[result.error!.code] ?? "ACTION_FAILED") as ApiErrorCode, result.error!.message);
   }
-  return { data: result.data, job_id: result.job_id };
+  return {
+    ...(result.data === undefined ? {} : { data: result.data }),
+    ...(result.job_id ? { job_id: result.job_id } : {}),
+  };
 }
 
 /* -------------------------------- router --------------------------------- */

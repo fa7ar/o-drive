@@ -87,7 +87,7 @@ export async function telegramUpload(
   const config = await configFor(connectionId);
   const form = new FormData();
   form.append("chat_id", config.chat);
-  form.append("document", new Blob([file.bytes], { type: file.type || guessMimeType(file.name) }), file.name);
+  form.append("document", new Blob([file.bytes as unknown as BlobPart], { type: file.type || guessMimeType(file.name) }), file.name);
   const message = await telegramFetch<TelegramMessage>(connectionId, "sendDocument", { method: "POST", body: form });
   if (!message.document) throw new Error("Telegram did not return document metadata");
   return toMetadata(connectionId, message, message.document);

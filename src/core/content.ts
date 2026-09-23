@@ -48,7 +48,7 @@ const seeds: ContentEntry[] = [
 ];
 
 function item(id: string, type: ContentType, slug: string, title: string, excerpt: string, markdown: string, showInFooter: boolean, showInHeader: boolean, navOrder: number, navLabel?: string): ContentEntry {
-  return { id, type, slug, title, excerpt, markdown, status: "published", publishedAt: "2026-09-16T00:00:00.000Z", showInHeader, showInFooter, navLabel, navOrder, index: true, follow: true, updatedAt: now() };
+  return { id, type, slug, title, excerpt, markdown, status: "published", publishedAt: "2026-09-16T00:00:00.000Z", showInHeader, showInFooter, ...(navLabel ? { navLabel } : {}), navOrder, index: true, follow: true, updatedAt: now() };
 }
 
 const entries = new Map(seeds.map((entry) => [entry.id, entry]));
