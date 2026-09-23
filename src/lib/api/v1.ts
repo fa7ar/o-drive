@@ -15,6 +15,7 @@ import { createWebhook, listWebhooks, WEBHOOK_EVENTS } from "@/core/webhooks";
 import type { WebhookEventType } from "@/core/types";
 import {
   ApiError,
+  type ApiErrorCode,
   fail,
   newRequestId,
   ok,
