@@ -75,7 +75,7 @@ const toMetadata = (connectionId: string, fallbackPath: string, item: GraphItem)
   mimeType: item.folder ? "inode/directory" : item.file?.mimeType || guessMimeType(item.name),
   sizeBytes: item.size ?? 0,
   modifiedAt: item.lastModifiedDateTime ?? new Date().toISOString(),
-  createdAt: item.createdDateTime,
+  ...(item.createdDateTime ? { createdAt: item.createdDateTime } : {}),
   favorite: false,
   trashed: false,
   providerFileId: item.id,
@@ -123,7 +123,7 @@ export async function oneDriveUpload(
   const response = await graphFetch(connectionId, uploadPath(path, file.name), {
     method: "PUT",
     headers: { "content-type": file.type || guessMimeType(file.name) },
-    body: file.bytes,
+    body: file.bytes as unknown as BodyInit,
   });
   return toMetadata(connectionId, path, (await response.json()) as GraphItem);
 }
@@ -163,7 +163,7 @@ export async function oneDriveUser(connectionId: string): Promise<{ id: string; 
   return {
     id: user.id ?? connectionId,
     label: user.displayName || user.mail || user.userPrincipalName || "OneDrive account",
-    email: user.mail || user.userPrincipalName,
+    ...(user.mail || user.userPrincipalName ? { email: (user.mail || user.userPrincipalName)! } : {}),
   };
 }
 

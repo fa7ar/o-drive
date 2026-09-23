@@ -344,8 +344,8 @@ export async function readinessReport(): Promise<ReadinessReport> {
     ["routing-failover", "Routing Failover", "Testing", "Failover policy is modeled; live retry/failover verification requires multiple healthy connected destinations."],
     ["cross-provider-transfer", "Cross-provider Transfer", "Testing", "Cross-provider routing queues transfers through ActionService; full E2E depends on live provider accounts."],
   ].map(([id, name, state, reason]) => ({
-    id,
-    name,
+    id: String(id),
+    name: String(name),
     group: "Core Features" as const,
     state: state as ReadinessState,
     reason,

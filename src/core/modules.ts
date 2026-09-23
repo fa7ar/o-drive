@@ -189,7 +189,10 @@ function isCompatible(range: string) {
   if (range === "*" || range === ODRIVE_VERSION) return true;
   const minimum = range.startsWith(">=") ? range.slice(2) : range;
   if (!SEMVER.test(minimum)) return false;
-  const parse = (value: string) => value.split(".").map((part) => Number(part));
+  const parse = (value: string): [number, number, number] => {
+    const parts = value.split(".").map((part) => Number(part) || 0);
+    return [parts[0] ?? 0, parts[1] ?? 0, parts[2] ?? 0];
+  };
   const [major, minor, patch] = parse(ODRIVE_VERSION);
   const [minMajor, minMinor, minPatch] = parse(minimum);
   return major > minMajor || (major === minMajor && (minor > minMinor || (minor === minMinor && patch >= minPatch)));

@@ -364,7 +364,7 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 
 function Picker({ value, onValueChange, items, placeholder }: { value: string; onValueChange: (value: string) => void; items: Conn[]; placeholder?: string }) {
   return (
-    <Select value={value || undefined} onValueChange={onValueChange}>
+    <Select {...(value ? { value } : {})} onValueChange={onValueChange}>
       <SelectTrigger><SelectValue placeholder={placeholder ?? "Select"} /></SelectTrigger>
       <SelectContent>
         {items.map((item) => <SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>)}

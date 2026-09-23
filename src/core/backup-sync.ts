@@ -245,7 +245,7 @@ export async function runBackupSyncPolicy(policyId: string): Promise<BackupSyncR
     const completed: BackupSyncRun = {
       ...run,
       status: "completed",
-      transferJobId: action.job_id,
+      ...(action.job_id ? { transferJobId: action.job_id } : {}),
       reason: `Queued transfer ${action.job_id ?? "without job id"} through ActionService.`,
       finishedAt: now(),
     };
@@ -314,26 +314,33 @@ export async function selectDestination(destination: BackupSyncPolicy["destinati
   };
 }
 
-function chooseConnection(pool: StoragePool, eligible: Array<{ member: StoragePoolMember; connection: Connection }>) {
+function chooseConnection(pool: StoragePool, eligible: Array<{ member: StoragePoolMember; connection: Connection }>): { connection: Connection; cursor: number } {
+  const first = (entries: Array<{ member: StoragePoolMember; connection: Connection }>): Connection => {
+    const entry = entries[0];
+    if (!entry) throw new Error("No eligible destination connection is available.");
+    return entry.connection;
+  };
   if (pool.strategy === "least-used") {
-    return { connection: [...eligible].sort((a, b) => a.connection.quotaUsedBytes - b.connection.quotaUsedBytes)[0].connection, cursor: pool.routingCursor };
+    return { connection: first([...eligible].sort((a, b) => a.connection.quotaUsedBytes - b.connection.quotaUsedBytes)), cursor: pool.routingCursor };
   }
   if (pool.strategy === "most-available-space") {
     return {
-      connection: [...eligible].sort((a, b) =>
+      connection: first([...eligible].sort((a, b) =>
         (b.connection.quotaTotalBytes - b.connection.quotaUsedBytes) - (a.connection.quotaTotalBytes - a.connection.quotaUsedBytes),
-      )[0].connection,
+      )),
       cursor: pool.routingCursor,
     };
   }
   if (pool.strategy === "priority-failover") {
-    return { connection: [...eligible].sort((a, b) => a.member.priority - b.member.priority)[0].connection, cursor: pool.routingCursor };
+    return { connection: first([...eligible].sort((a, b) => a.member.priority - b.member.priority)), cursor: pool.routingCursor };
   }
   const ring = pool.strategy === "weighted-round-robin"
     ? eligible.flatMap((entry) => Array.from({ length: Math.max(1, entry.member.weight) }, () => entry.connection))
     : eligible.map((entry) => entry.connection);
   const index = pool.routingCursor % ring.length;
-  return { connection: ring[index], cursor: (index + 1) % ring.length };
+  const connection = ring[index];
+  if (!connection) throw new Error("No eligible destination connection is available.");
+  return { connection, cursor: (index + 1) % ring.length };
 }
 
 function destinationIssue(connection: Connection, state: ProviderState | undefined, capability: StoragePool["requiredCapability"], healthAware: boolean) {
