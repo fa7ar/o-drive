@@ -1141,6 +1141,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_workspace_for_current_user: {
+        Args: { _name: string }
+        Returns: string
+      }
       current_profile_workspace_id: { Args: never; Returns: string }
       current_workspace_id: { Args: never; Returns: string }
       has_role: {
