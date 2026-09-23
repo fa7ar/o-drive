@@ -1,4 +1,4 @@
-import { postgresAdapter } from "@/database/postgres.server";
+import { createPostgresAdapter, postgresAdapter } from "@/database/postgres.server";
 import type { DatabaseAdapter } from "@/database/adapter";
 import {
   createPostgresRepositories,
