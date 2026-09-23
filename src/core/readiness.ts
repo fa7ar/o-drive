@@ -348,7 +348,7 @@ export async function readinessReport(): Promise<ReadinessReport> {
     name: String(name),
     group: "Core Features" as const,
     state: state as ReadinessState,
-    reason,
+    reason: String(reason),
     lastVerifiedAt: checkedAt,
   }));
 
