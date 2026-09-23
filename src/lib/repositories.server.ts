@@ -1,4 +1,4 @@
-import { postgresAdapter } from "@/database/postgres.server";
+import { createPostgresAdapter, postgresAdapter } from "@/database/postgres.server";
 import type { DatabaseAdapter } from "@/database/adapter";
 import {
   createPostgresRepositories,
@@ -33,16 +33,21 @@ export async function resolveWorkspace(
   let workspaceId = profile ? String(profile["workspace_id"]) : null;
 
   if (!workspaceId) {
-    const workspace = await db.insert("workspaces", { name: "My Workspace" });
+    // Profiles are normally provisioned by the sign-up trigger. This fallback
+    // is a privileged, server-only path: direct workspace inserts are revoked
+    // from signed-in users, so it must run through the service-role client.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const admin = createPostgresAdapter(supabaseAdmin);
+    const workspace = await admin.insert("workspaces", { name: "My Workspace" });
     workspaceId = String(workspace["id"]);
-    await db.insert("profiles", {
+    await admin.insert("profiles", {
       id: userId,
       workspace_id: workspaceId,
       email,
       display_name: "",
     });
-    await db.upsert("user_roles", [{ user_id: userId, role: "owner" }], "user_id,role");
-    await db.upsert(
+    await admin.upsert("user_roles", [{ user_id: userId, role: "owner" }], "user_id,role");
+    await admin.upsert(
       "workspace_settings",
       [{ workspace_id: workspaceId, data: {} }],
       "workspace_id",
