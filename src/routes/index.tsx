@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Check, Copy, GitFork, Github, Star } from "lucide-react";
+import { ArrowRight, Check, Github } from "lucide-react";
 
 import { DESCRIPTORS } from "@/adapters";
 import { OdriveLogo } from "@/components/odrive-logo";
@@ -144,10 +144,17 @@ function Home() {
 }
 
 function GithubRepoMenu() {
-  const stats = [
-    { label: "Stars", value: "Open", icon: Star },
-    { label: "Forks", value: "Open", icon: GitFork },
-    { label: "Clone", value: "HTTPS", icon: Copy },
+  const repos = [
+    {
+      label: "ODrive",
+      href: "https://github.com/fa7ar/o-drive",
+      stats: { clones: 0, stars: 13, forks: 7 },
+    },
+    {
+      label: "ODrive WP",
+      href: "https://github.com/fa7ar/odrive-wp",
+      stats: { clones: 0, stars: 0, forks: 0 },
+    },
   ];
   return (
     <DropdownMenu>
@@ -157,23 +164,32 @@ function GithubRepoMenu() {
           <span className="hidden sm:inline">GitHub</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuItem asChild>
-          <a href="https://github.com/fa7ar/o-drive" target="_blank" rel="noreferrer">
-            <Github className="size-4" />
-            View repository
-          </a>
-        </DropdownMenuItem>
-        {stats.map((item) => (
-          <DropdownMenuItem key={item.label} asChild>
-            <a href="https://github.com/fa7ar/o-drive" target="_blank" rel="noreferrer">
-              <item.icon className="size-4" />
-              <span className="flex-1">{item.label}</span>
-              <span className="text-xs text-muted-foreground">{item.value}</span>
+      <DropdownMenuContent align="end" className="w-72 p-2">
+        {repos.map((repo) => (
+          <DropdownMenuItem key={repo.href} asChild className="block cursor-pointer p-3">
+            <a href={repo.href} target="_blank" rel="noreferrer">
+              <div className="flex items-center gap-2">
+                <Github className="size-4" />
+                <span className="font-medium">{repo.label}</span>
+              </div>
+              <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+                <RepoStat label="Clone" value={repo.stats.clones} />
+                <RepoStat label="Stars" value={repo.stats.stars} />
+                <RepoStat label="Forks" value={repo.stats.forks} />
+              </div>
             </a>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+function RepoStat({ label, value }: { label: string; value: number }) {
+  return (
+    <span className="rounded-md border border-border bg-surface px-2 py-1">
+      <span className="block font-mono text-sm font-semibold">{value}</span>
+      <span className="block text-[10px] uppercase tracking-wide text-muted-foreground">{label}</span>
+    </span>
   );
 }

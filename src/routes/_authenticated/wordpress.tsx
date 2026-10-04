@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   checkWordPressSite,
   connectWordPressSite,
@@ -117,29 +118,39 @@ function WordPressPage() {
         />
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <section className="panel p-5">
-          <h2 className="font-display text-sm font-semibold">Standard REST capabilities</h2>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {(wordpress.data?.standardCapabilities ?? []).map((capability) => (
-              <Capability key={capability.id} label={capability.label} icon="standard" />
-            ))}
+      <section className="panel mt-4 p-5">
+        <Tabs defaultValue="standard">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="font-display text-sm font-semibold">WordPress capabilities</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Standard REST mode now, connector plugin contract prepared for advanced mode.</p>
+            </div>
+            <TabsList>
+              <TabsTrigger value="standard">Standard REST</TabsTrigger>
+              <TabsTrigger value="contract">Connector API</TabsTrigger>
+            </TabsList>
           </div>
-        </section>
 
-        <section className="panel p-5">
-          <h2 className="font-display text-sm font-semibold">Connector API contract</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Stable endpoints for the separate ODrive Connector WordPress plugin.</p>
-          <div className="mt-3 space-y-2">
-            {(wordpress.data?.connectorContract.endpoints ?? []).map((endpoint) => (
-              <div key={`${endpoint.method}:${endpoint.path}`} className="rounded-md border border-border p-2">
-                <p className="font-mono text-xs">{endpoint.method} {endpoint.path}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{endpoint.purpose}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
+          <TabsContent value="standard" className="mt-4">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {(wordpress.data?.standardCapabilities ?? []).map((capability) => (
+                <Capability key={capability.id} label={capability.label} icon="standard" />
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="contract" className="mt-4">
+            <div className="grid gap-2 md:grid-cols-2">
+              {(wordpress.data?.connectorContract.endpoints ?? []).map((endpoint) => (
+                <div key={`${endpoint.method}:${endpoint.path}`} className="rounded-md border border-border p-2">
+                  <p className="font-mono text-xs">{endpoint.method} {endpoint.path}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{endpoint.purpose}</p>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </section>
     </AppShell>
   );
 }

@@ -17,7 +17,8 @@ const descriptionByType: Record<"blog" | "docs" | "changelog", string> = {
   changelog: "Release notes and product changes.",
 };
 
-const displayDate = (value: string) => value.slice(0, 10);
+const displayDate = (value: string) =>
+  new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", timeZone: "UTC" }).format(new Date(value));
 
 export function PublicContentArchivePage({
   type,

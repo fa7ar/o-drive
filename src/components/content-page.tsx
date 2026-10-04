@@ -4,7 +4,8 @@ import { FloatingToc, MarkdownRenderer, useMarkdownHeadings } from "@/components
 import { OdriveLogo } from "@/components/odrive-logo";
 import { PublicFooter } from "@/components/public-footer";
 
-const displayDate = (value: string) => value.slice(0, 10);
+const displayDate = (value: string) =>
+  new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", timeZone: "UTC" }).format(new Date(value));
 
 export function PublicContentPage({ entry, footerLinks = [] }: { entry: ContentEntry; footerLinks?: ContentEntry[] }) {
   const headings = useMarkdownHeadings(entry.markdown);
