@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Copy, GitFork, Github, Star } from "lucide-react";
 
 import { DESCRIPTORS } from "@/adapters";
 import { OdriveLogo } from "@/components/odrive-logo";
@@ -8,6 +8,12 @@ import { ProviderIcon } from "@/components/provider-icon";
 import { PublicFooter } from "@/components/public-footer";
 import { ReadinessBadge } from "@/components/readiness-badge";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
 import { footerContentQuery, readinessQuery } from "@/lib/queries";
 
@@ -48,6 +54,7 @@ function Home() {
       <header className="mx-auto flex h-16 max-w-3xl items-center justify-between px-6">
         <OdriveLogo />
         <div className="flex items-center gap-1">
+          <GithubRepoMenu />
           <Button asChild size="sm">
             <Link to={user ? "/explorer" : "/auth"}>
               {user ? "Continue" : "Get started"}
@@ -133,5 +140,40 @@ function Home() {
 
       <PublicFooter links={footerContent.data ?? []} />
     </div>
+  );
+}
+
+function GithubRepoMenu() {
+  const stats = [
+    { label: "Stars", value: "Open", icon: Star },
+    { label: "Forks", value: "Open", icon: GitFork },
+    { label: "Clone", value: "HTTPS", icon: Copy },
+  ];
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="sm" aria-label="Open ODrive on GitHub">
+          <Github className="size-4" />
+          <span className="hidden sm:inline">GitHub</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuItem asChild>
+          <a href="https://github.com/fa7ar/o-drive" target="_blank" rel="noreferrer">
+            <Github className="size-4" />
+            View repository
+          </a>
+        </DropdownMenuItem>
+        {stats.map((item) => (
+          <DropdownMenuItem key={item.label} asChild>
+            <a href="https://github.com/fa7ar/o-drive" target="_blank" rel="noreferrer">
+              <item.icon className="size-4" />
+              <span className="flex-1">{item.label}</span>
+              <span className="text-xs text-muted-foreground">{item.value}</span>
+            </a>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

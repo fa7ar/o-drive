@@ -13,6 +13,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Plug,
+  FileStack,
   Search,
   Settings as SettingsIcon,
   Shield,
@@ -62,6 +63,7 @@ const SECTIONS: Array<{
       { to: "/explorer", label: "Explorer", icon: FolderTree },
       { to: "/drives", label: "Drives", icon: HardDrive },
       { to: "/connections", label: "Connections", icon: Plug },
+      { to: "/wordpress", label: "WordPress", icon: FileStack },
     ],
   },
   {
@@ -101,6 +103,7 @@ function sectionForPath(pathname: string): SectionKey {
   )
     return "activity";
   if (pathname.startsWith("/settings") || pathname.startsWith("/developer")) return "settings";
+  if (pathname.startsWith("/wordpress")) return "files";
   return "files"; // explorer, drives, connections, files detail, default
 }
 

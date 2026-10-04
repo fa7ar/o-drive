@@ -704,7 +704,14 @@ export type ApiScope =
   | "file:write"
   | "transfer:write"
   | "share:read"
-  | "webhook:write";
+  | "webhook:write"
+  | "wordpress.site"
+  | "files.read"
+  | "files.write"
+  | "backup.create"
+  | "backup.read"
+  | "restore.create"
+  | "storage.destinations.read";
 
 export type ApiKeyStatus = "active" | "revoked" | "expired";
 

@@ -25,6 +25,7 @@ import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/h
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedSharesRouteImport } from './routes/_authenticated/shares'
 import { Route as AuthenticatedTransfersRouteImport } from './routes/_authenticated/transfers'
+import { Route as AuthenticatedWordpressRouteImport } from './routes/_authenticated/wordpress'
 import { Route as CBlogRouteImport } from './routes/c/blog'
 import { Route as CChangelogRouteImport } from './routes/c/changelog'
 import { Route as CChangelogsRouteImport } from './routes/c/changelogs'
@@ -151,6 +152,11 @@ const AuthenticatedSharesRoute = AuthenticatedSharesRouteImport.update({
 const AuthenticatedTransfersRoute = AuthenticatedTransfersRouteImport.update({
   id: '/transfers',
   path: '/transfers',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWordpressRoute = AuthenticatedWordpressRouteImport.update({
+  id: '/wordpress',
+  path: '/wordpress',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const CBlogRoute = CBlogRouteImport.update({
@@ -416,6 +422,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/wordpress': typeof AuthenticatedWordpressRoute
   '/c/blog': typeof CBlogRouteWithChildren
   '/c/changelog': typeof CChangelogRouteWithChildren
   '/c/changelogs': typeof CChangelogsRouteWithChildren
@@ -478,6 +485,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/shares': typeof AuthenticatedSharesRoute
   '/transfers': typeof AuthenticatedTransfersRoute
+  '/wordpress': typeof AuthenticatedWordpressRoute
   '/legal/$slug': typeof LegalSlugRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
   '/legal/data-deletion': typeof LegalDataDeletionRoute
@@ -539,6 +547,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/shares': typeof AuthenticatedSharesRoute
   '/_authenticated/transfers': typeof AuthenticatedTransfersRoute
+  '/_authenticated/wordpress': typeof AuthenticatedWordpressRoute
   '/c/blog': typeof CBlogRouteWithChildren
   '/c/changelog': typeof CChangelogRouteWithChildren
   '/c/changelogs': typeof CChangelogsRouteWithChildren
@@ -604,6 +613,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/shares'
     | '/transfers'
+    | '/wordpress'
     | '/c/blog'
     | '/c/changelog'
     | '/c/changelogs'
@@ -666,6 +676,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/shares'
     | '/transfers'
+    | '/wordpress'
     | '/legal/$slug'
     | '/legal/acceptable-use'
     | '/legal/data-deletion'
@@ -726,6 +737,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/shares'
     | '/_authenticated/transfers'
+    | '/_authenticated/wordpress'
     | '/c/blog'
     | '/c/changelog'
     | '/c/changelogs'
@@ -909,6 +921,13 @@ declare module '@tanstack/react-router' {
       path: '/transfers'
       fullPath: '/transfers'
       preLoaderRoute: typeof AuthenticatedTransfersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/wordpress': {
+      id: '/_authenticated/wordpress'
+      path: '/wordpress'
+      fullPath: '/wordpress'
+      preLoaderRoute: typeof AuthenticatedWordpressRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/c/blog': {
@@ -1289,6 +1308,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedSharesRoute: typeof AuthenticatedSharesRoute
   AuthenticatedTransfersRoute: typeof AuthenticatedTransfersRoute
+  AuthenticatedWordpressRoute: typeof AuthenticatedWordpressRoute
   AuthenticatedFilesFileIdRoute: typeof AuthenticatedFilesFileIdRoute
   AuthenticatedSettingsSecurityRoute: typeof AuthenticatedSettingsSecurityRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
@@ -1308,6 +1328,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedSharesRoute: AuthenticatedSharesRoute,
   AuthenticatedTransfersRoute: AuthenticatedTransfersRoute,
+  AuthenticatedWordpressRoute: AuthenticatedWordpressRoute,
   AuthenticatedFilesFileIdRoute: AuthenticatedFilesFileIdRoute,
   AuthenticatedSettingsSecurityRoute: AuthenticatedSettingsSecurityRoute,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,

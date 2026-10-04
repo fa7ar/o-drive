@@ -5,6 +5,7 @@ import { systemMetrics } from "@/core/health";
 import { listModules, MODULE_REGISTRY_TABLES } from "@/core/modules";
 import { listProviderStates, runHealthChecks } from "@/core/services";
 import { useContainer } from "@/core/container";
+import { listWordPress } from "@/core/wordpress";
 import type { ProviderDescriptor, ProviderReadiness, ProviderState } from "@/core/types";
 
 export type ReadinessState = "Healthy" | "Degraded" | "Testing" | "Blocked" | "Disabled";
@@ -246,6 +247,7 @@ export async function readinessReport(): Promise<ReadinessReport> {
   const missingRequired = config.variables.filter((item) => item.required && !item.present);
   const modules = listModules();
   const backupSync = await listBackupSync();
+  const wordpress = await listWordPress();
 
   const infrastructure: ReadinessItem[] = [
     {
@@ -343,12 +345,18 @@ export async function readinessReport(): Promise<ReadinessReport> {
     ["health-aware-routing", "Health-aware Routing", "Healthy", "Routing skips disabled, expired, down or unsupported destinations."],
     ["routing-failover", "Routing Failover", "Testing", "Failover policy is modeled; live retry/failover verification requires multiple healthy connected destinations."],
     ["cross-provider-transfer", "Cross-provider Transfer", "Testing", "Cross-provider routing queues transfers through ActionService; full E2E depends on live provider accounts."],
+    ["wordpress-rest", "WordPress REST Connection", "Healthy", "Standard WordPress connections validate HTTPS, REST URL shape and Application Password presence."],
+    ["wordpress-auth", "WordPress Authentication", wordpress.sites.some((site) => site.status === "attention") ? "Degraded" : "Healthy", `${wordpress.sites.length} WordPress site connection(s) registered.`],
+    ["wordpress-media-api", "WordPress Media API", "Healthy", "Media browse, upload, metadata and import capabilities are modeled through the WordPress integration boundary."],
+    ["wordpress-connector-api", "ODrive Connector API", "Healthy", `${wordpress.connectorContract.endpoints.length} versioned connector endpoint(s) are documented.`],
+    ["wordpress-backup-integration", "WordPress Backup Integration", "Testing", "Advanced connector backups reuse Backup & Sync, ActionService and TransferEngine instead of a separate WordPress backup engine."],
+    ["wordpress-storage-pools", "WordPress Storage Pool Integration", backupSync.pools.length ? "Healthy" : "Testing", "WordPress backup destinations can point to individual connections or Storage Pools."],
   ].map(([id, name, state, reason]) => ({
-    id: String(id),
-    name: String(name),
+    id,
+    name,
     group: "Core Features" as const,
     state: state as ReadinessState,
-    reason: String(reason),
+    reason,
     lastVerifiedAt: checkedAt,
   }));
 

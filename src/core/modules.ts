@@ -109,6 +109,7 @@ export const MODULE_PERMISSION_CATALOG: ModulePermission[] = [
   { id: "transfers.create", label: "Create transfers", actionIds: ["transfer.create"] },
   { id: "transfers.manage", label: "Cancel or retry transfers", actionIds: ["transfer.cancel", "transfer.retry"] },
   { id: "backup.run", label: "Run backup and sync policies", actionIds: ["backup.policy.run", "backup.pool.route"] },
+  { id: "wordpress.site", label: "Manage WordPress site connections", actionIds: [] },
   { id: "shares.create", label: "Create and manage share links", actionIds: ["share.create", "share.update", "share.revoke"] },
   { id: "automations.run", label: "Run automations", actionIds: ["automation.run"] },
   { id: "activity.read", label: "Read activity metadata", actionIds: [] },
@@ -148,6 +149,21 @@ export const EXAMPLE_MODULE_PACKAGE: ModulePackageInput = {
 
 const availableModules: ModuleManifest[] = [
   EXAMPLE_MODULE_PACKAGE.manifest,
+  {
+    id: "wordpress-integration",
+    name: "WordPress Integration",
+    description: "Connect WordPress sites through REST API Application Passwords and prepare ODrive Connector Plugin workflows.",
+    version: "1.0.0",
+    odriveVersion: ">=1.0.0",
+    edition: "free",
+    author: "ODrive Core",
+    kind: "official",
+    dependencies: [],
+    extensionPoints: [
+      { point: "navigation", label: "WordPress", target: "/wordpress" },
+      { point: "file.action", label: "Import to WordPress Media" },
+    ],
+  },
   {
     id: "smart-deduplicator",
     name: "Smart Deduplicator",
@@ -189,10 +205,7 @@ function isCompatible(range: string) {
   if (range === "*" || range === ODRIVE_VERSION) return true;
   const minimum = range.startsWith(">=") ? range.slice(2) : range;
   if (!SEMVER.test(minimum)) return false;
-  const parse = (value: string): [number, number, number] => {
-    const parts = value.split(".").map((part) => Number(part) || 0);
-    return [parts[0] ?? 0, parts[1] ?? 0, parts[2] ?? 0];
-  };
+  const parse = (value: string) => value.split(".").map((part) => Number(part));
   const [major, minor, patch] = parse(ODRIVE_VERSION);
   const [minMajor, minMinor, minPatch] = parse(minimum);
   return major > minMajor || (major === minMajor && (minor > minMinor || (minor === minMinor && patch >= minPatch)));

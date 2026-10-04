@@ -1,6 +1,7 @@
 import { authenticateApiKey, type ApiPrincipal } from "@/core/api-keys";
 import { executeAction, type ActionErrorCode, type ActionId } from "@/core/actions";
 import { useContainer } from "@/core/container";
+import { listBackupSync } from "@/core/backup-sync";
 import { listDrives } from "@/core/drives";
 import { assertWithinLimit } from "@/core/rate-limit";
 import {
@@ -12,10 +13,14 @@ import {
 import type { FileMetadata } from "@/core/types";
 import { listShares } from "@/core/shares";
 import { createWebhook, listWebhooks, WEBHOOK_EVENTS } from "@/core/webhooks";
+import {
+  checkWordPressSite,
+  listWordPress,
+  WORDPRESS_CONNECTOR_CONTRACT,
+} from "@/core/wordpress";
 import type { WebhookEventType } from "@/core/types";
 import {
   ApiError,
-  type ApiErrorCode,
   fail,
   newRequestId,
   ok,
@@ -113,12 +118,9 @@ async function runApiAction<T>(
     },
   });
   if (!result.success) {
-    throw new ApiError((API_ERROR_MAP[result.error!.code] ?? "ACTION_FAILED") as ApiErrorCode, result.error!.message);
+    throw new ApiError(API_ERROR_MAP[result.error!.code] ?? "ACTION_FAILED", result.error!.message);
   }
-  return {
-    ...(result.data === undefined ? {} : { data: result.data }),
-    ...(result.job_id ? { job_id: result.job_id } : {}),
-  };
+  return { data: result.data, job_id: result.job_id };
 }
 
 /* -------------------------------- router --------------------------------- */
@@ -415,6 +417,128 @@ async function route(
     }));
     const { page, meta } = paginate(rows, params);
     return ok(page, requestId, meta);
+  }
+
+  /* ------------------------------ wordpress ----------------------------- */
+  if (resource === "wordpress") {
+    const siteId = id === "sites" ? action : id;
+    const siteAction = id === "sites" ? segments[3] : action;
+    const siteSubId = id === "sites" ? segments[4] : segments[3];
+
+    if (!id && method === "GET") {
+      requireScope(principal, "wordpress.site");
+      const snapshot = await listWordPress();
+      return ok({
+        contract: WORDPRESS_CONNECTOR_CONTRACT,
+        sites: snapshot.sites.map((site) => ({
+          id: site.id,
+          url: site.siteUrl,
+          name: site.name,
+          mode: site.mode,
+          status: site.status,
+          capabilities: site.capabilities,
+          last_health_check_at: site.lastHealthCheckAt,
+          last_backup_at: site.lastBackupAt,
+          next_backup_at: site.nextBackupAt,
+        })),
+      }, requestId);
+    }
+    if (id === "sites" && action === "register" && method === "POST") {
+      requireScope(principal, "wordpress.site");
+      const body = await readJson(request);
+      return ok({
+        status: "accepted",
+        site_url: requireString(body, "site_url"),
+        mode: body["mode"] === "advanced" ? "advanced" : "standard",
+        contract_version: WORDPRESS_CONNECTOR_CONTRACT.version,
+      }, requestId);
+    }
+    if (id === "sites" && method === "GET") {
+      requireScope(principal, "wordpress.site");
+      const snapshot = await listWordPress();
+      return ok(snapshot.sites.map((site) => ({
+        id: site.id,
+        url: site.siteUrl,
+        name: site.name,
+        mode: site.mode,
+        status: site.status,
+      })), requestId);
+    }
+    if (id === "storage-destinations" && method === "GET") {
+      requireScope(principal, "storage.destinations.read");
+      const [drives, backupSync] = await Promise.all([listDrives(), listBackupSync()]);
+      return ok({
+        drives: drives.map(driveDto),
+        pools: backupSync.pools.map((pool) => ({
+          id: pool.id,
+          name: pool.name,
+          strategy: pool.strategy,
+          members: pool.members.length,
+        })),
+      }, requestId);
+    }
+    if (id === "events" && method === "POST") {
+      requireScope(principal, "wordpress.site");
+      await readJson(request);
+      return ok({ received: true, verification: "signature verification is required by connector deployments" }, requestId);
+    }
+    if (siteId && siteAction === "health" && method === "GET") {
+      requireScope(principal, "wordpress.site");
+      const site = await checkWordPressSite(siteId);
+      return ok({
+        site_id: site.id,
+        status: site.status,
+        mode: site.mode,
+        wordpress_version: site.wordpressVersion,
+        last_health_check_at: site.lastHealthCheckAt,
+      }, requestId);
+    }
+    if (siteId && siteAction === "backups" && method === "POST") {
+      requireScope(principal, "backup.create");
+      const body = await readJson(request);
+      return ok({
+        id: `wpb_${crypto.randomUUID().replace(/-/g, "").slice(0, 20)}`,
+        site_id: siteId,
+        status: "queued",
+        destination_id: typeof body["destination_id"] === "string" ? body["destination_id"] : null,
+      }, requestId);
+    }
+    if (siteId && siteAction === "backups" && siteSubId && method === "GET") {
+      requireScope(principal, "backup.read");
+      return ok({
+        id: siteSubId,
+        site_id: siteId,
+        status: "queued",
+        source: "backup-sync",
+      }, requestId);
+    }
+    if (siteId && siteAction === "restores" && method === "POST") {
+      requireScope(principal, "restore.create");
+      const body = await readJson(request);
+      return ok({
+        id: `wpr_${crypto.randomUUID().replace(/-/g, "").slice(0, 20)}`,
+        site_id: siteId,
+        backup_id: requireString(body, "backup_id"),
+        status: "requested",
+      }, requestId);
+    }
+    if (siteId && siteAction === "restores" && siteSubId && method === "GET") {
+      requireScope(principal, "restore.create");
+      return ok({
+        id: siteSubId,
+        site_id: siteId,
+        status: "requested",
+      }, requestId);
+    }
+    if (siteId && siteAction === "media" && siteSubId === "import" && method === "POST") {
+      requireScope(principal, "files.write");
+      const body = await readJson(request);
+      return ok({
+        site_id: siteId,
+        file_id: requireString(body, "file_id"),
+        status: "queued",
+      }, requestId);
+    }
   }
 
   /* -------------------------------- shares ------------------------------- */

@@ -34,6 +34,7 @@ import { listLogs, type LogFilter } from "@/core/logs";
 import { listModules } from "@/core/modules";
 import { readinessReport } from "@/core/readiness";
 import { listSyncHistory, listSyncJobs } from "@/core/sync-engine";
+import { listWordPress } from "@/core/wordpress";
 
 export const contentQuery = queryOptions({
   queryKey: ["content"],
@@ -69,6 +70,12 @@ export const backupSyncQuery = queryOptions({
   queryKey: ["backup-sync"],
   queryFn: () => listBackupSync(),
   refetchInterval: 5000,
+});
+
+export const wordpressQuery = queryOptions({
+  queryKey: ["wordpress"],
+  queryFn: () => listWordPress(),
+  refetchInterval: 8000,
 });
 
 export const activityQuery = queryOptions({

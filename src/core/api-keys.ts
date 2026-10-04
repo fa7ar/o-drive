@@ -16,6 +16,13 @@ export const API_SCOPES: Array<{ scope: ApiScope; description: string }> = [
   { scope: "transfer:write", description: "Start transfers and inspect jobs" },
   { scope: "share:read", description: "Read share links and their status" },
   { scope: "webhook:write", description: "Register and manage webhook endpoints" },
+  { scope: "wordpress.site", description: "Register and read WordPress site connector state" },
+  { scope: "files.read", description: "Read files through connector workflows" },
+  { scope: "files.write", description: "Write files through connector workflows" },
+  { scope: "backup.create", description: "Create backup requests through Backup & Sync" },
+  { scope: "backup.read", description: "Read backup status" },
+  { scope: "restore.create", description: "Create restore requests" },
+  { scope: "storage.destinations.read", description: "List available storage destinations and pools" },
 ];
 
 const ALPHABET = "abcdefghijklmnopqrstuvwxyz0123456789";
