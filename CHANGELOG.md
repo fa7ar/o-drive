@@ -10,7 +10,7 @@ All notable changes to ODrive are documented here.
 - Added `/wordpress` for connecting multiple WordPress sites through REST API Application Passwords.
 - Added secure WordPress site connection validation for HTTPS, username, Application Password shape, REST endpoint shape and standard media capabilities.
 - Added WordPress credential storage through the existing credential vault without returning saved Application Passwords to the browser.
-- Added a versioned ODrive Connector API contract for the separate WordPress connector plugin.
+- Added a versioned [ODrive Connector](https://github.com/fa7ar/odrive-wp) API contract for the separate WordPress connector plugin.
 - Added public API routes under `/api/v1/wordpress` for connector discovery, site listing, health checks, backup requests, restore requests, media import, storage destinations and connector events.
 - Added WordPress scopes for API keys: `wordpress.site`, `files.read`, `files.write`, `backup.create`, `backup.read`, `restore.create` and `storage.destinations.read`.
 - Added WordPress readiness checks for REST connection, authentication, Media API, Connector API, Backup Integration and Storage Pool Integration.
