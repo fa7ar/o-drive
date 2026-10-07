@@ -6,7 +6,7 @@ ODrive is a provider-agnostic storage management platform that brings multiple s
 
 Connect your Google Drive, OneDrive, Telegram, Cloudflare R2, Amazon S3, and other storage services — without making any provider the center of the architecture.
 
-ODrive is designed to be simple for users, modular for developers, and portable across infrastructure. New: already **[ODrive Connector](https://github.com/fa7ar/odrive-wp)** for WordPress integration.
+ODrive is designed to be simple for users, modular for developers, and portable across infrastructure. New: already **[ODrive Connector](https://github.com/fa7ar/odrive-wp)** for WordPress integration. Join **[Vibe Circle](https://t.me/vibecircles)** group on Telegram
 
 ---
 
