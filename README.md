@@ -580,7 +580,7 @@ ODrive is created by **[Fajar Tri](https://www.linkedin.com/in/fajartri)** built
 About me: A T-Shaped professional with deep expertise in SEO since 2011, complemented by broad knowledge across digital marketing, vibe coding, PHP native programmer (2008-2011) and related disciplines.
 
 **Need a help/custom?**
-contact me at [Codelab](https://clab.my.id)
+contact me at [Marvia](https://marvia.id)
 
 ---
 
